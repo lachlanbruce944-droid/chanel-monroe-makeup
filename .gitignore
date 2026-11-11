@@ -5,3 +5,9 @@ final-draft/images/inspiration/**/*.webp
 final-draft/images/videos/*.mp4
 final-draft/images/videos/*.jpg
 
+
+# Other people's photos used by the final draft (kept local only)
+final-draft/images/affiliates/*/*/
+final-draft/images/products/
+final-draft/images/chanel/comments/
+final-draft/data/*-raw.json

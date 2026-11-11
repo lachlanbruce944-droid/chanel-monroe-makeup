@@ -44,7 +44,9 @@ The complete copy with all reference photos and clips is `M:\CMM-Site\final-draf
 - Bio lines (ABOUT_LINES) and business name are still placeholders in `data/site-content.js` / `settings/site-settings.js`.
 - Inspiration images belong to other artists. Decide before publishing them publicly: keep repo public with credits only, make it private, or get permission.
 - Affiliates: message each person before listing them on the live site.
-- Free space on C: (was full on 2026-11-11). Big work now lives on M:.
+- Free space on C: (was full on 2026-11-11, 1.1 GB free on 2026-11-12). Big work now lives on M:.
+- Products with no photo yet (show the brand logo instead): Danessa Myricks Colorfix x2 (site blocks downloads), NARS red lipstick (Dragon Girl is a placeholder shade), MUFE Ultra HD Soft Light (no longer sold in Australia: replace or drop). Placeholder picks to confirm: Real Techniques Everything Eye Set, MYO Bling (links to The Face Paint Shop gems).
+- Re-scrape affiliate photos and Chanel's comments now and then; both are snapshots from 2026-11-12.
 
 ## Chanel's Instagram: scrape register (@chanelmonroemakeup)
 Check this before pulling from her profile. Profile had 20 posts on 2026-11-11, all already downloaded.
@@ -77,6 +79,15 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (carousels, popups, Chanel only in About)
+- Style sections now show inspiration only. Chanel's own photos appear only in About (`pick()` skips `own`; the `mix` option no longer adds her photos).
+- About: clicking a tile opens an Instagram-style popup: photo on the left; caption and her real Instagram comments (with replies, avatars, dates) pinned on the right. Arrows or ← → move between photos. Data: `data/comments.js` (`window.IG_POSTS`, keyed by post URL, 18 posts, 89 comments), built by `tools/build_people.py` from `data/comments-raw.json`. Commenter avatars: `images/chanel/comments/` (local only).
+- Affiliates, Brands, Products are now horizontal auto-rotating carousels (loop, pause on hover, drag or trackpad to move; rows alternate direction).
+- Affiliates: click a card for a popup with avatar, bio, posts/followers, a 3 x 3 grid of their 9 latest posts (each links to the post), Instagram and website buttons. Data: `data/affiliates.js`, built from `data/affiliates-raw.json` + `images/affiliates/affiliates.csv`. Photos: `images/affiliates/<cat>/<handle>/01-09.jpg` (local only). @goddesslashesx is private: no photos.
+- Brands: every logo links to the brand's official site (`BRAND_URL` in index.html, checked 2026-11-12). ModelCo closed in 2025 (link redirects to MCoBeauty); LaGlam has no site (links to its Australian Made listing).
+- Products: one clear product photo each, linking to an Australian product page where one exists. Source list: `data/products.csv` (edit it, then `python tools/fetch_products.py`, which downloads to `images/products/` and writes `data/products.js`). Generic kit items show as an "Also in the kit" list.
+- Affiliate photos, product photos and commenter avatars belong to other people, so they are git-ignored like the inspiration images.
+
 ### 2026-11-12
 - Removed 9 near-duplicate slides from Chanel's work (now 21 photos). Copies kept at `M:\CMM-Site\chanel\_removed-duplicates`. Added the scrape register above so they are not downloaded again.
 - About grid still has 36 tiles, so each photo shows 1 to 2 times; repeats never sit next to or above each other.
