@@ -289,7 +289,7 @@ body.editing .tile figcaption{display:none}
 
 <section id="gallery">
   <div class="subs" id="subs"></div>
-  <div class="ghead"><h1 id="gTitle"></h1><p id="gTag"></p><button class="mix" id="groupPrices"></button><button class="mix" id="remix">New mix</button></div>
+  <div class="ghead"><h1 id="gTitle"></h1><p id="gTag"></p><button class="mix" id="remix">New mix</button></div>
   <main class="strip" id="strip" aria-label="Gallery: drag or scroll to move it"><div class="track" id="track"></div></main>
   <div class="capbar"><div class="txt" id="cap"><div class="sub" id="capSub"></div><div class="desc" id="capDesc"></div><div class="src" id="capSrc"></div></div></div>
 </section>
@@ -458,7 +458,7 @@ function tileHTML(it,k){
 function go(i,s){
   page=null;$('gallery').hidden=false;$('info').hidden=true;
   cur=i;sub=s||null;var g=GROUPS[i];document.body.dataset.g=g.id;markNav();renderSubs();
-  $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(DESC[sub]||[''])[0]+'.':g.tag;$('groupPrices').textContent=g.name+' prices';
+  $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(DESC[sub]||[''])[0]+'.':g.tag;
   shown=(sub||EDIT)?pick(g,sub):SEL[g.id];
   $('track').innerHTML=shown.map(tileHTML).join('');
   observeVideos();$('strip').scrollLeft=0;centreIdx=-1;dir=1;setTimeout(findCentre,60);closeDd();
@@ -514,7 +514,7 @@ function poGo(i,fromScroll){poIdx=(i+GROUPS.length)%GROUPS.length;po.setAttribut
   if(po.dataset.layout==='a')$('poPages').style.transform='translateX('+(-100*poIdx)+'%)';
   if(po.dataset.layout==='c'&&!fromScroll){var c=$('poPages').children[poIdx],v=$('poView');v.scrollTo({left:c.offsetLeft-(v.clientWidth-c.offsetWidth)/2,behavior:'smooth'})}}
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
-$('openPricing').onclick=function(){poOpen(page?0:cur)};$('groupPrices').onclick=function(){poOpen(cur)};
+$('openPricing').onclick=function(){poOpen(page?0:cur)};
 $('poX').onclick=function(){po.classList.remove('open')};
 po.addEventListener('click',function(e){if(e.target===po||(e.target===$('poView')&&po.dataset.layout==='c'))po.classList.remove('open')});
 $('poPrev').onclick=function(){poGo(poIdx-1)};$('poNext').onclick=function(){poGo(poIdx+1)};
