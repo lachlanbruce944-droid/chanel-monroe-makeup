@@ -1,0 +1,7 @@
+
+# Other artists' reference photos and clips stay local (M:\CMM-Site\final-draft)
+final-draft/images/inspiration/**/*.jpg
+final-draft/images/inspiration/**/*.webp
+final-draft/images/videos/*.mp4
+final-draft/images/videos/*.jpg
+

@@ -1,0 +1,1 @@
+window.SITE={businessName:'[Business name]',email:'hello@example.com',suburb:'[Suburb]',instagramHandle:'[your-handle]',instagram:'',facebook:'',tiktok:''};
