@@ -243,6 +243,15 @@ body[data-theme="b"][data-g="about"] #bgfx,body[data-theme="b"][data-g="affiliat
 .about-lines{font-family:var(--fh);font-size:clamp(22px,2.6vw,32px);line-height:1.3;max-width:34ch;min-height:3.2em;transition:opacity .4s}
 .mini-strip{display:flex;gap:12px;overflow-x:auto;padding:10px 0;scrollbar-width:none}
 .mini-strip img{height:260px;border-radius:8px;flex:none}
+/* About: shuffling grid of Chanel's work, 9 x 4 on desktop, 4 x 9 on phones */
+.agrid{display:grid;grid-template-columns:repeat(9,1fr);gap:8px;margin:6px 0 18px}
+.agrid .cell{position:relative;aspect-ratio:1;overflow:hidden;border-radius:6px;background:var(--bg2);cursor:zoom-in}
+.agrid .cell img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .9s ease,transform 6s ease}
+.agrid .cell img.out{opacity:0}
+.agrid .cell:hover img{transform:scale(1.06)}
+.agrid .cell span{position:absolute;left:0;right:0;bottom:0;padding:18px 8px 6px;background:linear-gradient(transparent,rgba(0,0,0,.6));color:#fff;font-size:11px;opacity:0;transition:opacity .3s}
+.agrid .cell:hover span{opacity:1}
+@media (max-width:760px){.agrid{grid-template-columns:repeat(4,1fr);gap:5px}}
 .note-small{color:var(--soft);font-size:12px;margin-top:24px}
 
 /* ===== EDIT MODE ===== */
@@ -519,11 +528,11 @@ function openPage(id){
   page=id;document.body.dataset.g=id;markNav();$('gallery').hidden=true;var el=$('info');el.hidden=false;el.scrollTop=0;clearInterval(aboutTimer);
   var ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/', h='';
   if(id==='about'){
-    var lines=(sec('about').lines||[]).filter(function(l){return l&&!/^\[/.test(l)});
-    var own=shuffle(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)})).slice(0,12);
+    var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
+    var own=shuffle(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)}));
     h='<h1>About</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p>'+
-      '<h3>Chanel’s work</h3><div class="mini-strip">'+own.map(function(x){return '<img loading="lazy" src="'+x.src+'" alt="'+esc(desc(x))+'">'}).join('')+'</div>'+
+      '<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a> <a class="pill solid" style="text-decoration:none;display:inline-block" href="'+BOOK+'" target="_blank" rel="noopener">Enquire</a></p>'+
       (lines.length?'':'<p class="note-small">Bio lines still to write: edit ABOUT_LINES in data/site-content.js.</p>');
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
@@ -543,6 +552,32 @@ function openPage(id){
       '<p class="note-small">'+esc((sec('products').lines||[]).slice(-1)[0]||'')+'</p>';
   }
   el.innerHTML=h;
+  if(id==='about')buildAboutGrid(own);
+}
+/* 36 tiles (9 x 4): fresh order on every visit, then one tile fades to another photo every few seconds */
+var gridTimer=0;
+function buildAboutGrid(own){
+  clearInterval(gridTimer);var grid=$('agrid');if(!grid||!own.length)return;
+  var COLS=9,N=36,cells=[],pool=[];
+  while(pool.length<N)pool=pool.concat(shuffle(own));
+  for(var i=0;i<N;i++){ /* avoid the same photo next to or above itself */
+    var j=i;while(j<pool.length&&((i%COLS&&pool[j]===cells[i-1])||(i>=COLS&&pool[j]===cells[i-COLS])))j++;
+    if(j>=pool.length)j=i;var t=pool[i];pool[i]=pool[j];pool[j]=t;cells.push(pool[i]);
+  }
+  grid.innerHTML=cells.map(function(x,i){return '<div class="cell" data-i="'+i+'"><img loading="'+(i<18?'eager':'lazy')+'" src="'+x.src+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></div>'}).join('');
+  grid.onclick=function(e){var c=e.target.closest('.cell');if(!c)return;shown=own;lbShow(own.indexOf(cells[+c.dataset.i]));$('lb').classList.add('open')};
+  gridTimer=setInterval(function(){
+    if(!document.body.contains(grid)||page!=='about'){clearInterval(gridTimer);return}
+    if(document.hidden||$('lb').classList.contains('open'))return;
+    var i=Math.floor(Math.random()*N),onScreen={};cells.forEach(function(x){onScreen[x.src]=1});
+    var near=[cells[i-1],cells[i+1],cells[i-COLS],cells[i+COLS]].filter(Boolean);
+    var choices=own.filter(function(x){return !onScreen[x.src]});
+    if(!choices.length)choices=own.filter(function(x){return x!==cells[i]&&near.indexOf(x)<0});
+    if(!choices.length)return;
+    var next=choices[Math.floor(Math.random()*choices.length)],cell=grid.children[i],old=cell.querySelector('img');
+    var img=new Image();img.alt=desc(next);img.className='out';img.onload=function(){cell.appendChild(img);requestAnimationFrame(function(){img.classList.remove('out');old.classList.add('out')});setTimeout(function(){old.remove()},1000);cell.querySelector('span').textContent=desc(next);cells[i]=next};
+    img.src=next.src;
+  },2600);
 }
 
 /* ---- EDIT MODE: drag to reorder (pins), pin, hide, re-caption, move; save to data/overrides.js ---- */

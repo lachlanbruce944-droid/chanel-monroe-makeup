@@ -47,6 +47,10 @@ The complete copy with all reference photos and clips is `M:\CMM-Site\final-draf
 - Free space on C: (was full on 2026-11-11). Big work now lives on M:.
 
 ## Changes
+### 2026-11-11 (About grid)
+- About section: Chanel's work now shows as a 36-tile grid (9 x 4 on desktop, 4 x 9 on phones). Fresh order on every visit, one tile fades to another photo every 2.6 s, preferring photos not already on screen; no photo sits next to or above itself. Click a tile to open it large. With 30 photos, 6 tiles repeat until more of her work is added.
+- Bio lines with [placeholder] brackets are no longer shown.
+
 ### 2026-11-11 (later)
 - Added `final-draft/`: full desktop site with six-group nav plus About, Affiliates, Brands, Products; pricing window (side tabs); random 25 per section with clips spaced evenly; Edit mode with save-to-file log; README.
 - Added Lip art sub-style (Editorial) and 32 short clips. Fixed swapped descriptions on Chanel's "Sinner" (red-cross gothic glam) and "ghoulish" (SFX creature) photos.
