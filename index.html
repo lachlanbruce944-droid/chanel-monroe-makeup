@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>[Business name] · Makeup artist (trial)</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="description" content="Makeup artist on the Gold Coast: natural, special occasions, editorial and party makeup.">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Bodoni+Moda:ital,wght@0,500;1,500&family=Bungee&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Creepster&family=Fredoka:wght@400;600&family=Jost:wght@300;400;500&family=Mountains+of+Christmas:wght@700&family=Pinyon+Script&family=Righteous&family=Shrikhand&family=Sniglet:wght@400;800&family=Syne:wght@500;600;700&display=swap">
+<!--
+  NEW SITE, BASE FOUNDATION: one continuous gallery holds every image on the site.
+  Structure and behaviour only. Colours, themes and fonts are placeholders for now.
+
+  Edit content:  gallery-data.js                  (images, descriptions, About lines, affiliates, brands, products)
+  Edit prices:   ../settings/pricing-settings.js  (LOOK_PRICES)
+  Edit details:  ../settings/site-settings.js     (business name, email, socials)
+
+  Layout, top to bottom: header / section links (centred) / gallery / style button (centred) / footer strip
+-->
+<style>
+/* ================= TOKENS (placeholder neutrals: themes come later) ================= */
+:root{
+  --hdr:58px; --navh:46px; --btnh:56px; --band:64px; --cap:0px; --gap:14px;
+  --th:clamp(110px, calc(100svh - var(--hdr) - var(--navh) - var(--btnh) - var(--band) - var(--cap) - 24px), 440px); /* image height: one row only */
+  --tw:calc(var(--th) * .8);                                                                                       /* every image is 4:5 */
+  --bg:#efedea; --fg:#1d1b1a; --soft:rgba(29,27,26,.6); --ph:rgba(29,27,26,.09); --line:rgba(29,27,26,.18);
+  --font:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --fh:"Cormorant Garamond",Georgia,serif;   /* display font (changes per section) */
+  --ff:"Jost",system-ui,sans-serif;          /* text font (changes per section) */
+}
+/* ================= THEMES: each part of the gallery has its own colours and fonts (taken from the previous site) ================= */
+body[data-part="about"],.sheet[data-style="about"]{--bg:#f6f1ea;--fg:#2b2521;--soft:rgba(43,37,33,.62);--ph:rgba(43,37,33,.08);--line:rgba(43,37,33,.18)}
+body[data-part="natural"],.sheet[data-style="natural"]{--bg:#eef0e6;--fg:#2f3a2b;--soft:#5d6a57;--ph:rgba(47,58,43,.09);--line:#c4cfb7;--fh:Georgia,"Times New Roman",serif;--ff:Georgia,"Times New Roman",serif}
+body[data-part="special"],.sheet[data-style="special"]{--bg:#fbf7f0;--fg:#3d3833;--soft:#6e665d;--ph:rgba(61,56,51,.08);--line:#e2d3bd;--fh:"Cormorant Garamond",Georgia,serif;--ff:"Jost",system-ui,sans-serif}
+body[data-part="editorial"],.sheet[data-style="editorial"]{--bg:#0a0a0b;--fg:#ececec;--soft:#a9a9ae;--ph:rgba(236,236,236,.08);--line:#2e2e33;--fh:"Bodoni Moda",Didot,"Bodoni 72",serif;--ff:"Syne",system-ui,sans-serif}
+body[data-part="parties"],.sheet[data-style="parties"]{--bg:#fff8ef;--fg:#2a1a3a;--soft:#5e4d6b;--ph:rgba(42,26,58,.08);--line:#f1d3ae;--fh:"Shrikhand",Georgia,cursive;--ff:"Baloo 2","Trebuchet MS",system-ui,sans-serif}
+body[data-part="clients"]{--bg:#eef0f1;--fg:#22272a;--soft:rgba(34,39,42,.62);--ph:rgba(34,39,42,.08);--line:rgba(34,39,42,.18)}
+body[data-part="inspiration"]{--bg:#1c1a19;--fg:#f1eee9;--soft:rgba(241,238,233,.62);--ph:rgba(241,238,233,.09);--line:rgba(241,238,233,.22);--fh:"Bodoni Moda",Didot,serif}
+body[data-part="affiliates"],body[data-part="brands"],body[data-part="products"]{--bg:#f2eee8;--fg:#26221f;--soft:rgba(38,34,31,.62);--ph:rgba(38,34,31,.08);--line:rgba(38,34,31,.18);--fh:"Syne",system-ui,sans-serif}
+/* Parties changes again for each season */
+body[data-scene="halloween"]{--bg:#1d1b26;--fg:#fff3e6;--soft:rgba(255,243,230,.66);--ph:rgba(255,243,230,.08);--line:rgba(255,138,31,.4);--fh:"Creepster",Impact,cursive;--ff:"Fredoka",system-ui,sans-serif}
+body[data-scene="easter"]{--bg:#fdf6ff;--fg:#3b2a4a;--soft:#6a5a78;--line:#e3cdf2;--fh:"Sniglet",system-ui,sans-serif;--ff:"Sniglet",system-ui,sans-serif}
+body[data-scene="christmas"]{--bg:#3a0d16;--fg:#fff7ea;--soft:rgba(255,247,234,.7);--ph:rgba(255,247,234,.09);--line:rgba(212,175,55,.45);--fh:"Mountains of Christmas",Georgia,serif;--ff:"Baloo 2",system-ui,sans-serif}
+body[data-scene="birthday"]{--bg:#fff7fb;--fg:#2a1a3a;--soft:#5e4d6b;--line:#ffd0e6;--fh:"Bungee",Impact,sans-serif;--ff:"Fredoka",system-ui,sans-serif}
+body[data-scene="festival"]{--bg:#3a1a4f;--fg:#fff5fb;--soft:rgba(255,245,251,.72);--ph:rgba(255,245,251,.1);--line:rgba(255,154,213,.45);--fh:"Righteous",system-ui,sans-serif;--ff:"Fredoka",system-ui,sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--fg);font:400 14px/1.45 var(--ff);transition:background-color .9s,color .9s;-webkit-font-smoothing:antialiased;
+  height:100vh;height:100svh;display:grid;grid-template-rows:var(--hdr) minmax(var(--navh),1fr) auto minmax(var(--btnh),1fr) var(--band)}
+a{color:inherit}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+:focus-visible{outline:2px solid currentColor;outline-offset:3px}
+
+/* ================= HEADER: logo left, social and Enquire right ================= */
+.hdr{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 max(18px,env(safe-area-inset-left))}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;font-weight:600;letter-spacing:.02em;white-space:nowrap}
+.brand i{width:26px;height:26px;border-radius:50%;border:1.5px solid currentColor;display:block}  /* logo placeholder */
+.right{display:flex;align-items:center;gap:14px}
+.social{display:flex;gap:12px}
+.social a{font-size:13px;color:var(--soft);text-decoration:none}
+.social a:hover{color:var(--fg)}
+.enq{padding:8px 16px;border:1px solid var(--fg);border-radius:99px;font-size:13px;text-decoration:none;white-space:nowrap}
+.enq:hover{background:var(--fg);color:var(--bg)}
+
+/* ================= SECTION LINKS: centred, halfway between header and gallery ================= */
+.navrow{display:flex;align-items:center;justify-content:center;position:relative;z-index:25;padding:0 12px}
+.nav{display:flex;gap:2px;flex-wrap:nowrap}
+.nav button{padding:7px 11px;border-radius:99px;font-size:13px;color:var(--soft);transition:color .3s,background .3s;white-space:nowrap}
+.nav button:hover{color:var(--fg)}
+.nav button[aria-current="true"]{color:var(--fg);background:var(--ph)}
+/* the link for the part of the gallery on screen is clear; the others fade back */
+.nav > button,.dd-btn{opacity:.4;transition:opacity .35s,color .3s,background .3s}
+.nav > button[aria-current="true"],.dd-btn[aria-current="true"],.nav > button:hover,.dd-btn:hover,.nav button:focus-visible{opacity:1}
+/* Styles and Connections: a click shows their links on the same line (Styles to the right, Connections to the left) and fades the rest */
+.dd{position:relative;display:flex}
+.dd-menu{position:absolute;top:0;left:100%;display:flex;gap:2px;padding-left:4px;opacity:0;visibility:hidden;transform:translateX(-10px);transition:opacity .3s,transform .3s,visibility .3s}
+.dd.left .dd-menu{left:auto;right:100%;padding:0 4px 0 0;transform:translateX(10px)}
+.dd.open .dd-menu{opacity:1;visibility:visible;transform:none}
+.nav .dd-menu button{opacity:.55}
+.nav .dd-menu button[aria-current="true"],.nav .dd-menu button:hover,.nav .dd-menu button:focus-visible{opacity:1}
+.nav.expanded > button,.nav.expanded .dd:not(.open){opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.nav.expanded .dd.open .dd-btn{opacity:1}
+
+/* ================= GALLERY: one row, always scrolling, drag / swipe / wheel to move it ================= */
+.strip{position:relative;z-index:1;overflow:hidden;height:calc(var(--th) + var(--cap));cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.strip.dragging{cursor:grabbing}
+.track{display:flex;gap:var(--gap);will-change:transform}
+.t{flex:0 0 var(--tw);margin:0}
+.t.start{margin-left:calc(var(--tw) * .7)}          /* breathing room where each section begins */
+.t .ph{width:var(--tw);height:var(--th);background:var(--ph);overflow:hidden;border-radius:2px;transition:background-color .9s}
+.t img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;-webkit-user-drag:none}
+.t.logo .ph{background:#fff}
+.t.logo img{object-fit:contain;padding:20%}
+.t figcaption{margin-top:9px;font-size:12px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.strip .t{cursor:pointer}
+
+/* ================= STYLE BUTTON: centred, halfway between gallery and footer; only shows for the style on screen ================= */
+.btnrow{position:relative;z-index:1;display:grid;place-items:center;padding:0 12px}
+.btnrow > *{grid-area:1/1}
+.note{margin:0;max-width:640px;text-align:center;font:400 12px/1.5 var(--ff);color:var(--soft);opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .4s,transform .4s,visibility .4s}
+.note.show{opacity:1;visibility:visible;transform:none}
+@media (max-height:500px){.note{font-size:10.5px;max-width:82vw}}
+.stylebtn{padding:10px 22px;border:1px solid var(--fg);border-radius:99px;font-size:13px;white-space:nowrap;
+  opacity:0;visibility:hidden;transform:translateY(6px);transition:opacity .35s,transform .35s,visibility .35s,background .25s,color .25s}
+.stylebtn.show{opacity:1;visibility:visible;transform:none}
+.stylebtn:hover{background:var(--fg);color:var(--bg)}
+
+/* ================= FOOTER STRIP ================= */
+.band{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2.4fr) minmax(0,1fr);align-items:center;gap:20px;padding:0 max(18px,env(safe-area-inset-left)) env(safe-area-inset-bottom)}
+.where{font-size:12px;color:var(--soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.where b{color:var(--fg);font-weight:600}
+.say{margin:0;text-align:center;font-size:15px;min-height:1.5em;transition:opacity .45s}
+.say.out{opacity:0}
+.say.small{font-size:11.5px;color:var(--soft);line-height:1.4}
+
+/* ================= INFO PANEL (pauses the gallery) ================= */
+.panel{position:fixed;inset:0;z-index:40;display:grid;place-items:center;padding:20px;background:rgba(0,0,0,.18);opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s}
+.panel.open{opacity:1;visibility:visible}
+.sheet{width:min(760px,100%);max-height:calc(100svh - 40px);overflow:auto;background:var(--bg);color:var(--fg);border-radius:4px;padding:34px 36px 30px;position:relative;
+       font-family:var(--ff);transform:translateY(12px);transition:transform .35s}
+.panel.open .sheet{transform:none}
+.x{position:absolute;top:10px;right:14px;font-size:28px;line-height:1;padding:6px;color:var(--soft)}
+.x:hover{color:var(--fg)}
+.sheet h2{margin:0 0 6px;font-size:26px;font-weight:600}
+.sheet .intro{margin:0 0 22px;color:var(--soft)}
+.prices{list-style:none;margin:0;padding:0;border-top:1px solid var(--line)}
+.prices li{display:grid;grid-template-columns:1fr auto;gap:4px 18px;padding:12px 0;border-bottom:1px solid var(--line)}
+.prices b{font-weight:600}
+.prices .amt{text-align:right;white-space:nowrap;font-weight:600}
+.prices .amt small,.prices .inc{font-weight:400;color:var(--soft);font-size:12.5px}
+.prices .inc{grid-column:1/-1}
+.rules{margin:18px 0 0;font-size:12.5px;color:var(--soft)}
+.book{display:inline-block;margin-top:20px;padding:12px 24px;border-radius:99px;background:var(--fg);color:var(--bg);text-decoration:none;font-weight:500}
+/* image preview */
+.sheet.view{width:auto;max-width:min(92vw,1100px);padding:22px 22px 20px}
+.pv{margin:0;display:grid;gap:14px;justify-items:center}
+.pv-img{background:var(--ph);border-radius:2px;overflow:hidden;height:min(68svh,760px);aspect-ratio:4/5;max-width:100%}
+.pv-img img{width:100%;height:100%;object-fit:cover;display:block}
+.pv.logo .pv-img{background:#fff}
+.pv.logo .pv-img img{object-fit:contain;padding:18%}
+.pv figcaption{display:grid;gap:4px;text-align:center;max-width:560px}
+.pv-where{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.pv figcaption b{font-size:18px;font-weight:500}
+.pv figcaption small{font-size:11.5px;color:var(--soft);margin-top:6px;line-height:1.4}
+@media (max-height:500px){
+  .sheet.view{padding:14px 44px 14px 14px}
+  .pv{grid-template-columns:auto minmax(0,260px);align-items:center;justify-items:start}
+  .pv-img{height:calc(100svh - 70px)}
+  .pv figcaption{text-align:left}
+}
+
+/* ================= FONTS ON THE PAGE ================= */
+.brand span{font-family:"Cormorant Garamond",Georgia,serif;font-size:21px;font-weight:600;letter-spacing:.01em}
+.say,.stylebtn,.sheet h2,.pv figcaption b{font-family:var(--fh)}
+.say{font-size:18px}
+.say.small{font-family:var(--ff)}
+.stylebtn{font-size:16px;padding:10px 28px}
+body[data-part="special"] .stylebtn{font-family:"Pinyon Script",cursive;font-size:24px;padding:4px 30px 6px}
+body[data-part="editorial"] .where,body[data-part="editorial"] .stylebtn{text-transform:uppercase;letter-spacing:.14em}
+body[data-part="editorial"] .stylebtn{font-size:15px}
+.sheet h2{font-size:32px;font-weight:500}
+
+/* ================= SCENES: the background changes with each part of the gallery ================= */
+.scenes{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.scene{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;overflow:hidden}
+.scene.on{opacity:1}
+.scene i{position:absolute;display:block;left:var(--x);top:0;animation-play-state:paused!important}
+.scene.on i{animation-play-state:running!important}
+.scene[data-scene="about"]{background:radial-gradient(60vmax 40vmax at 15% 10%,rgba(232,196,184,.45),transparent 60%),radial-gradient(50vmax 40vmax at 90% 90%,rgba(214,190,150,.35),transparent 60%),#f6f1ea}
+.scene[data-scene="natural"]{background:radial-gradient(40vmax 40vmax at 85% 0%,rgba(255,236,170,.6),transparent 60%),linear-gradient(140deg,#dfe9dc,#d7e7ee 60%,#efe5cf)}
+.scene[data-scene="special"]{background:radial-gradient(50vmax 40vmax at 50% 0%,rgba(201,166,107,.3),transparent 65%),linear-gradient(135deg,#f6e7e1,#f4ebdf 55%,#ecdcc0)}
+.scene[data-scene="editorial"]{background:#0a0a0b}
+.scene[data-scene="parties"]{background:linear-gradient(120deg,#f1e8ff,#ffe8f2 50%,#fff3d6)}
+.scene[data-scene="halloween"]{background:radial-gradient(60vmax 35vmax at 50% 110%,rgba(255,138,31,.38),transparent 65%),linear-gradient(#14121b,#2a1838)}
+.scene[data-scene="easter"]{background:linear-gradient(135deg,#ffe3ef,#e9ddff 50%,#dff5ea)}
+.scene[data-scene="christmas"]{background:radial-gradient(50vmax 40vmax at 50% 0%,rgba(212,175,55,.25),transparent 60%),linear-gradient(160deg,#5c111f,#2a0b12 55%,#173226)}
+.scene[data-scene="birthday"]{background:linear-gradient(120deg,#fff0f7,#e8fbff 50%,#fff8d6)}
+.scene[data-scene="festival"]{background:linear-gradient(170deg,#24123f,#5b1f63 45%,#c2436f 78%,#f29a6b)}
+.scene[data-scene="clients"]{background:radial-gradient(50vmax 40vmax at 80% 10%,rgba(190,205,214,.55),transparent 60%),#eef0f1}
+.scene[data-scene="inspiration"]{background:radial-gradient(40vmax 30vmax at 50% 45%,rgba(255,240,220,.1),transparent 70%),#1c1a19}
+.scene[data-scene="connect"]{background:radial-gradient(rgba(38,34,31,.08) 1px,transparent 1.6px) 0 0/22px 22px,#f2eee8}
+.scene[data-scene="editorial"]::after,.scene[data-scene="inspiration"]::after{content:"";position:absolute;inset:-50%;opacity:.07;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+@keyframes sc-fall{from{transform:translate3d(0,-12vh,0) rotate(0)}50%{transform:translate3d(var(--sway),50vh,0) rotate(180deg)}to{transform:translate3d(0,112vh,0) rotate(360deg)}}
+@keyframes sc-rise{from{transform:translate3d(0,112vh,0)}50%{transform:translate3d(var(--sway),50vh,0)}to{transform:translate3d(0,-16vh,0)}}
+@keyframes sc-bob{0%,100%{transform:translateY(0) rotate(-6deg)}50%{transform:translateY(-18px) rotate(6deg)}}
+@keyframes sc-twinkle{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+@keyframes sc-drift{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(12vw,6vh) scale(1.15)}66%{transform:translate(-8vw,10vh) scale(.9)}}
+.scene .leaf{width:calc(18px * var(--s));height:calc(10px * var(--s));background:var(--c);border-radius:0 100% 0 100%;opacity:.55;animation:sc-fall var(--d) linear var(--dl) infinite}
+.scene .petal{width:calc(13px * var(--s));height:calc(10px * var(--s));background:var(--c);border-radius:100% 0 100% 0;opacity:.8;animation:sc-fall var(--d) linear var(--dl) infinite}
+.scene .snow{width:calc(5px * var(--s));height:calc(5px * var(--s));border-radius:50%;background:var(--c);opacity:.85;animation:sc-fall var(--d) linear var(--dl) infinite}
+.scene .conf{width:calc(7px * var(--s));height:calc(12px * var(--s));background:var(--c);opacity:.75;animation:sc-fall var(--d) linear var(--dl) infinite}
+.scene .ember{width:calc(4px * var(--s));height:calc(4px * var(--s));border-radius:50%;background:#ffb35c;box-shadow:0 0 10px 3px rgba(255,138,31,.7);animation:sc-rise var(--d) linear var(--dl) infinite}
+.scene .balloon{width:calc(34px * var(--s));height:calc(42px * var(--s));border-radius:50% 50% 48% 48%;background:var(--c);opacity:.55;animation:sc-rise var(--d) linear var(--dl) infinite}
+.scene .balloon::after{content:"";position:absolute;left:50%;top:100%;width:1px;height:46px;background:rgba(42,26,58,.25)}
+.scene .egg{top:var(--y);width:calc(30px * var(--s));height:calc(40px * var(--s));border-radius:50% 50% 50% 50%/60% 60% 40% 40%;background:var(--c);opacity:.7;animation:sc-bob var(--d) ease-in-out var(--dl) infinite}
+.scene .glit{top:var(--y);width:calc(4px * var(--s));height:calc(4px * var(--s));border-radius:50%;background:var(--c);box-shadow:0 0 8px 2px var(--c);animation:sc-twinkle var(--d) ease-in-out var(--dl) infinite}
+.scene .blob{top:var(--y);width:46vmax;height:46vmax;margin:-23vmax 0 0 -23vmax;border-radius:50%;background:var(--c);filter:blur(70px);opacity:.35;animation:sc-drift var(--d) ease-in-out var(--dl) infinite}
+.scene .moon{left:78%;top:12%;width:12vmin;height:12vmin;border-radius:50%;background:#ffe9c4;box-shadow:0 0 60px 20px rgba(255,200,120,.35);opacity:.85}
+@media (prefers-reduced-motion:reduce){.scene i{animation:none!important}}
+
+/* ================= LOADER / ROTATE TO LANDSCAPE (phones and tablets) ================= */
+.rot{position:fixed;inset:0;z-index:100;display:none;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:#111;color:#eee;text-align:center;padding:24px;transition:opacity .5s}
+.rot .phone{width:46px;height:80px;border:2.5px solid currentColor;border-radius:9px;position:relative;animation:turn 2.2s ease-in-out infinite}
+.rot .phone::after{content:"";position:absolute;left:50%;bottom:6px;width:10px;height:2px;margin-left:-5px;background:currentColor;border-radius:2px}
+.rot p{margin:0;font-size:15px;letter-spacing:.02em}
+@keyframes turn{0%,20%{transform:rotate(0)}50%,75%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+html.touch .rot.loading{display:flex}
+@media (orientation:portrait){html.touch .rot{display:flex}}
+.rot.done{opacity:0;pointer-events:none}
+
+/* ================= SMALL LANDSCAPE SCREENS (phones on their side) ================= */
+@media (max-height:500px){
+  :root{--hdr:42px;--navh:34px;--btnh:40px;--band:40px;--cap:0px;--gap:10px}
+  .nav button{padding:5px 8px;font-size:11.5px}
+  .social{display:none}
+  .enq{padding:5px 12px;font-size:12px}
+  .brand span{font-size:16px}
+  .brand i{width:22px;height:22px}
+  .say{font-size:12px}
+  .say.small{font-size:10.5px}
+  .stylebtn{padding:6px 16px;font-size:12px}
+  .t figcaption{margin-top:6px;font-size:11px}
+  .where{display:none}
+  .band{grid-template-columns:1fr}
+}
+@media (max-width:900px) and (min-height:501px){ .social{display:none} }
+/* ================= GLASS (Apple style): active link, sub-links, Enquire, style button, panels ================= */
+:root{--ui:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+.nav,.nav button,.enq,.social a{font-family:var(--ui);font-weight:500;letter-spacing:0;text-transform:none}
+.nav button{font-size:13.5px;border:1px solid transparent}
+.nav .dd-menu{gap:6px;padding-left:8px}
+.nav .dd.left .dd-menu{padding:0 8px 0 0}
+.nav > button[aria-current="true"],.dd-btn[aria-current="true"],.dd.open .dd-btn,.nav .dd-menu button,.enq,.stylebtn{
+  color:var(--fg);
+  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.1));
+  -webkit-backdrop-filter:blur(14px) saturate(180%);backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(255,255,255,.42);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.7),inset 0 -1px 2px rgba(255,255,255,.18),0 0 0 .5px rgba(0,0,0,.06),0 8px 24px -6px rgba(0,0,0,.22);
+  transition:background .3s,box-shadow .3s,transform .2s,opacity .35s,visibility .35s}
+.nav .dd-menu button{opacity:.8}
+.nav .dd-menu button[aria-current="true"],.nav .dd-menu button:hover,.enq:hover,.stylebtn:hover{
+  background:linear-gradient(180deg,rgba(255,255,255,.5),rgba(255,255,255,.18));color:var(--fg);opacity:1}
+.enq:active,.stylebtn:active,.nav button:active{transform:scale(.97)}
+.sheet{
+  background:linear-gradient(180deg,rgba(255,255,255,.2),rgba(255,255,255,.04)),color-mix(in srgb,var(--bg) 72%,transparent);
+  -webkit-backdrop-filter:blur(28px) saturate(170%);backdrop-filter:blur(28px) saturate(170%);
+  border:1px solid rgba(255,255,255,.4);border-radius:22px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 30px 80px -20px rgba(0,0,0,.45)}
+/* refraction: the background bends through the glass (Chrome and Edge only; other browsers keep the frosted glass) */
+html.refract .nav > button[aria-current="true"],html.refract .dd-btn[aria-current="true"],html.refract .dd.open .dd-btn,
+html.refract .nav .dd-menu button,html.refract .enq,html.refract .stylebtn{
+  -webkit-backdrop-filter:url(#glass-refract) blur(5px) saturate(190%);backdrop-filter:url(#glass-refract) blur(5px) saturate(190%)}
+/* solid buttons where glass can't render, or for people who turn transparency down */
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){
+  .nav > button[aria-current="true"],.dd-btn[aria-current="true"],.dd.open .dd-btn,.nav .dd-menu button,.enq,.stylebtn,.sheet{background:var(--bg)}}
+@media (prefers-reduced-transparency:reduce){
+  .nav > button[aria-current="true"],.dd-btn[aria-current="true"],.dd.open .dd-btn,.nav .dd-menu button,.enq,.stylebtn,.sheet{background:var(--bg);-webkit-backdrop-filter:none;backdrop-filter:none}}
+@media (max-height:500px){.nav button{font-size:11.5px}}
+/* no visible close symbol: click outside the panel or press Esc to close (the button stays for screen readers) */
+.x{position:absolute!important;width:1px;height:1px;padding:0!important;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.panel{cursor:pointer}.sheet{cursor:auto}
+/* the style button disappears while its price panel is open, and comes back when it closes */
+body:has(.panel.open) .stylebtn{opacity:0;visibility:hidden;transform:translateY(6px)}
+/* Instagram sits at the right end of the section links; Enquire floats in the bottom right corner */
+.navrow{gap:6px}
+.navrow .social{display:flex!important;gap:2px;transition:opacity .3s,visibility .3s}
+.navrow .social a{font-family:var(--ui,var(--font));font-weight:500;font-size:13.5px;padding:7px 11px;border-radius:99px;color:var(--fg);opacity:.4;transition:opacity .35s}
+.navrow .social a:hover,.navrow .social a:focus-visible{opacity:1}
+.navrow:has(.nav.expanded) .social{opacity:0;visibility:hidden}
+.enq{position:fixed;right:max(18px,env(safe-area-inset-right));bottom:max(16px,env(safe-area-inset-bottom));z-index:30;padding:11px 22px;font-size:14px}
+@media (max-height:500px){
+  .navrow .social a{font-size:11.5px;padding:5px 8px}
+  .enq{padding:7px 14px;font-size:12px;bottom:8px;right:12px}
+  .band{padding-right:96px}
+}
+/* a little more space between the section links; social links show as logos */
+.nav{gap:10px}
+.nav .dd-menu{gap:8px;padding-left:10px}
+.nav .dd.left .dd-menu{padding:0 10px 0 0}
+.navrow{gap:14px}
+.navrow .social{gap:6px}
+.navrow .social a{display:grid;place-items:center;width:34px;height:34px;padding:0}
+@media (max-height:500px){.nav{gap:6px}.navrow .social a{width:28px;height:28px;padding:0}.navrow .social svg{width:16px;height:16px}}
+/* ================= OPENING INTRO ================= */
+.navrow,.strip,.btnrow,.band,.enq{transition:opacity .9s ease}
+body.intro-on .navrow,body.intro-on .strip,body.intro-on .btnrow,body.intro-on .band,body.intro-on .enq{opacity:0;pointer-events:none}
+body.brand-wait .hdr .brand{visibility:hidden}
+.intro{position:fixed;inset:0;z-index:50;display:grid;place-items:center;pointer-events:none;padding:0 24px}
+body.intro-on .intro{pointer-events:auto;cursor:pointer}
+.intro > *{grid-area:1/1}
+.intro-brand{position:fixed;z-index:60;margin:0;opacity:0;transform-origin:50% 50%;pointer-events:none;
+  transition:opacity .9s ease,transform 1.4s cubic-bezier(.7,0,.2,1)}
+.intro-brand.in{opacity:1}
+.intro-line{margin:0;max-width:min(720px,86vw);text-align:center;color:var(--fg);
+  font:400 clamp(22px,3vw,36px)/1.3 "Cormorant Garamond",Georgia,serif;opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+.intro-line.on{opacity:1;transform:none}
+.intro-go{font:500 16px/1 var(--ui,var(--font));color:var(--fg);padding:14px 34px;border-radius:99px;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.4),rgba(255,255,255,.12));
+  -webkit-backdrop-filter:blur(14px) saturate(180%);backdrop-filter:blur(14px) saturate(180%);
+  border:1px solid rgba(255,255,255,.5);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.75),0 0 0 .5px rgba(0,0,0,.06),0 12px 30px -8px rgba(0,0,0,.25);
+  opacity:0;visibility:hidden;transform:translateY(10px) scale(.96);transition:opacity .6s ease,transform .6s ease,visibility .6s,background .3s}
+.intro-go.on{opacity:1;visibility:visible;transform:none}
+.intro-go:hover{background:linear-gradient(180deg,rgba(255,255,255,.55),rgba(255,255,255,.2))}
+@media (max-height:500px){.intro-line{font-size:20px}.intro-go{padding:10px 26px;font-size:14px}}
+@media (prefers-reduced-motion:reduce){.intro-brand{transition:opacity .5s ease}}
+/* bottom-left info text: wraps onto a second line instead of cutting off, and shows on phones too */
+.where{white-space:normal;overflow:visible;text-overflow:clip;line-height:1.35;overflow-wrap:normal;word-break:normal}
+@media (max-height:500px){.where{display:block;font-size:10.5px;line-height:1.3}.band{grid-template-columns:minmax(0,1fr) minmax(0,1.7fr);gap:12px}}
+/* rotating text (About, Affiliates, Brands, Products) sits centred between the gallery and the bottom of the screen */
+.mid{display:flex;align-items:center;justify-content:center;gap:18px;max-width:min(940px,92vw)}
+.mid .say{margin:0;text-align:center;max-width:640px}
+.collab{display:inline-block;text-decoration:none;white-space:nowrap}
+.mid .collab:not(.show){position:absolute}
+@media (max-height:500px){.mid{gap:10px}.mid .say{font-size:12.5px;line-height:1.3}}
+/* ================= POP-UP BUTTONS (glass) ================= */
+.acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.gbtn{display:inline-flex;align-items:center;justify-content:center;padding:11px 22px;border-radius:99px;font:500 14px/1 var(--ui,var(--font));color:var(--fg);text-decoration:none;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.26),rgba(255,255,255,.06));
+  -webkit-backdrop-filter:blur(12px) saturate(170%);backdrop-filter:blur(12px) saturate(170%);
+  border:1px solid rgba(255,255,255,.38);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.55),0 0 0 .5px rgba(0,0,0,.08),0 8px 22px -8px rgba(0,0,0,.25);transition:background .3s,transform .2s}
+.gbtn.primary{padding:12px 28px;background:linear-gradient(180deg,rgba(255,255,255,.48),rgba(255,255,255,.16))}
+.gbtn:hover{background:linear-gradient(180deg,rgba(255,255,255,.6),rgba(255,255,255,.22))}
+.gbtn:active{transform:scale(.97)}
+.subs{list-style:none;display:flex;flex-wrap:wrap;gap:8px;padding:0;margin:2px 0 0}
+.subs li{padding:6px 13px;border-radius:99px;border:1px solid var(--line);font-size:12.5px;color:var(--soft)}
+.sheet .pv-where{display:block;margin-bottom:8px}
+.enq-pop .intro{margin-bottom:0}
+
+/* ================= TWO-PAGE STYLE POP-UPS ================= */
+.flip{position:relative;display:grid;overflow:hidden;border-radius:14px}
+.pg{grid-area:1/1;display:flex;flex-direction:column;align-items:flex-start;transition:opacity .35s ease,visibility .35s}
+.pg:not(.on){opacity:0;visibility:hidden}
+.pg1{justify-content:center}
+.pg1 h2{font-size:clamp(26px,3.2vw,38px);line-height:1.15;max-width:22ch}
+.pg2 .prices{width:100%}
+.flip[data-run]:not([data-run="fade"]) .pg{transition:none}
+.flip.both .pg{opacity:1;visibility:visible}
+.fx{position:absolute;inset:0;pointer-events:none;z-index:3;overflow:hidden}
+
+/* Natural: a wave washes across */
+.wave{position:absolute;top:-6%;bottom:-6%;left:0;width:170%;display:flex;transform:translateX(60%);color:#7fa491}
+.wave.back{color:rgba(201,220,207,.95)}
+.wave svg{height:100%;width:14%;flex:0 0 14%;fill:currentColor;display:block}
+.wave svg:last-child{transform:scaleX(-1)}
+.wave i{flex:1;background:linear-gradient(180deg,currentColor,color-mix(in srgb,currentColor 80%,#fff))}
+.flip[data-run="wave"] .wave{animation:wv 1.55s cubic-bezier(.65,0,.35,1) forwards}
+.flip[data-run="wave"] .wave.back{animation-duration:1.7s;animation-delay:-.06s}
+@keyframes wv{from{transform:translateX(60%)}to{transform:translateX(-102%)}}
+
+/* Special occasions: gold line, the panel closes over it, then opens on the prices */
+.veil{position:absolute;left:0;right:0;height:50.5%;background:linear-gradient(180deg,#f8efe4,#efe2cf)}
+.veil.t{top:0;transform:translateY(-101%);box-shadow:0 10px 30px -12px rgba(120,90,50,.35)}
+.veil.b{bottom:0;transform:translateY(101%);box-shadow:0 -10px 30px -12px rgba(120,90,50,.35)}
+.gline{position:absolute;left:8%;right:8%;top:50%;height:1px;margin-top:-.5px;transform:scaleX(0);
+  background:linear-gradient(90deg,transparent,#c9a66b 20%,#f3dfb4 50%,#c9a66b 80%,transparent);box-shadow:0 0 12px rgba(201,166,107,.85)}
+.flip[data-run="reveal"] .veil.t{animation:rv-t 1.6s cubic-bezier(.77,0,.18,1) forwards}
+.flip[data-run="reveal"] .veil.b{animation:rv-b 1.6s cubic-bezier(.77,0,.18,1) forwards}
+.flip[data-run="reveal"] .gline{animation:rv-l 1.6s ease forwards}
+@keyframes rv-t{0%{transform:translateY(-101%)}28%,50%{transform:translateY(0)}100%{transform:translateY(-101%)}}
+@keyframes rv-b{0%{transform:translateY(101%)}28%,50%{transform:translateY(0)}100%{transform:translateY(101%)}}
+@keyframes rv-l{0%,12%{transform:scaleX(0);opacity:1}42%,60%{transform:scaleX(1);opacity:1}100%{transform:scaleX(1.06);opacity:0}}
+
+/* Editorial: pages advance like frames on a film reel */
+.flip[data-run="film"]{background:#0b0b0c}
+.flip[data-run="film"] .pg1{animation:fr-out 1s cubic-bezier(.75,0,.25,1) forwards}
+.flip[data-run="film"] .pg2{animation:fr-in 1s cubic-bezier(.75,0,.25,1) forwards}
+@keyframes fr-out{0%{transform:translateY(0);filter:none}45%{filter:blur(1.2px) brightness(1.15)}100%{transform:translateY(-116%);filter:none}}
+@keyframes fr-in{0%{transform:translateY(116%);filter:none}55%{filter:blur(1.2px) brightness(1.15)}100%{transform:translateY(0);filter:none}}
+.sprk{position:absolute;top:0;bottom:0;width:20px;opacity:0;background-color:#050505;
+  background-image:repeating-linear-gradient(180deg,transparent 0 9px,rgba(240,240,240,.9) 9px 21px,transparent 21px 30px);
+  background-size:8px 100%;background-repeat:repeat-y;background-position:center 0}
+.sprk.l{left:0}.sprk.r{right:0}
+.flip[data-run="film"] .sprk{animation:sprk 1s cubic-bezier(.75,0,.25,1) forwards}
+@keyframes sprk{0%{opacity:0;background-position:center 0}15%,85%{opacity:1}100%{opacity:0;background-position:center -360px}}
+.flip[data-run="film"] .fx::after{content:"";position:absolute;inset:0;background:rgba(255,255,255,.02);animation:flick .12s steps(2) 8}
+@keyframes flick{50%{background:rgba(255,255,255,.07)}}
+
+/* Parties: a balloon floats up, inflates and pops into confetti */
+.balloon{position:absolute;left:50%;top:50%;width:120px;height:146px;margin:-73px 0 0 -60px;border-radius:50% 50% 48% 48%/55% 55% 45% 45%;opacity:0;transform:translateY(120%) scale(.5);
+  background:radial-gradient(circle at 34% 28%,rgba(255,255,255,.85) 0 6%,rgba(255,255,255,0) 22%),radial-gradient(circle at 50% 50%,#ff5fa2,#b23a8a 70%,#6b2fbf);
+  box-shadow:inset -10px -14px 30px rgba(60,10,70,.35),0 20px 40px -10px rgba(107,47,191,.45)}
+.balloon::after{content:"";position:absolute;left:50%;bottom:-8px;width:12px;height:10px;margin-left:-6px;background:#b23a8a;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.balloon b{position:absolute;left:50%;top:100%;width:1px;height:90px;margin-top:2px;background:rgba(42,26,58,.35)}
+.flip[data-run="balloon"] .balloon{animation:bl-rise .62s cubic-bezier(.2,.8,.2,1) forwards,bl-wobble .38s ease-in-out .62s 1 forwards}
+@keyframes bl-rise{to{transform:translateY(0) scale(1);opacity:1}}
+@keyframes bl-wobble{0%{transform:scale(1);opacity:1}40%{transform:scale(1.12,1.05) rotate(-3deg);opacity:1}70%{transform:scale(1.08,1.16) rotate(2deg);opacity:1}100%{transform:scale(1.2);opacity:1}}
+.flip.popped .balloon{animation:bl-pop .16s ease-out forwards}
+@keyframes bl-pop{from{transform:scale(1.2);opacity:1}to{transform:scale(1.9);opacity:0}}
+.flip.popped .fx::before{content:"";position:absolute;left:50%;top:50%;width:40px;height:40px;margin:-20px;border-radius:50%;border:2px solid rgba(255,255,255,.9);animation:bl-ring .5s ease-out forwards}
+@keyframes bl-ring{from{transform:scale(.5);opacity:1}to{transform:scale(9);opacity:0}}
+.confetti{position:fixed;z-index:70;width:0;height:0;pointer-events:none}
+.confetti i{position:absolute;left:0;top:0;display:block;margin:-6px 0 0 -4px}
+
+/* ================= BIO VIDEO SPOT IN THE INTRO ================= */
+.intro-video{width:min(760px,82vw);aspect-ratio:16/9;max-height:58vh;border-radius:22px;overflow:hidden;position:relative;opacity:0;transform:scale(.97);
+  transition:opacity .9s ease,transform 1.2s cubic-bezier(.2,.8,.2,1);display:grid;place-items:end center;
+  background:linear-gradient(180deg,rgba(255,255,255,.34),rgba(255,255,255,.1));-webkit-backdrop-filter:blur(14px) saturate(160%);backdrop-filter:blur(14px) saturate(160%);
+  border:1px solid rgba(255,255,255,.45);box-shadow:inset 0 1px 1px rgba(255,255,255,.6),0 30px 70px -24px rgba(0,0,0,.35)}
+.intro-video.on{opacity:1;transform:none}
+.intro-video span{position:relative;z-index:1;padding:0 0 18px;font:500 11px/1 var(--ui,var(--font));letter-spacing:.16em;text-transform:uppercase;color:var(--soft)}
+.intro-video video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.intro-video::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 40%,rgba(0,0,0,.45));opacity:0}
+.intro.has-video .intro-video::after{opacity:1}
+.intro.has-video .intro-line{color:#fff;text-shadow:0 2px 18px rgba(0,0,0,.5)}
+.intro-line,.intro-go{position:relative;z-index:1}
+@media (max-height:500px){.acts{margin-top:14px}.pg1 h2{font-size:22px}}
+@media (prefers-reduced-motion:reduce){.intro-video{transition:opacity .5s ease}}
+/* pop-up text: keep it in the normal flow (it shares the 'intro' class name with the opening intro screen) */
+.sheet .intro{position:static;inset:auto;display:block;padding:0;z-index:auto;pointer-events:auto;cursor:auto;place-items:normal}
+.sheet .intro > *{grid-area:auto}
+/* Brands (2 x 2) and Products (3 x 3) in the space of one image */
+.t.grid .ph{display:grid;gap:5px;background:transparent}
+.t.g2 .ph{grid-template-columns:repeat(2,1fr);grid-template-rows:repeat(2,1fr)}
+.t.g3 .ph{grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px}
+.cell{position:relative;overflow:hidden;border-radius:2px;background:var(--ph);transition:filter .3s,transform .3s}
+.cell:hover{filter:brightness(1.06);transform:scale(.97)}
+.cell.empty{background:transparent;pointer-events:none}
+.cell img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.t.logo .cell{background:#fff}
+.t.logo .cell img{object-fit:contain;padding:16%}
+.t.logo.grid .ph{background:transparent}
+/* opening intro: the whole intro screen fades away once Explore is pressed */
+.intro{transition:opacity .8s ease,visibility .8s}
+body:not(.intro-on) #intro{opacity:0;visibility:hidden}
+/* ================= PHONES AND TABLETS: FULL SCREEN ONLY ================= */
+.fsq{position:fixed;inset:0;z-index:95;display:none;align-items:center;justify-content:center;padding:24px;background:#111;color:#eee;text-align:center}
+html.touch body.need-fs .fsq{display:flex}
+.fsq-box{display:grid;justify-items:center;gap:12px;max-width:440px}
+.fsq-ico{opacity:.85;animation:fsq-pulse 2.4s ease-in-out infinite}
+@keyframes fsq-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.fsq-t{margin:0;font:600 20px/1.2 "Cormorant Garamond",Georgia,serif;letter-spacing:.01em}
+.fsq-p{margin:0;font:400 13.5px/1.5 var(--ui,var(--font));color:rgba(238,238,238,.75)}
+.fsq-go{margin-top:6px;padding:12px 30px;border-radius:99px;font:500 15px/1 var(--ui,var(--font));color:#fff;cursor:pointer;
+  background:linear-gradient(180deg,rgba(255,255,255,.22),rgba(255,255,255,.06));border:1px solid rgba(255,255,255,.35);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,.45),0 10px 30px -10px rgba(0,0,0,.6)}
+.fsq-go[hidden]{display:none}
+.fsq-ios{display:grid;gap:12px;justify-items:center}
+.fsq-ios[hidden]{display:none}
+.fsq-skip{font:500 13px/1 var(--ui,var(--font));color:rgba(238,238,238,.7);text-decoration:underline;text-underline-offset:3px;padding:8px}
+@media (prefers-reduced-motion:reduce){.fsq-ico{animation:none}}
+/* ================= STYLE POP-UPS: each page its own height; page one centred ================= */
+.flip{display:block;transition:height .5s cubic-bezier(.2,.8,.2,1)}
+.pg{position:relative}
+.pg:not(.on){position:absolute;left:0;right:0;top:0}
+.flip.both .pg2{position:absolute;left:0;right:0;top:0}
+.pg1{align-items:center;text-align:center;padding:6px 0}
+.pg1 h2{margin-left:auto;margin-right:auto}
+.pg1 .intro{max-width:56ch;margin-left:auto;margin-right:auto}
+.pg1 .subs,.pg1 .acts{justify-content:center}
+@media (max-height:500px){
+  .sheet{padding:18px 22px 16px;max-height:calc(100svh - 20px)}
+  .panel{padding:10px}
+  .sheet h2{font-size:22px}
+  .pg1 h2{font-size:22px}
+  .sheet .intro{font-size:12.5px;margin-bottom:10px}
+  .subs li{padding:4px 10px;font-size:11px}
+  .pg2 .prices{display:grid;grid-template-columns:1fr 1fr;column-gap:22px}
+  .pg2 .prices li{padding:4px 0;gap:2px 12px}
+  .pg2 .pv-where{display:none}
+  .pg2 h2{margin-bottom:4px}
+  .pg2 .prices .inc{line-height:1.25}
+  .sheet{padding:14px 20px 12px}
+  .pg2 .prices .inc{font-size:11px}
+  .rules{margin-top:8px;font-size:11px}
+  .acts{margin-top:12px}
+  .gbtn{padding:9px 18px;font-size:13px}.gbtn.primary{padding:10px 22px}
+}
+
+/* ================= END OF THE SITE ================= */
+body.outro-on .navrow,body.outro-on .strip,body.outro-on .btnrow,body.outro-on .band,body.outro-on .enq{opacity:0;pointer-events:none}
+.outro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:calc(110px + 6vh) 24px 0;
+  pointer-events:none;opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+body.outro-on .outro{opacity:1;visibility:visible;pointer-events:auto}
+.outro-line{margin:0;max-width:min(680px,86vw);min-height:1.3em;text-align:center;color:var(--fg);font:400 clamp(20px,2.6vw,32px)/1.3 "Cormorant Garamond",Georgia,serif;
+  opacity:0;transform:translateY(10px);transition:opacity .7s ease,transform .7s ease}
+.outro-line.on{opacity:1;transform:none}
+@media (max-height:500px){.outro{padding-top:90px;gap:12px}.outro-line{font-size:18px}}
+/* ================= SPACING FROM THE SCREEN EDGES ================= */
+.hdr{padding-left:max(clamp(24px,3vw,44px),calc(env(safe-area-inset-left) + 14px));padding-right:max(clamp(24px,3vw,44px),calc(env(safe-area-inset-right) + 14px))}
+.enq{right:max(clamp(22px,2.8vw,42px),calc(env(safe-area-inset-right) + 14px));bottom:max(clamp(18px,2.6vh,34px),calc(env(safe-area-inset-bottom) + 12px))}
+.band{padding-left:max(clamp(24px,3vw,44px),calc(env(safe-area-inset-left) + 14px))}
+@media (max-height:500px){
+  .hdr{padding-left:max(26px,calc(env(safe-area-inset-left) + 14px))}
+  .enq{right:max(22px,calc(env(safe-area-inset-right) + 14px));bottom:max(12px,calc(env(safe-area-inset-bottom) + 10px))}
+  .band{padding-left:max(26px,calc(env(safe-area-inset-left) + 14px))}
+}
+/* no Enquire button in About */
+/* no Enquire button in About, Affiliates, Brands or Products */
+body[data-part="about"] .enq,body[data-part="affiliates"] .enq,body[data-part="brands"] .enq,body[data-part="products"] .enq{opacity:0;visibility:hidden;pointer-events:none}
+.enq{transition:opacity .6s ease,visibility .6s,background .3s,transform .2s}
+
+/* ================= STYLE BUTTONS: all one size, floating clear of the gallery ================= */
+.btnrow{padding-top:clamp(14px,2.4vh,26px);padding-bottom:clamp(6px,1.2vh,12px)}
+.stylebtn{width:clamp(190px,17vw,240px);height:48px;padding:0 18px;display:inline-flex;align-items:center;justify-content:center;
+  box-sizing:border-box;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1}
+body[data-part="special"] .stylebtn{padding:0 18px 2px;font-size:25px}
+@media (max-height:500px){
+  :root{--btnh:60px}
+  .btnrow{padding-top:12px;padding-bottom:4px}
+  .stylebtn{width:168px;height:36px;font-size:13px;padding:0 14px}
+  body[data-part="special"] .stylebtn{font-size:19px}
+  body[data-part="editorial"] .stylebtn{font-size:11.5px}
+}
+/* ================= BREATHING ROOM ABOVE THE LOGO AND BELOW ENQUIRE ================= */
+:root{--hdr:84px}
+.enq{bottom:max(clamp(26px,3.8vh,40px),calc(env(safe-area-inset-bottom) + 16px))}
+/* the section label in the bottom-left lines up with Enquire */
+.band{align-items:end;padding-bottom:max(calc(clamp(26px,3.8vh,40px) + 14px),calc(env(safe-area-inset-bottom) + 30px))}
+@media (max-height:500px){
+  :root{--hdr:56px}
+  .enq{bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px))}
+  .band{padding-bottom:max(26px,calc(env(safe-area-inset-bottom) + 20px))}
+}
+/* ================= LAYOUT: section links up in the top bar, gallery 15% larger, style button on the bottom line with Enquire ================= */
+:root{--th:clamp(126px, calc((100svh - var(--hdr) - var(--navh) - 56px - var(--band) - 24px) * 1.15), 506px)}   /* 15% taller than before; width follows (4:5) */
+body{grid-template-rows:var(--hdr) minmax(10px,1fr) auto minmax(var(--btnh),1fr) var(--band)}
+.hdr{grid-row:1;grid-column:1}
+.navrow{grid-row:1;grid-column:1;align-self:center;justify-self:center}   /* section links sit on the same line as the logo */
+.strip{grid-row:3}
+.btnrow{grid-row:4}
+.band{grid-row:5}
+/* Enquire and the style button share one size and one bottom line */
+.enq{height:46px;display:inline-flex;align-items:center;justify-content:center;padding:0 22px}
+#styleBtn{position:fixed;z-index:30;left:50%;bottom:max(clamp(26px,3.8vh,40px),calc(env(safe-area-inset-bottom) + 16px));height:46px;transform:translate(-50%,6px)}
+#styleBtn.show{transform:translate(-50%,0)}
+.btnrow{z-index:3}            /* keep the style button above the bottom strip so it can be clicked */
+.band{pointer-events:none}
+body:has(.panel.open) #styleBtn{transform:translate(-50%,6px)}
+@media (max-height:500px){
+  :root{--th:clamp(110px, calc((100svh - var(--hdr) - var(--navh) - 60px - var(--band) - 24px) * 1.15), 506px)}
+  .enq{height:34px;padding:0 14px}
+  #styleBtn{height:34px;bottom:max(18px,calc(env(safe-area-inset-bottom) + 12px))}
+}
+/* rows: top bar / gap the height of a button / gallery / rest / bottom line (sizes set by sizeGallery) */
+body{grid-template-rows:var(--hdr) var(--gtop,20px) auto minmax(0,1fr) var(--band)}
+/* the section label can use the space up to the centre button */
+.band{grid-template-columns:minmax(0,1fr)}
+.where{max-width:calc(50vw - 170px)}
+@media (max-height:500px){.band{grid-template-columns:minmax(0,1fr)}.where{max-width:calc(50vw - 112px)}}
+/* phones: the rotating text (and Collaborate) stays clear of the section label in the bottom-left */
+@media (max-height:500px){.mid{max-width:calc(100vw - 2 * 150px)}.mid .say{font-size:11.5px;line-height:1.3}.mid .collab{width:132px}}
+/* section links + Instagram sit a third of their height below the logo line (change --navdrop to move them) */
+:root{--navdrop:12px}
+@media (max-height:500px){:root{--navdrop:9px}}
+.navrow{transform:translateY(var(--navdrop))}
+/* ================= OPENING INTRO (v2): wide bio video, bio lines + photo grid on the right, then the site intro ================= */
+:root{--ipad:max(clamp(24px,3vw,44px),calc(env(safe-area-inset-left) + 14px));--ibot:clamp(56px,9vh,84px)}
+.intro{display:block;padding:0}
+body.intro-on .intro{cursor:default}
+.intro-stage{position:absolute;left:var(--ipad);right:var(--ipad);top:calc(var(--hdr) + 4px);bottom:var(--ibot);
+  display:flex;align-items:center;justify-content:center;column-gap:clamp(14px,2.4vw,36px);opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.intro-stage.on{opacity:1;visibility:visible}
+.intro-stage .intro-video{flex:0 0 var(--vw,60%);width:var(--vw,60%);height:var(--vh,auto);max-height:none;aspect-ratio:auto;opacity:1;transform:none}
+.intro-side{flex:1 1 0;min-width:0;height:var(--vh,auto);display:flex;flex-direction:column;justify-content:space-between}
+.bio{position:relative;height:var(--bioh,40%);overflow:hidden;touch-action:none;cursor:grab;display:flex;flex-direction:column;justify-content:center;user-select:none;-webkit-user-select:none}
+.bio:active{cursor:grabbing}
+.bio-track{display:flex;transition:transform .6s cubic-bezier(.2,.8,.2,1)}
+.bio-track{font:400 20px/1.3 "Cormorant Garamond",Georgia,serif;align-items:center}
+.bio-line{flex:0 0 100%;margin:0;padding-right:8px;box-sizing:border-box;color:var(--fg);font:inherit}
+.bio-dots{display:flex;flex-wrap:wrap;gap:4px;margin-top:12px}
+.bio-dots button{width:22px;height:22px;display:grid;place-items:center;padding:0}
+.bio-dots button::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--fg);opacity:.22;transition:opacity .3s,transform .3s}
+.bio-dots button.on::before{opacity:.8;transform:scale(1.3)}
+.intro-grid{flex:0 0 auto;display:grid;justify-content:start;align-content:end}
+.intro-grid i{display:block;aspect-ratio:1;border-radius:4px;overflow:hidden;background:var(--ph)}
+.intro-grid img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .45s ease}
+.intro-site{position:absolute;left:0;right:0;top:var(--hdr);bottom:var(--ibot);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:28px;padding:0 24px;
+  opacity:0;visibility:hidden;transition:opacity .9s ease,visibility .9s}
+.intro-site.on{opacity:1;visibility:visible}
+.intro-site .intro-line{max-width:min(820px,88vw);text-align:center;font-size:clamp(22px,3.2vw,40px)}
+.intro-skip{position:absolute;right:var(--ipad);bottom:clamp(14px,2.6vh,28px);font:500 12.5px/1 var(--ui,var(--font));color:var(--soft);padding:10px 14px;border-radius:99px;
+  opacity:0;visibility:hidden;transition:opacity .5s,visibility .5s}
+.intro-skip.on{opacity:1;visibility:visible}
+.intro-skip:hover{color:var(--fg)}
+@media (max-height:500px){
+  :root{--ibot:40px}
+  .bio-dots{margin-top:4px}
+  .bio-dots button{width:16px;height:16px}
+  .intro-site{gap:14px}
+  .intro-site .intro-line{font-size:19px}
+  .intro-skip{bottom:6px;padding:8px 12px;font-size:11.5px}
+}
+@media (prefers-reduced-motion:reduce){.bio-track{transition:none}}
+</style>
+</head>
+<body data-part="about" data-scene="about" class="intro-on brand-wait">
+<div class="scenes" id="scenes" aria-hidden="true"></div>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <filter id="glass-refract" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">
+    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.02" numOctaves="2" seed="7" result="noise"/>
+    <feGaussianBlur in="noise" stdDeviation="2" result="soft"/>
+    <feDisplacementMap in="SourceGraphic" in2="soft" scale="38" xChannelSelector="R" yChannelSelector="G"/>
+  </filter>
+</svg>
+<script>
+  /* refraction only where it renders properly (desktop and Android Chrome, Edge) */
+  (function () { var ua = navigator.userAgent; if (/Chrome\/|Edg\//.test(ua) && !/OPR\/|SamsungBrowser/.test(ua)) document.documentElement.classList.add('refract'); })();
+</script>
+
+<header class="hdr">
+  <a class="brand" href="./" aria-label="[Business name], home"><i aria-hidden="true"></i><span>[Business name]</span></a>
+</header>
+
+<div class="navrow"><nav class="nav" aria-label="Gallery sections" id="nav"></nav><div class="social" id="social"></div></div>
+
+<main class="strip" id="strip" aria-label="Gallery: drag, swipe or scroll to move it">
+  <div class="track" id="track"></div>
+</main>
+
+<div class="btnrow">
+  <button class="stylebtn" id="styleBtn" tabindex="-1" aria-hidden="true"></button>
+  <p class="note" id="note"></p>
+  <div class="mid">
+    <p class="say" id="say" aria-live="polite"></p>
+    <a class="stylebtn collab" id="collab" href="#" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">Collaborate</a>
+  </div>
+</div>
+
+<footer class="band">
+  <div class="where" id="where"></div>
+  <div></div>
+  <div></div>
+</footer>
+
+<a class="enq" id="enq" href="mailto:hello@example.com?subject=Enquiry">Enquire</a>
+
+<div class="intro" id="intro">
+  <div class="intro-stage" id="introStage">
+    <div class="intro-video" id="introVideo" aria-hidden="true"></div>
+    <div class="intro-side">
+      <div class="bio" id="bio" aria-roledescription="carousel" aria-label="About me">
+        <div class="bio-track" id="bioTrack" aria-live="polite"></div>
+        <div class="bio-dots" id="bioDots"></div>
+      </div>
+      <div class="intro-grid" id="introGrid" aria-hidden="true"></div>
+    </div>
+  </div>
+  <div class="intro-site" id="introSite">
+    <p class="intro-line" id="introLine" aria-live="polite"></p>
+    <button class="intro-go" id="introGo" tabindex="-1">Explore</button>
+  </div>
+  <button class="intro-skip" id="introSkip">Skip intro</button>
+</div>
+
+<div class="outro" id="outro" aria-live="polite">
+  <p class="outro-line" id="outroLine"></p>
+  <button class="intro-go outro-go" id="outroGo" tabindex="-1">Explore further</button>
+</div>
+
+<div class="panel" id="panel" aria-hidden="true">
+  <div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+    <button class="x" id="close" aria-label="Close">&times;</button>
+    <div id="sheetBody"></div>
+  </div>
+</div>
+
+<div class="fsq" id="fsq" role="dialog" aria-modal="true" aria-labelledby="fsqT">
+  <div class="fsq-box">
+    <svg class="fsq-ico" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+    <p class="fsq-t" id="fsqT">Full screen only</p>
+    <p class="fsq-p" id="fsLead">This gallery is made to be seen edge to edge. Tap below to go full screen.</p>
+    <button class="fsq-go" id="fsGo">Enter full screen</button>
+    <div class="fsq-ios" id="fsIos" hidden>
+      <p class="fsq-p">Your browser can't go full screen. Tap <b>Share</b>, then <b>Add to Home Screen</b>, and open the site from your home screen.</p>
+      <button class="fsq-skip" id="fsSkip">Continue in the browser</button>
+    </div>
+  </div>
+</div>
+
+<div class="rot loading" id="rot" role="status">
+  <div class="phone" aria-hidden="true"></div>
+  <p>Turn your phone sideways to view the gallery</p>
+</div>
+
+<!-- Business details (name, email, socials): edit ../settings/site-settings.js -->
+<script src="settings/site-settings.js"></script>
+<script src="settings/pricing-settings.js"></script>
+<script src="gallery-data.js"></script>
+<script>
+(function () {
+  var SEC = window.GALLERY_SECTIONS, LP = window.LOOK_PRICES || { sections: [] }, SITE = window.SITE || {};
+  var $ = function (id) { return document.getElementById(id); };
+  var track = $('track'), strip = $('strip'), nav = $('nav'), say = $('say'), where = $('where'), styleBtn = $('styleBtn'), note = $('note'), collab = $('collab');
+  var touch = matchMedia('(pointer: coarse)').matches;
+  if (touch) document.documentElement.classList.add('touch');
+  function bySec(id) { return SEC.filter(function (s) { return s.id === id; })[0]; }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  /* placeholders filled from settings/site-settings.js, for text this page writes itself */
+  function fill(s) {
+    return String(s).split('hello@example.com').join(SITE.email || 'hello@example.com')
+      .split('[Suburb]').join(SITE.suburb || '[Suburb]').split('[Business name]').join(SITE.businessName || '[Business name]');
+  }
+  var email = SITE.email || 'hello@example.com';
+  function mail(subject) { return 'mailto:' + email + '?subject=' + encodeURIComponent(subject); }
+  $('enq').href = mail('Enquiry');
+  /* Collaborate (Affiliates): opens a direct message to your Instagram */
+  var igHandle = SITE.instagramHandle && SITE.instagramHandle.indexOf('[') < 0 ? SITE.instagramHandle : '';
+  $('collab').href = igHandle ? 'https://ig.me/m/' + encodeURIComponent(igHandle) : (SITE.instagram || '#');
+
+  /* ---------- header: social links (only the ones you've set) ---------- */
+  var socials = [];
+  if (SITE.instagram) socials.push(['Instagram', SITE.instagram]);
+  else if (SITE.instagramHandle && SITE.instagramHandle.indexOf('[') < 0) socials.push(['Instagram', 'https://www.instagram.com/' + SITE.instagramHandle + '/']);
+  else socials.push(['Instagram', '#']);
+  if (SITE.tiktok) socials.push(['TikTok', SITE.tiktok]);
+  if (SITE.facebook) socials.push(['Facebook', SITE.facebook]);
+  var ICON = {
+    Instagram: '<svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4.2"/><circle cx="17.3" cy="6.7" r="1.15" fill="currentColor" stroke="none"/></svg>',
+    TikTok: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M15 3c.3 2.2 1.7 3.6 4 3.8v3c-1.5 0-2.9-.4-4-1.2V15a5.5 5.5 0 1 1-5.5-5.5c.3 0 .6 0 .9.1v3.1a2.5 2.5 0 1 0 1.6 2.3V3z"/></svg>',
+    Facebook: '<svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor" aria-hidden="true"><path d="M14 8h2V5h-2.5C11 5 10 6.6 10 9v2H8v3h2v7h3v-7h2.4l.6-3h-3V9.4c0-.9.3-1.4 1-1.4z"/></svg>'
+  };
+  $('social').innerHTML = socials.map(function (s) { return '<a href="' + esc(s[1]) + '" target="_blank" rel="noopener" aria-label="' + s[0] + '" title="' + s[0] + '">' + ICON[s[0]] + '</a>'; }).join('');
+
+  /* ---------- scenes behind the gallery: one per part, and Parties changes again for each season ---------- */
+  var PARTY_SCENES = { halloween: 1, easter: 1, christmas: 1, birthday: 1, festival: 1 };
+  var SCENE_OF = { affiliates: 'connect', brands: 'connect', products: 'connect' };
+  var SCENES = {   /* scene: [particle type, how many, colours] */
+    about: ['blob', 3, ['rgba(232,196,184,.8)', 'rgba(214,190,150,.7)']],
+    natural: ['leaf', 10, ['#6f8f6a', '#8fb3a2', '#a9c29a', '#c9d8b6']],
+    special: ['petal', 16, ['#f3c9c2', '#ffffff', '#e5cf9f', '#f6dcd4']],
+    editorial: ['blob', 3, ['#ff2e88', '#3b3bff', '#2de2e6']],
+    parties: ['conf', 26, ['#6b2fbf', '#ff5fa2', '#ffd400', '#2bd9ff']],
+    halloween: ['ember', 18, ['#ffb35c']],
+    easter: ['egg', 9, ['#ffc2d9', '#cdb4f6', '#bfe8d3', '#fff0a8']],
+    christmas: ['snow', 40, ['#ffffff', '#f6e7c1', '#d4af37']],
+    birthday: ['balloon', 10, ['#ff5fa2', '#2bd9ff', '#ffd400', '#6b2fbf', '#ff8a1f']],
+    festival: ['glit', 40, ['#ffd27a', '#ff9ad5', '#ffffff', '#9be7ff']],
+    clients: ['blob', 2, ['rgba(190,205,214,.9)', 'rgba(220,210,200,.8)']],
+    inspiration: [null, 0, []],
+    connect: [null, 0, []]
+  };
+  var SPEED = { blob: [26, 40], glit: [2.5, 5], egg: [4, 7], snow: [9, 18] };   /* seconds per loop (others 11 to 22) */
+  function rnd(a, b) { return a + Math.random() * (b - a); }
+  var sceneEls = {};
+  Object.keys(SCENES).forEach(function (k) {
+    var cfg = SCENES[k], d = document.createElement('div'), h = '', sp = SPEED[cfg[0]] || [11, 22];
+    d.className = 'scene'; d.dataset.scene = k;
+    for (var i = 0; i < cfg[1]; i++) {
+      h += '<i class="' + cfg[0] + '" style="--x:' + rnd(0, 100).toFixed(1) + '%;--y:' + rnd(4, 96).toFixed(1) + '%;--s:' + rnd(.6, 1.5).toFixed(2) +
+        ';--d:' + rnd(sp[0], sp[1]).toFixed(1) + 's;--dl:-' + rnd(0, sp[1]).toFixed(1) + 's;--sway:' + rnd(-60, 60).toFixed(0) + 'px;--c:' + cfg[2][i % cfg[2].length] + '"></i>';
+    }
+    if (k === 'halloween') h += '<i class="moon"></i>';
+    d.innerHTML = h; $('scenes').appendChild(d); sceneEls[k] = d;
+  });
+  var curScene = null;
+  function setScene(k) {
+    if (k === curScene) return;
+    if (sceneEls[curScene]) sceneEls[curScene].classList.remove('on');
+    curScene = k; if (sceneEls[k]) sceneEls[k].classList.add('on');
+    document.body.dataset.scene = k;
+  }
+
+  /* ---------- build the gallery ---------- */
+  var GRID = { brands: 2, products: 3 };   /* Brands: 4 logos (2 x 2) per image space; Products: 9 (3 x 3) */
+  var MERGE = { products: true };          /* sections whose groups share tiles */
+  var tiles = [];   /* one entry per original tile: {el, sec, group, part} */
+  SEC.forEach(function (sec) {
+    var first = true;
+    /* Brands and Products share one image space: 2x2 logos, 3x3 products.
+       Products: the small categories share tiles so every 3x3 is full; Brands keep National / Global / Local apart. */
+    var n = GRID[sec.id] || 1, per = n * n;
+    var GROUPS = MERGE[sec.id] ? [{ merged: true, tiles: [].concat.apply([], sec.groups.map(function (g) { return g.tiles.map(function (t) { t._g = g; return t; }); })) }] : sec.groups;
+    GROUPS.forEach(function (gg) {
+      var list = [];
+      for (var k = 0; k < gg.tiles.length; k += per) list.push(gg.tiles.slice(k, k + per));
+      list.forEach(function (chunk) {
+        var g = gg.merged ? chunk[0]._g : gg;
+        var t = chunk[0];
+        var f = document.createElement('figure');
+        function pic(x) { return x.src ? '<img src="' + esc(x.src) + '" alt="' + esc(x.text) + '" loading="lazy" decoding="async" draggable="false">' : ''; }
+        f.className = 't' + (first ? ' start' : '') + (t.logo ? ' logo' : '') + (per > 1 ? ' grid g' + n : '');
+        if (per > 1) {
+          var cells = '';
+          for (var q = 0; q < per; q++) cells += chunk[q] ? '<div class="cell" data-sub="' + q + '" title="' + esc(chunk[q].text) + '">' + pic(chunk[q]) + '</div>' : '<div class="cell empty"></div>';
+          f.innerHTML = '<div class="ph">' + cells + '</div>';
+        } else f.innerHTML = '<div class="ph">' + pic(t) + '</div>';
+        f.dataset.i = tiles.length;                 /* click any image to pause and preview it with its description */
+        f.setAttribute('role', 'button'); f.tabIndex = 0;
+        f.setAttribute('aria-label', chunk.map(function (x) { return x.text; }).join(', '));
+        track.appendChild(f);
+        sec.count = (sec.count || 0) + 1;            /* images in this section */
+        var part = sec.id === 'styles' ? g.style : sec.id;
+        tiles.push({ el: f, t: t, subs: per > 1 ? chunk : null, sec: sec, group: g, part: part, scene: part === 'parties' && PARTY_SCENES[g.key] ? g.key : (SCENE_OF[part] || part) });
+        first = false;
+      });
+    });
+  });
+  /* a missing image falls back to the placeholder */
+  track.addEventListener('error', function (e) { if (e.target.tagName === 'IMG') e.target.remove(); }, true);
+  /* second copy so the loop never shows a gap */
+  Array.prototype.slice.call(track.children).forEach(function (n) {
+    var c = n.cloneNode(true); c.setAttribute('aria-hidden', 'true'); c.removeAttribute('tabindex'); track.appendChild(c);
+  });
+
+  /* ---------- section links: About, Styles (drop-down), Clients, Inspiration, Connections (drop-down) ---------- */
+  var styleOrder = bySec('styles').order;
+  var NAV = [
+    { go: 'about' },
+    { menu: 'Styles', secs: ['styles'], items: styleOrder.map(function (o) { return { go: o[0], label: o[1] }; }) },
+    { go: 'clients' },
+    { go: 'inspiration' },
+    { menu: 'Connections', side: 'left', secs: ['affiliates', 'brands', 'products'], items: ['affiliates', 'brands', 'products'].map(function (id) { return { go: id, label: bySec(id).label }; }) }
+  ];
+  nav.innerHTML = NAV.map(function (n, i) {
+    if (!n.menu) return '<button data-go="' + n.go + '" data-sec="' + n.go + '">' + esc(bySec(n.go).label) + '</button>';
+    return '<div class="dd' + (n.side === 'left' ? ' left' : '') + '"><button class="dd-btn" data-sec="' + n.secs.join(' ') + '" aria-expanded="false" aria-controls="dd' + i + '">' + n.menu + '</button>' +
+      '<div class="dd-menu" id="dd' + i + '">' + n.items.map(function (it) { return '<button data-go="' + it.go + '" data-part="' + it.go + '">' + esc(it.label) + '</button>'; }).join('') + '</div></div>';
+  }).join('');
+  var dds = nav.querySelectorAll('.dd');
+  function ddClose(keep) {
+    if (!keep) nav.classList.remove('expanded');
+    Array.prototype.forEach.call(dds, function (d) { if (d !== keep) { d.classList.remove('open'); d.querySelector('.dd-btn').setAttribute('aria-expanded', 'false'); } });
+  }
+  nav.addEventListener('click', function (e) {
+    var t = e.target.closest('.dd-btn');
+    if (t) { var d = t.parentNode, open = !d.classList.contains('open'); ddClose(d); d.classList.toggle('open', open); t.setAttribute('aria-expanded', open); nav.classList.toggle('expanded', open); return; }
+    var b = e.target.closest('[data-go]'); if (!b) return;
+    goTo(b.dataset.go); ddClose(); if (b.closest('.dd')) b.blur();
+  });
+  document.addEventListener('click', function (e) { if (!nav.contains(e.target)) ddClose(); });
+
+  /* ---------- measuring ---------- */
+  var L = 1, W = innerWidth, step = 1, starts = {};
+  /* gallery size: the gap above the images (to the section links) and below them (to the bottom buttons)
+     both equal the height of the buttons, on every screen */
+  function sizeGallery() {
+    var root = document.documentElement, e = $('enq').getBoundingClientRect();
+    var nb = nav.getBoundingClientRect().bottom, H = e.height || 46, B = innerHeight - e.bottom;
+    var hdr = document.querySelector('.hdr').getBoundingClientRect().height;
+    var th = Math.max(110, Math.floor(innerHeight - B - 3 * H - nb));
+    root.style.setProperty('--th', th + 'px');
+    root.style.setProperty('--gtop', Math.max(0, Math.round(nb + H - hdr)) + 'px');
+  }
+  function measure() {
+    sizeGallery();
+    W = innerWidth;
+    L = track.children[tiles.length].offsetLeft - track.children[0].offsetLeft;
+    step = tiles[1].el.offsetLeft - tiles[0].el.offsetLeft;
+    tiles.forEach(function (t) { t.x = t.el.offsetLeft; t.w = t.el.offsetWidth; });
+    starts = {};
+    tiles.forEach(function (t) {
+      if (!(t.sec.id in starts)) starts[t.sec.id] = t.x;
+      if (t.sec.id === 'styles' && !(t.group.style in starts)) starts[t.group.style] = t.x;
+    });    placeMid();
+  }
+  /* the rotating text (About, Affiliates, Brands, Products) sits exactly halfway between the bottom of the gallery and the bottom of the screen */
+  function placeMid() {
+    var mid = document.querySelector('.mid'); if (!mid) return;
+    mid.style.transform = '';
+    var g = strip.getBoundingClientRect().bottom, r = mid.getBoundingClientRect();
+    var want = (g + innerHeight) / 2, now = r.top + r.height / 2;
+    mid.style.transform = 'translateY(' + Math.round(want - now) + 'px)';
+  }
+
+  /* ---------- motion: auto scroll + glide to a section + manual drag / swipe / wheel ---------- */
+  var x = 0, paused = true, glide = null, last = performance.now(), fling = 0, holdUntil = 0, drag = null, suppress = false;
+  function speed() { return Math.max(26, tiles[0].w * .2); }            /* auto scroll, px per second */
+  function wrap(v) { return ((v % L) + L) % L; }
+  function glideTo(target) {
+    var d = wrap(target) - x;
+    if (d > L / 2) d -= L; if (d < -L / 2) d += L;
+    glide = { from: x, d: d, t0: performance.now(), dur: Math.min(1800, 500 + Math.abs(d) * .15) }; fling = 0;
+  }
+  function goTo(id) { if (id in starts) { lastHit = -1; glideTo(starts[id] - W * .06); } }   /* a jump with the section links doesn't count as reaching the end */
+  function ease(t) { return t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2; }
+
+  /* drag with a mouse, swipe with a finger */
+  strip.addEventListener('pointerdown', function (e) {
+    if (e.button !== 0) return;
+    drag = { id: e.pointerId, last: e.clientX, t: performance.now(), moved: 0, on: false, v: 0 };
+  });
+  addEventListener('pointermove', function (e) {
+    if (!drag || e.pointerId !== drag.id) return;
+    var now = performance.now(), dx = e.clientX - drag.last, dt = Math.max(1, now - drag.t);
+    drag.last = e.clientX; drag.t = now; drag.moved += Math.abs(dx);
+    if (!drag.on && drag.moved > 6) {
+      drag.on = true; glide = null; fling = 0; strip.classList.add('dragging');
+      try { strip.setPointerCapture(drag.id); } catch (_) {}
+    }
+    if (drag.on) { x = wrap(x - dx); drag.v = drag.v * .6 + (-dx / dt) * .4; }
+  });
+  function endDrag() {
+    if (!drag) return;
+    if (drag.on) {
+      fling = Math.max(-4, Math.min(4, drag.v)); holdUntil = performance.now() + 700;
+      suppress = true; setTimeout(function () { suppress = false; }, 0);   /* a drag isn't a click */
+      strip.classList.remove('dragging');
+    }
+    drag = null;
+  }
+  addEventListener('pointerup', endDrag); addEventListener('pointercancel', endDrag);
+  strip.addEventListener('click', function (e) { if (suppress) { e.stopPropagation(); e.preventDefault(); } }, true);
+  /* mouse wheel and trackpad */
+  addEventListener('wheel', function (e) {
+    if (paused || e.target.closest('.panel') || e.target.closest('.dd-menu')) return;
+    var d = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (e.deltaMode === 1) d *= 16;
+    x = wrap(x + d); glide = null; fling = 0; holdUntil = performance.now() + 900; wheelAt = performance.now();
+  }, { passive: true });
+  /* arrow keys move one image */
+  addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') { ddClose(); if (panel.classList.contains('open')) close(); return; }
+    if (paused) return;
+    if (e.key === 'ArrowRight') glideTo(x + step);
+    if (e.key === 'ArrowLeft') glideTo(x - step);
+  });
+
+  var cur = null, curGroup = null, curStyle = null, lineIdx = -1;
+  /* while the gallery is gliding or being skipped quickly, keep the current theme; change it once it lands */
+  var wheelAt = 0;
+  function settling() { return glide || (drag && drag.on) || Math.abs(fling) > .25 || performance.now() - wheelAt < 280; }
+  var lastHit = -1;
+  function state() {
+    if (settling()) return;
+    var c = wrap(x + W * .5), hit = tiles[tiles.length - 1];
+    for (var i = 0; i < tiles.length; i++) { if (tiles[i].x + tiles[i].w + 14 > c) { hit = tiles[i]; break; } }
+    var hitIdx = tiles.indexOf(hit);
+    if (lastHit === tiles.length - 1 && hitIdx === 0 && !outroOn) { lastHit = hitIdx; outro(); return; }   /* reached the end of the site */
+    lastHit = hitIdx;
+    if (hit.part !== document.body.dataset.part) document.body.dataset.part = hit.part;
+    setScene(hit.scene);
+    if (hit.sec !== cur) {
+      cur = hit.sec; lineIdx = -1;
+      nav.querySelectorAll('[data-sec]').forEach(function (b) { b.setAttribute('aria-current', b.dataset.sec.split(' ').indexOf(cur.id) > -1); });
+      if (!cur.lines) setSay('', false);
+      note.textContent = cur.note ? fill(cur.note) : ''; note.classList.toggle('show', !!cur.note);
+      var showCollab = cur.id === 'affiliates';
+      collab.classList.toggle('show', showCollab);
+      if (showCollab) { collab.removeAttribute('tabindex'); collab.removeAttribute('aria-hidden'); } else { collab.tabIndex = -1; collab.setAttribute('aria-hidden', 'true'); }
+    }
+    if (hit.group !== curGroup) {
+      curGroup = hit.group;
+      where.innerHTML = '<b>' + esc(cur.label) + '</b>' + (cur.id === 'styles' ? ' · ' + esc(hit.group.styleName) : '') +
+        (hit.group.name !== cur.label ? ' · ' + esc(hit.group.name) : '');
+      nav.querySelectorAll('.dd-menu button').forEach(function (b) { b.setAttribute('aria-current', b.dataset.part === hit.part); });
+      /* the style button only appears for the style on screen */
+      var st = cur.id === 'styles' ? hit.group.style : null;
+      if (st !== curStyle) {
+        curStyle = st;
+        if (st) {
+          styleBtn.textContent = hit.group.styleName; styleBtn.setAttribute('aria-label', hit.group.styleName + ': prices and booking');
+          styleBtn.dataset.style = st; styleBtn.dataset.name = hit.group.styleName;
+          styleBtn.classList.add('show'); styleBtn.removeAttribute('tabindex'); styleBtn.removeAttribute('aria-hidden');
+        } else {
+          styleBtn.classList.remove('show'); styleBtn.tabIndex = -1; styleBtn.setAttribute('aria-hidden', 'true');
+        }
+      }
+    }
+    /* About: the text under the gallery moves on one line each time a photo passes */
+    if (cur.lines) {
+      var n = Math.floor((c - starts[cur.id]) / step), len = cur.lines.length, li;
+      if (cur.spread) {
+        /* share the lines out across the section, so each stays up for several images; the last line covers the final 4 */
+        var seg = Math.max(1, (cur.count - 4) / Math.max(1, len - 1));
+        li = Math.max(0, Math.min(len - 1, Math.floor(n / seg)));
+      } else li = ((n % len) + len) % len;
+      if (li !== lineIdx) { lineIdx = li; setSay(fill(cur.lines[li]), false); }
+    }
+  }
+  var sayTimer;
+  function setSay(text, small) {
+    clearTimeout(sayTimer); say.classList.add('out');
+    sayTimer = setTimeout(function () { say.textContent = text; say.classList.toggle('small', !!small); say.classList.remove('out'); }, 260);
+  }
+
+  function frame(now) {
+    var dt = Math.min(60, now - last); last = now;
+    if (glide) {
+      var p = Math.min(1, (now - glide.t0) / glide.dur);
+      x = wrap(glide.from + glide.d * ease(p));
+      if (p >= 1) glide = null;
+    } else if (!(drag && drag.on)) {
+      if (Math.abs(fling) > .01) { x = wrap(x + fling * dt); fling *= Math.pow(.994, dt); } else fling = 0;
+      if (!paused && now > holdUntil) x = wrap(x + speed() * dt / 1000);
+    }
+    track.style.transform = 'translate3d(' + (-x).toFixed(2) + 'px,0,0)';
+    state();
+    requestAnimationFrame(frame);
+  }
+
+  /* ---------- panels ---------- */
+  var panel = $('panel'), sheet = $('sheet'), body = $('sheetBody'), lastFocus = null;
+  function open(html, style, view) {
+    lastFocus = document.activeElement;
+    body.innerHTML = html;
+    sheet.classList.toggle('view', !!view);
+    body.querySelectorAll('img').forEach(function (im) { im.onerror = function () { im.remove(); }; });   /* missing photo: show the placeholder */
+    if (style) sheet.dataset.style = style; else delete sheet.dataset.style;
+    panel.classList.add('open'); panel.setAttribute('aria-hidden', 'false'); paused = true; fling = 0;
+    $('close').focus();
+  }
+  function close() {
+    panel.classList.remove('open'); panel.setAttribute('aria-hidden', 'true'); paused = false;
+    if (lastFocus && lastFocus.focus) lastFocus.focus({ preventScroll: true });
+  }
+  $('close').addEventListener('click', close);
+  panel.addEventListener('click', function (e) { if (e.target === panel) close(); });
+
+  function money(v) { return (LP.currency || '$') + Number(v).toLocaleString('en-AU'); }
+  styleBtn.addEventListener('click', function () { if (styleBtn.dataset.style) stylePanel(styleBtn.dataset.style, styleBtn.dataset.name); });
+
+  /* Image preview: clicking any image pauses the gallery and shows it larger with its description.
+     Inspiration images also credit the original artist; affiliates show their Instagram. */
+  function big(src) { return src.replace(/([?&]w=)\d+/, function (m, a) { return a + '1800'; }); }
+  function preview(i, sub) {
+    var T = tiles[i], t = T.subs ? (T.subs[sub || 0] || T.t) : T.t;
+    var place = T.sec.id === 'styles' ? T.group.styleName + ' \u00b7 ' + T.group.name : T.sec.label + (T.group.name !== T.sec.label ? ' \u00b7 ' + T.group.name : '');
+    var html = '<figure class="pv' + (t.logo ? ' logo' : '') + '"><div class="pv-img">' +
+      (t.src ? '<img src="' + esc(big(t.src)) + '" alt="' + esc(t.text) + '">' : '') + '</div>' +
+      '<figcaption><span class="pv-where">' + esc(place) + '</span><b id="sheetTitle">' + esc(t.text) + '</b>';
+    if (t.handle) {
+      var url = 'https://www.instagram.com/' + encodeURIComponent(t.handle) + '/';
+      html += '<span>' + (t.credit ? 'Original work by ' : 'Instagram: ') + '<a href="' + url + '" target="_blank" rel="noopener">@' + esc(t.handle) + '</a></span>';
+    }
+    if (t.credit) html += '<small>' + esc(fill(bySec('inspiration').note)) + '</small>';
+    open(html + '</figcaption></figure>', null, true);
+  }
+  track.addEventListener('click', function (e) { var f = e.target.closest('[data-i]'), c = e.target.closest('[data-sub]'); if (f) preview(+f.dataset.i, c ? +c.dataset.sub : 0); });
+  track.addEventListener('keydown', function (e) {
+    var f = e.target.closest('[data-i]');
+    if (f && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); preview(+f.dataset.i); }
+  });
+  /* keyboard focus on a credited image brings it into view */
+  track.addEventListener('focusin', function (e) {
+    var f = e.target.closest('figure'); if (!f) return;
+    strip.scrollLeft = 0; x = wrap(f.offsetLeft - W * .4);
+  });
+
+  /* ---------- booking links + Enquire pop-up: says which section you are in and that Proceed opens the booking page ---------- */
+  var BL = window.BOOKING_LINKS || {}, STYLE_INFO = window.STYLE_INFO || {}, STYLE_NAME = {};
+  styleOrder.forEach(function (o) { STYLE_NAME[o[0]] = o[1]; });
+  function bookingLink(part, label) {
+    var l = BL[part] || BL.general || '';
+    return l && l.indexOf('[') < 0 ? l : mail('Booking enquiry: ' + label);
+  }
+  function linkAttrs(link) { return ' href="' + esc(link) + '"' + (link.indexOf('mailto:') === 0 ? '' : ' target="_blank" rel="noopener"'); }
+  $('enq').addEventListener('click', function (e) {
+    e.preventDefault();
+    var part = document.body.dataset.part, isStyle = !!STYLE_NAME[part], label = STYLE_NAME[part] || (cur ? cur.label : 'About');
+    var link = bookingLink(part, label), email = link.indexOf('mailto:') === 0;
+    open('<div class="enq-pop"><span class="pv-where">Enquire</span><h2 id="sheetTitle">' + esc(label) + '</h2>' +
+      '<p class="intro">You\'re viewing <b>' + esc(label) + '</b>. ' +
+      (email ? 'Proceed opens an email to book' : 'Proceed takes you to a separate booking page') +
+      (isStyle ? ' for ' + esc(label.toLowerCase()) + ' makeup' : '') + ', where you can choose your date and send your details.</p>' +
+      '<div class="acts"><a class="gbtn primary"' + linkAttrs(link) + '>Proceed</a><button class="gbtn" data-close>Stay here</button></div></div>', isStyle ? part : null);
+  });
+  panel.addEventListener('click', function (e) { if (e.target.closest('[data-close]')) close(); });
+
+  /* ---------- style pop-ups: page one describes the style and its looks, See prices turns to page two.
+     Each style turns the page its own way: Natural a wave, Special occasions a reveal, Editorial a film reel, Parties a balloon pop. ---------- */
+  function stylePanel(id, name) {
+    var s = LP.sections.filter(function (x) { return x.id === id; })[0];
+    if (!s) return;
+    var info = STYLE_INFO[id] || {}, link = bookingLink(id, name);
+    var prices = '<ul class="prices">' + s.looks.map(function (l) {
+        return '<li><b>' + esc(l.name) + '</b><span class="amt">' + (l.from ? '<small>from </small>' : '') + money(l.price) + ' <small>' + esc(l.unit) + '</small></span>' +
+          '<span class="inc">' + esc(l.includes) + '</span></li>';
+      }).join('') + '</ul>' +
+      '<p class="rules">' + fill('One flat price per look. Bookings start at ' + money(LP.minimumBooking || 150) + '. A ' + (LP.depositPct || 30) +
+        '% deposit secures your date. Travel within ' + (LP.includedKm || 50) + ' km of [Suburb] is included.') + '</p>';
+    open('<div class="flip" data-anim="' + id + '">' +
+      '<section class="pg pg1 on"><span class="pv-where">' + esc(name) + '</span><h2 id="sheetTitle">' + esc(info.tagline || name) + '</h2>' +
+        '<p class="intro">' + esc(info.text || s.intro || '') + '</p>' +
+        '<ul class="subs">' + s.looks.map(function (l) { return '<li>' + esc(l.name) + '</li>'; }).join('') + '</ul>' +
+        '<div class="acts"><button class="gbtn primary" data-next>See prices</button></div></section>' +
+      '<section class="pg pg2" aria-hidden="true"><span class="pv-where">' + esc(name) + ' · Prices</span><h2>' + esc(name) + '</h2>' + prices +
+        '<div class="acts"><a class="gbtn primary"' + linkAttrs(link) + '>Book ' + esc(name.toLowerCase()) + '</a><button class="gbtn" data-back>Back</button></div></section>' +
+      '<div class="fx" aria-hidden="true"></div></div>', id);
+  }
+  $('sheetBody').addEventListener('click', function (e) {
+    var nx = e.target.closest('[data-next]'), bk = e.target.closest('[data-back]');
+    if (nx) turn(nx.closest('.flip'), true);
+    if (bk) turn(bk.closest('.flip'), false);
+  });
+  function showPage(fl, two) {
+    var a = fl.querySelector('.pg1'), b = fl.querySelector('.pg2');
+    var from = fl.offsetHeight;
+    a.classList.toggle('on', !two); b.classList.toggle('on', two);
+    a.setAttribute('aria-hidden', two); b.setAttribute('aria-hidden', !two);
+    /* the pop-up grows or shrinks smoothly to fit the page now showing */
+    fl.style.height = ''; var to = fl.offsetHeight;
+    if (to !== from) {
+      fl.style.height = from + 'px'; void fl.offsetHeight; fl.style.height = to + 'px';
+      clearTimeout(fl._ht); fl._ht = setTimeout(function () { fl.style.height = ''; }, 560);
+    }
+    sheet.scrollTop = 0;
+    var btn = (two ? b : a).querySelector('.gbtn'); if (btn) btn.focus({ preventScroll: true });
+  }
+  function turn(fl, forward) {
+    if (!fl || fl.dataset.run) return;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var kind = forward && !reduce ? fl.dataset.anim : 'fade', fx = fl.querySelector('.fx');
+    var total = (FX[kind] || FX.fade)(fl, fx, function () { showPage(fl, forward); });
+    setTimeout(function () { delete fl.dataset.run; fl.classList.remove('both', 'popped'); fx.innerHTML = ''; }, total);
+  }
+  var WAVE_EDGE = '<svg viewBox="0 0 100 1000" preserveAspectRatio="none"><path d="M100 0 L100 1000 L60 1000 C 20 900, 95 820, 55 720 S 10 560, 50 470 S 100 300, 55 200 S 15 60, 60 0 Z"/></svg>';
+  var FX = {
+    fade: function (fl, fx, swap) { fl.dataset.run = 'fade'; swap(); return 380; },
+    natural: function (fl, fx, swap) {          /* a wave washes across the panel */
+      fx.innerHTML = '<div class="wave back">' + WAVE_EDGE + '<i></i>' + WAVE_EDGE + '</div><div class="wave">' + WAVE_EDGE + '<i></i>' + WAVE_EDGE + '</div>';
+      fl.dataset.run = 'wave'; setTimeout(swap, 770); return 1700;
+    },
+    special: function (fl, fx, swap) {          /* a gold line draws across, the panel closes over it and opens on the prices */
+      fx.innerHTML = '<i class="veil t"></i><i class="veil b"></i><i class="gline"></i>';
+      fl.dataset.run = 'reveal'; setTimeout(swap, 640); return 1650;
+    },
+    editorial: function (fl, fx, swap) {        /* the pages advance like frames on a film reel */
+      fx.innerHTML = '<i class="sprk l"></i><i class="sprk r"></i>';
+      fl.classList.add('both'); fl.dataset.run = 'film';
+      setTimeout(function () { swap(); fl.classList.remove('both'); }, 1000); return 1060;
+    },
+    parties: function (fl, fx, swap) {          /* a balloon floats up, inflates and pops into confetti */
+      fx.innerHTML = '<div class="balloon"><b></b></div>';
+      fl.dataset.run = 'balloon';
+      setTimeout(function () { fl.classList.add('popped'); swap(); confetti(); }, 1000); return 1500;
+    }
+  };
+  function confetti() {
+    var r = sheet.getBoundingClientRect(), box = document.createElement('div'), C = ['#6b2fbf', '#ff5fa2', '#ffd400', '#2bd9ff', '#ff8a1f', '#ffffff'];
+    box.className = 'confetti'; box.style.left = (r.left + r.width / 2) + 'px'; box.style.top = (r.top + r.height / 2) + 'px';
+    for (var i = 0; i < 60; i++) {
+      var p = document.createElement('i'), a = Math.random() * Math.PI * 2, d = 120 + Math.random() * 280;
+      var dx = Math.cos(a) * d, dy = Math.sin(a) * d * .8 - 40, rot = (Math.random() - .5) * 720;
+      p.style.background = C[i % C.length]; p.style.width = (5 + Math.random() * 6) + 'px'; p.style.height = (8 + Math.random() * 9) + 'px';
+      if (i % 4 === 0) p.style.borderRadius = '50%';
+      box.appendChild(p);
+      if (p.animate) p.animate([
+        { transform: 'translate(0,0) rotate(0deg)', opacity: 1 },
+        { transform: 'translate(' + dx + 'px,' + dy + 'px) rotate(' + rot + 'deg)', opacity: 1, offset: .55 },
+        { transform: 'translate(' + dx * 1.15 + 'px,' + (dy + 190) + 'px) rotate(' + rot * 1.6 + 'deg)', opacity: 0 }
+      ], { duration: 1300 + Math.random() * 600, easing: 'cubic-bezier(.12,.75,.3,1)', fill: 'forwards' });
+    }
+    document.body.appendChild(box); setTimeout(function () { box.remove(); }, 2100);
+  }
+
+  /* ---------- opening intro
+     1. the logo and name appear in the centre, then glide to the header
+     2. the bio video plays as wide as the screen allows; beside it, personal bio lines (BIO_LINES, swipe or tap the dots)
+        and a grid of photos that fills the space left over
+     3. when the video ends (or, with no video yet, once the bio lines have run through), it all fades and a few lines
+        explain the site and how to get around (INTRO_LINES), then Explore starts the gallery.
+     Skip intro (or Esc) goes straight to Explore. ---------- */
+  var INTRO = window.INTRO_LINES || [], introStarted = false, introDone = false;
+  function runIntro() {
+    if (introStarted) return; introStarted = true;
+    var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var brand = document.querySelector('.hdr .brand'), r = brand.getBoundingClientRect();
+    var ghost = brand.cloneNode(true);
+    ghost.removeAttribute('href'); ghost.setAttribute('aria-hidden', 'true'); ghost.classList.add('intro-brand');
+    ghost.style.left = r.left + 'px'; ghost.style.top = r.top + 'px'; ghost.style.width = r.width + 'px'; ghost.style.height = r.height + 'px';
+    var sc = Math.min(2.6, innerWidth * .7 / r.width), dx = innerWidth / 2 - (r.left + r.width / 2), dy = innerHeight / 2 - (r.top + r.height / 2);
+    ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + sc + ')';
+    document.body.appendChild(ghost);
+
+    var timers = [];
+    function later(fn, ms) { var id = setTimeout(fn, ms); timers.push(id); return id; }
+    var stage = $('introStage'), vbox = $('introVideo'), grid = $('introGrid'), bioBox = $('bio'), bioTrack = $('bioTrack'), dots = $('bioDots');
+    var line = $('introLine'), go = $('introGo'), site = $('introSite'), skipBtn = $('introSkip');
+    var IV = window.INTRO_VIDEO || {}, BIO = window.BIO_LINES || (bySec('about').lines || []);
+    var phase = 0, bioIdx = 0, bioTimer = null, gridTimer = null, BIO_MS = 4800, i = 0;
+    var pics = [];
+    SEC.forEach(function (s) { s.groups.forEach(function (g) { g.tiles.forEach(function (t) { if (t.src && !t.logo) pics.push(t.src); }); }); });
+    skipBtn.classList.add('on');
+
+    /* layout: the video as wide as the screen allows (keeping 16:9), the bio and photo grid in the column to its right */
+    function layout() {
+      var cs = getComputedStyle(stage), W = stage.clientWidth, H = stage.clientHeight, gap = parseFloat(cs.columnGap) || 24;
+      var vw = Math.min(W * (W < 760 ? .6 : .7), H * 16 / 9), vh = vw * 9 / 16;
+      stage.style.setProperty('--vw', Math.floor(vw) + 'px'); stage.style.setProperty('--vh', Math.floor(vh) + 'px');
+      var side = W - vw - gap, bioH = Math.max(64, vh * .4), gh = vh - bioH - Math.max(8, vh * .03);
+      stage.style.setProperty('--bioh', Math.floor(bioH) + 'px');
+      /* up to 8 x 5 photos: try 8, 6 and 5 across and keep whichever shows the most photos without getting too small */
+      var g = Math.max(3, Math.round(side * .015)), best = null;
+      [8, 6, 5].forEach(function (cols) {
+        var cell = (side - g * (cols - 1)) / cols, rows = Math.min(cols === 5 ? 8 : 5, Math.floor((gh + g) / (cell + g)));
+        if (cell < 26 || rows < 1) return;
+        if (!best || cols * rows > best.n) best = { cols: cols, rows: rows, cell: cell, n: cols * rows };
+      });
+      if (!best) best = { cols: 5, rows: 1, cell: (side - g * 4) / 5, n: 5 };
+      grid.style.gridTemplateColumns = 'repeat(' + best.cols + ',' + Math.floor(best.cell) + 'px)'; grid.style.gap = g + 'px';
+      var gridH = best.rows * Math.floor(best.cell) + (best.rows - 1) * g;
+      stage.style.setProperty('--bioh', Math.floor(Math.max(64, vh - gridH - Math.max(10, vh * .04))) + 'px');   /* the bio takes the space the grid leaves */
+      fillGrid(best.n); fitBio();
+    }
+    function fillGrid(n) {
+      if (grid.children.length === n) return;
+      var h = '';
+      for (var k = 0; k < n; k++) {
+        var src = pics.length ? pics[k % pics.length] : '';
+        h += '<i>' + (src ? '<img src="' + esc(src) + '" alt="" onerror="this.style.visibility=\'hidden\'">' : '') + '</i>';
+      }
+      grid.innerHTML = h;
+    }
+    function cycleGrid() {                                   /* photos in the grid swap one at a time */
+      if (pics.length < 2) return;
+      var gp = 0;
+      gridTimer = setInterval(function () {
+        var imgs = grid.querySelectorAll('img'); if (!imgs.length) return;
+        var im = imgs[Math.floor(Math.random() * imgs.length)]; im.style.opacity = 0;
+        setTimeout(function () { gp = (gp + 1) % pics.length; im.src = pics[(imgs.length + gp) % pics.length]; im.style.visibility = ''; im.style.opacity = ''; }, 460);
+      }, 1300);
+    }
+
+    /* bio lines: they move on by themselves, and can be swiped (or dots tapped) */
+    function buildBio() {
+      bioTrack.innerHTML = BIO.map(function (t) { return '<p class="bio-line">' + esc(fill(t)) + '</p>'; }).join('');
+      dots.innerHTML = BIO.length > 1 ? BIO.map(function (t, k) { return '<button aria-label="Bio line ' + (k + 1) + '"></button>'; }).join('') : '';
+      showBio(0);
+    }
+    function fitBio() {                                      /* the longest bio line always fits its box: shrink the text if needed */
+      var lines = bioTrack.children; if (!lines.length) return;
+      var room = bioBox.clientHeight - dots.offsetHeight - 14, fs = Math.min(26, Math.max(13, innerWidth * .017));
+      bioTrack.style.fontSize = fs + 'px';
+      while (fs > 11 && bioTrack.offsetHeight > room) { fs -= 1; bioTrack.style.fontSize = fs + 'px'; }
+    }
+    function showBio(k) {
+      if (!BIO.length) return;
+      bioIdx = (k + BIO.length) % BIO.length;
+      bioTrack.style.transform = 'translateX(' + (-100 * bioIdx) + '%)';
+      Array.prototype.forEach.call(dots.children, function (d, j) { d.classList.toggle('on', j === bioIdx); });
+    }
+    function autoBio() {
+      clearInterval(bioTimer);
+      bioTimer = setInterval(function () {
+        if (bioIdx === BIO.length - 1 && !IV.src && phase === 1) return endPhase1();   /* no video yet: move on after one pass */
+        showBio(bioIdx + 1);
+      }, BIO_MS);
+    }
+    var sx = null;
+    bioBox.addEventListener('pointerdown', function (e) { sx = e.clientX; });
+    bioBox.addEventListener('pointerup', function (e) {
+      if (sx === null) return; var d = e.clientX - sx; sx = null;
+      if (Math.abs(d) > 36) { showBio(bioIdx + (d < 0 ? 1 : -1)); autoBio(); }
+    });
+    dots.addEventListener('click', function (e) {
+      var b = e.target.closest('button'); if (!b) return;
+      showBio(Array.prototype.indexOf.call(dots.children, b)); autoBio();
+    });
+
+    function startVideo() {
+      if (IV.src) {
+        vbox.innerHTML = '<video muted playsinline autoplay preload="auto"' + (IV.poster ? ' poster="' + esc(IV.poster) + '"' : '') + '><source src="' + esc(IV.src) + '"></video>';
+        var v = vbox.querySelector('video');
+        v.addEventListener('ended', function () { if (phase === 1) endPhase1(); });
+        v.addEventListener('error', function () { if (phase === 1) later(endPhase1, Math.max(1, BIO.length) * BIO_MS); }, true);
+      } else vbox.innerHTML = '<span>Your short bio video plays here</span>';
+    }
+    function phase1() {
+      phase = 1; buildBio(); layout(); startVideo(); autoBio(); cycleGrid();
+      requestAnimationFrame(function () { stage.classList.add('on'); });
+      if (!BIO.length && !IV.src) later(endPhase1, 3000);
+    }
+    function endPhase1() {
+      if (phase !== 1) return; phase = 2;
+      clearInterval(bioTimer); stage.classList.remove('on');
+      var v = vbox.querySelector('video'); if (v) v.pause();
+      later(function () { clearInterval(gridTimer); site.classList.add('on'); i = 0; nextLine(); }, 900);
+    }
+    function nextLine() {
+      if (!INTRO.length) return showGo();
+      line.textContent = fill(INTRO[i++]); line.classList.add('on');
+      if (i >= INTRO.length) { later(showGo, 2200); return; }     /* the last line stays up */
+      later(function () { line.classList.remove('on'); later(nextLine, 650); }, 2800);
+    }
+    function showGo() { phase = 3; skipBtn.classList.remove('on'); go.classList.add('on'); go.removeAttribute('tabindex'); go.focus({ preventScroll: true }); }
+    function skip() {
+      if (introDone || phase === 3) return;
+      timers.forEach(clearTimeout); clearInterval(bioTimer); clearInterval(gridTimer);
+      ghost.remove(); document.body.classList.remove('brand-wait');
+      var v = vbox.querySelector('video'); if (v) v.pause();
+      stage.classList.remove('on'); site.classList.add('on');
+      if (INTRO.length) { line.textContent = fill(INTRO[INTRO.length - 1]); line.classList.add('on'); }
+      showGo();
+    }
+    skipBtn.addEventListener('click', skip);
+    addEventListener('keydown', function (e) { if (!introDone && e.key === 'Escape') skip(); });
+    addEventListener('resize', function () { if (phase === 1) layout(); });
+    go.addEventListener('click', function () {
+      introDone = true; go.classList.remove('on'); go.tabIndex = -1; clearInterval(gridTimer); clearInterval(bioTimer);
+      document.body.classList.remove('intro-on'); paused = false; last = performance.now();
+    });
+
+    requestAnimationFrame(function () { requestAnimationFrame(function () { ghost.classList.add('in'); }); });   /* fade in, centred */
+    later(function () { ghost.style.transform = 'none'; }, 1600);                                                 /* glide to the header */
+    later(function () { document.body.classList.remove('brand-wait'); ghost.remove(); phase1(); }, 1600 + (reduce ? 100 : 1500));
+  }
+
+  /* ---------- phones and tablets: the site is viewed in full screen only.
+     A prompt covers the site until the visitor goes full screen, and comes back if they leave it.
+     iPhone browsers can't go full screen, so iPhone visitors are shown how to open it from the home screen
+     (which opens it full screen), with an option to carry on in the browser. ---------- */
+  var de = document.documentElement;
+  var canFS = !!(de.requestFullscreen || de.webkitRequestFullscreen);
+  var homeScreen = matchMedia('(display-mode: fullscreen), (display-mode: standalone)').matches || navigator.standalone === true;
+  var fsSkipped = false, fsPrev = null, introWaiting = false;
+  function isFS() { return !!(document.fullscreenElement || document.webkitFullscreenElement) || homeScreen; }
+  function checkFS() {
+    var need = touch && !isFS() && !fsSkipped;
+    document.body.classList.toggle('need-fs', need);
+    if (need && fsPrev === null) { fsPrev = paused; paused = true; }      /* hold the gallery while the prompt is up */
+    if (!need && fsPrev !== null) { paused = fsPrev; fsPrev = null; }
+    return need;
+  }
+  function gateIntro() { if (checkFS()) introWaiting = true; else runIntro(); }
+  function fsChanged() { if (!checkFS() && introWaiting) { introWaiting = false; runIntro(); } }
+  if (!canFS) { $('fsGo').hidden = true; $('fsIos').hidden = false; $('fsLead').textContent = 'This gallery is made to be seen edge to edge.'; }
+  $('fsGo').addEventListener('click', function () {
+    var req = de.requestFullscreen ? de.requestFullscreen({ navigationUI: 'hide' }) : de.webkitRequestFullscreen();
+    Promise.resolve(req).then(function () {
+      if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {});
+    }).catch(function () {});
+  });
+  $('fsSkip').addEventListener('click', function () { fsSkipped = true; fsChanged(); });
+  document.addEventListener('fullscreenchange', fsChanged);
+  document.addEventListener('webkitfullscreenchange', fsChanged);
+  if (touch) checkFS();
+
+  /* ---------- end of the site: the gallery pauses, everything fades, the logo returns to the centre,
+     a few lines thank the visitor (OUTRO_LINES in gallery-data.js), then Explore further jumps to a random spot ---------- */
+  var OUTRO = window.OUTRO_LINES || ['Thank you for spending time here.', 'I hope you found a look you love.', 'Would you like to keep exploring?'];
+  var outroOn = false, outroTimers = [];
+  function outro() {
+    outroOn = true; paused = true; fling = 0;
+    var t = outroTimers, later = function (fn, ms) { t.push(setTimeout(fn, ms)); };
+    var line = $('outroLine'), go = $('outroGo'), i = 0, ghost = null;
+    later(function () {                                   /* after a short pause, fade everything away */
+      document.body.classList.add('outro-on');
+      var brand = document.querySelector('.hdr .brand'), r = brand.getBoundingClientRect();
+      ghost = brand.cloneNode(true);
+      ghost.removeAttribute('href'); ghost.setAttribute('aria-hidden', 'true'); ghost.classList.add('intro-brand', 'in', 'outro-brand');
+      ghost.style.left = r.left + 'px'; ghost.style.top = r.top + 'px'; ghost.style.width = r.width + 'px'; ghost.style.height = r.height + 'px';
+      document.body.appendChild(ghost); document.body.classList.add('brand-wait');
+      var s = Math.min(2.6, innerWidth * .7 / r.width), dx = innerWidth / 2 - (r.left + r.width / 2), dy = innerHeight / 2 - (r.top + r.height / 2) - Math.min(70, innerHeight * .12);
+      later(function () { ghost.style.transform = 'translate(' + dx + 'px,' + dy + 'px) scale(' + s + ')'; }, 120);   /* the logo glides back to the centre */
+      later(nextLine, 1700);
+    }, 1400);
+    function nextLine() {
+      if (i >= OUTRO.length) return showGo();
+      line.textContent = fill(OUTRO[i++]); line.classList.add('on');
+      if (i >= OUTRO.length) { later(showGo, 1600); return; }     /* the last line stays up */
+      later(function () { line.classList.remove('on'); later(nextLine, 650); }, 2600);
+    }
+    function showGo() { go.classList.add('on'); go.removeAttribute('tabindex'); go.focus({ preventScroll: true }); }
+    outro.again = function () {                           /* Explore further: a random place in the gallery */
+      t.forEach(clearTimeout); t.length = 0;
+      go.classList.remove('on'); go.tabIndex = -1; line.classList.remove('on');
+      var pick = tiles[Math.floor(Math.random() * Math.max(1, tiles.length - 6))];
+      x = wrap(pick.x - W * .3); lastHit = -1; glide = null;
+      document.body.classList.remove('outro-on');
+      if (ghost) { ghost.style.transform = 'none'; setTimeout(function () { ghost.remove(); document.body.classList.remove('brand-wait'); }, 1450); }
+      else document.body.classList.remove('brand-wait');
+      paused = false; last = performance.now();
+      setTimeout(function () { outroOn = false; }, 1500);
+    };
+    outro.skip = function () { if (!go.classList.contains('on')) { t.forEach(clearTimeout); t.length = 0; if (OUTRO.length) { line.textContent = fill(OUTRO[OUTRO.length - 1]); line.classList.add('on'); } showGo(); } };
+  }
+  $('outroGo').addEventListener('click', function () { if (outro.again) outro.again(); });
+  addEventListener('keydown', function (e) { if (outroOn && e.key === 'Escape' && outro.skip) outro.skip(); });
+
+  /* ---------- start ---------- */
+  function start() {
+    measure(); requestAnimationFrame(frame);
+    var rot = $('rot');
+    /* the loader is the rotate prompt: it fades once the phone is sideways (or straight away on a computer) */
+    var upright = matchMedia('(orientation: portrait)');
+    function finish() {
+      if (touch && upright.matches) return;
+      rot.classList.add('done');
+      setTimeout(function () { rot.classList.remove('loading', 'done'); gateIntro(); }, 600);
+    }
+    if (touch) { setTimeout(finish, 1800); upright.addEventListener('change', function () { if (rot.classList.contains('loading')) finish(); }); }
+    else { rot.classList.remove('loading'); runIntro(); }
+  }
+  var rs; addEventListener('resize', function () { clearTimeout(rs); rs = setTimeout(function () { var f = x / L; measure(); x = wrap(f * L); }, 120); });
+  if (document.readyState === 'complete') start(); else addEventListener('load', start);
+})();
+</script>
+</body>
+</html>
