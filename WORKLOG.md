@@ -3,7 +3,7 @@
 Read this first before changing the site. Newest entries at the top of each section.
 Rule: add a dated entry under **Changes** for every edit, and update **Current state** and **Open items** so the next person (or Claude) starts from the truth.
 
-## Current state (2026-11-11)
+## Current state (2026-11-12)
 
 **Live repo:** github.com/lachlanbruce944-droid/chanel-monroe-makeup (public, branch `main`)
 **Local repo:** `C:\Users\USER\repos\chanel-monroe-makeup`
@@ -46,6 +46,11 @@ The complete copy with all reference photos and clips is `M:\CMM-Site\final-draf
 - Affiliates: message each person before listing them on the live site.
 - Free space on C: (was full on 2026-11-11, 1.1 GB free on 2026-11-12). Big work now lives on M:.
 - Products with no photo yet (show the brand logo instead): Danessa Myricks Colorfix x2 (site blocks downloads), NARS red lipstick (Dragon Girl is a placeholder shade), MUFE Ultra HD Soft Light (no longer sold in Australia: replace or drop). Placeholder picks to confirm: Real Techniques Everything Eye Set, MYO Bling (links to The Face Paint Shop gems).
+- Confirm the About timeline with Chanel: Huxley School of Makeup in 2017 (from her competition post), Trace Cosmetic Tattoo Academy in 2021 (from a tag).
+- Brand facts left blank where they couldn't be confirmed: LaGlam, Oil 'o' Eve, Makeup Cartel, Loving Tan, Lash & Brow, Noosa Naturals, Fusion, Danessa's year and Mehron's founder.
+- No catalogue products yet for Charlotte Tilbury, NARS, Laura Mercier, MECCA Cosmetica, Danessa Myricks, Mehron, Ben Nye, Cannabella, Clean Beauty Market or LaGlam: they're not on Adore Beauty and have no public Shopify feed. 152 catalogue items have no description, so their popup shows the shop link only.
+- SEO steps that need the domain or Chanel: canonical URL, sitemap.xml, Google Business Profile, directories (see SEO.md).
+- Hidden items are hidden only; "apply the removals" has not been run.
 - Re-scrape affiliate photos and Chanel's comments now and then; both are snapshots from 2026-11-12.
 
 ## Chanel's Instagram: scrape register (@chanelmonroemakeup)
@@ -79,6 +84,24 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (catalogue, clips round 2, SEO, register)
+- **REGISTER.csv** (`final-draft/`, built by `tools/build_register.py`): every photo, clip, kit product, catalogue product, brand and affiliate, plus 139 Instagram posts already reviewed and rejected (`data/rejected.json`). **Check it before adding anything**; re-run the script after any change.
+- **Clips:** 37 more (69 total), all checked frame by frame for text overlays, captions and watermarks. Transcoded to H.264 with no audio for iPhone/Safari. Scripts in `tools/video-round2/`.
+- **Catalogue:** `data/catalog.js` holds 526 products from 41 of the listed brands, in 22 categories plus "Trending now", up to 25 each. Every product appears once, and other sizes or shades of the same product are dropped. Clicking a product opens a popup with its description (credited to Adore Beauty or the brand site), price and shop link. Rebuild with `tools/build_catalog.py` from `data/raw/` (git-ignored: adore.json, shop-*.json).
+- **Brand popup:** logo, est. / from / founder (`data/brands-info.js`), one line, site link, and 9 products.
+- **Layout:**
+  - Brand wordmark sits bottom left, Pricing and Enquire bottom right, inline with the rotating caption. On About the brand replaces the title, and Pricing and Enquire are hidden.
+  - Compact top nav that scrolls on small screens. Phone layout follows iPhone 17 Pro and Pro Max sizes.
+- **About:**
+  - Timeline in one row.
+  - Each of Chanel's photos shows once.
+  - Instagram popup no longer shows dates, hearts, the comment icon or the arrow.
+- **Other changes:**
+  - New mix shows unseen images in new positions.
+  - Parties uses the "Blush editorial" background.
+  - Affiliates show as large circles.
+  - Favicon is a rose-gold script M (`images/icons/`).
+- **SEO:** title, description, OG tags, BeautySalon JSON-LD (15 suburbs), noscript H1 and robots.txt. Competitor review and next steps are in `SEO.md`.
 ### 2026-11-12 (carousels, popups, Chanel only in About)
 - Style sections now show inspiration only. Chanel's own photos appear only in About (`pick()` skips `own`; the `mix` option no longer adds her photos).
 - About: clicking a tile opens an Instagram-style popup: photo on the left; caption and her real Instagram comments (with replies, avatars, dates) pinned on the right. Arrows or ← → move between photos. Data: `data/comments.js` (`window.IG_POSTS`, keyed by post URL, 18 posts, 89 comments), built by `tools/build_people.py` from `data/comments-raw.json`. Commenter avatars: `images/chanel/comments/` (local only).

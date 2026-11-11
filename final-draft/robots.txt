@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /data/raw/
+Disallow: /tools/
+# When the site has its domain, add:  Sitemap: https://YOUR-DOMAIN/sitemap.xml
