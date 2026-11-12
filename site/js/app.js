@@ -158,7 +158,9 @@ function closeDd(){var a=document.activeElement;if(a&&a.closest&&a.closest('.dd'
 /* long descriptions shrink to fit the caption bar instead of being cut off */
 function fitCap(){var c=$('cap'),bar=c.closest('.capbar'),d=$('capDesc');d.style.removeProperty('font-size');
   var fs=parseFloat(getComputedStyle(d).fontSize)||14;
-  while(fs>9&&(c.scrollHeight>bar.clientHeight+1||d.scrollWidth>d.clientWidth+1)){fs-=.5;d.style.setProperty('font-size',fs+'px','important')}}
+  /* shrink only while the description wraps past one line */
+  function over(){var lh=parseFloat(getComputedStyle(d).lineHeight)||fs*1.2;return d.scrollHeight>lh*1.5||d.scrollWidth>d.clientWidth+1}
+  while(fs>9.5&&over()){fs-=.5;d.style.setProperty('font-size',fs+'px','important')}}
 window.addEventListener('resize',function(){clearTimeout(window._fc);window._fc=setTimeout(fitCap,200)});
 function setCap(it){var c=$('cap');c.classList.add('out');
   setTimeout(function(){$('capSub').textContent=it.s;$('capDesc').textContent=desc(it);$('capSrc').innerHTML=credit(it);fitCap();c.classList.remove('out')},220);
