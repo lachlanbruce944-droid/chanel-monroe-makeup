@@ -543,6 +543,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 @media (orientation:landscape) and (max-height:520px){.lb{padding:12px 58px}.lb img,.lb video{max-height:calc(var(--vh) - 24px)}.lb figcaption{font-size:12.5px}}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.aff .bio{font-size:12px;line-height:1.4}
 .aff .side{overflow:hidden!important;display:flex;flex-direction:column;justify-content:center}.aff .side .sin{width:100%}
 /* the profile popup never scrolls as a whole: fixed height, the photo grid scrolls on its own, the profile text scales to fit */
 @media (min-width:821px){.aff{height:min(760px,calc(100vh - 40px));overflow:hidden;grid-template-rows:minmax(0,1fr)}}
@@ -585,6 +586,6 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .aff .side img.av{width:clamp(56px,17vh,90px);height:clamp(56px,17vh,90px);margin-bottom:8px}
   .aff h2{font-size:clamp(16px,4.8vh,21px)}.aff .role{font-size:11.5px;margin-bottom:8px}
   .aff .stats{font-size:11px;margin-bottom:8px;gap:12px}.aff .stats b{font-size:13px}
-  .aff .bio{font-size:12px;margin-bottom:10px}.aff .side .pill{margin:5px 0;padding:8px 12px;font-size:11px}
+  .aff .bio{font-size:clamp(9px,2.5vh,10.5px);line-height:1.35;margin-bottom:8px}.aff .side .pill{margin:5px 0;padding:8px 12px;font-size:11px}
   #affMod .x{top:clamp(12px,3vh,20px);right:clamp(46px,7.5vw,70px)}
 }
