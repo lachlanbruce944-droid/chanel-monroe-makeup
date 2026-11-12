@@ -3,67 +3,7 @@
    captions: replacement descriptions.  moved: images moved to another section or style.
    log: a dated record of every saved change. */
 window.SITE_OVERRIDES = {
- "hidden": [
-  "images/videos/natural_clean-polished_christina_mua4_Dc4xmWyzDRB.mp4",
-  "images/videos/natural_clean-polished_ares.artistry_DXtMVTCk3_Q.mp4",
-  "images/inspiration/Maternity%20glow/maternity-glow_024_%40artra_styling_DcdyaeaCfi1.jpg",
-  "images/videos/natural_clean-polished_deannamareemakeup_Dbkbop8uIdw.mp4",
-  "images/inspiration/Mature%20natural/mature-natural_001_%40cindy_willour_DdjnENAxWpX.jpg",
-  "images/videos/natural_clean-polished_ellenclarkmakeup_DbEXjagNGMj.mp4",
-  "images/inspiration/Mature%20natural/mature-natural_025_%40bbsilverhair_C2pXvUeM5_S.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_007_%40mjhxbeauty_DcwmIGFj1Sy.jpg",
-  "images/inspiration/Mature%20natural/mature-natural_013_%40simonestolai_DdHJp4DMv3l.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_018_%40kylielouisefit_B0ExZoADqTT.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_020_%40makeupwithdiane_CmQibyvMHAF.jpg",
-  "images/inspiration/Maternity%20glow/maternity-glow_004_%40glow_flies_photography_DYjSeQQkzqx.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_017_%40makeupbymariafigueroa_DD2OC0VpwS7.jpg",
-  "images/inspiration/No-makeup%20makeup/no-makeup-makeup_026_%40oldie_and_goldie_Ddv3y4jEQky.jpg",
-  "images/inspiration/Maternity%20glow/maternity-glow_028_%40kavinas_makeover_DY3p9gnESo-.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_022_%40iambridal.makeup_C1Fq3qgsBi0.jpg",
-  "images/inspiration/Sensitive%20skin/sensitive-skin_006_%40embodiment.wellness_Dfi3MBOkY78.jpg",
-  "images/inspiration/Mature%20natural/mature-natural_014_%40sabinamonteysfullam_DUi5XfLDeou.jpg",
-  "images/inspiration/Sun-kissed%20bronze/sun-kissed-bronze_025_%40iam_ejf_DcYdIg6jvg6.webp",
-  "images/inspiration/No-makeup%20makeup/no-makeup-makeup_004_%40paulinasiembormua_DdEcb7ntfXi.jpg",
-  "images/videos/glam_soft-glam_brookeartistry__DXq56c0j4pf.mp4",
-  "images/videos/glam_full-glam_simonavbeauty_DeOB7hetb5e.mp4",
-  "images/videos/glam_soft-glam_clairejamiesonmakeup_DTdsRofk-h-.mp4",
-  "images/inspiration/Old%20Hollywood/old-hollywood_007_%40gloomygreentrees_DeQNP8jEXKG.jpg",
-  "images/inspiration/Mature%20skin%20glam/mature-skin-glam_015_%40sylvia_breslin_DffZBBhxzcW.jpg",
-  "images/inspiration/Race%20day%20glam/race-day-glam_020_%40training_by_jemma_DRHxtTKihXh.jpg",
-  "images/inspiration/Race%20day%20glam/race-day-glam_004_%40megantoblervisuals_DfTVfWGidwU.jpg",
-  "images/inspiration/Bronzed%20coastal%20glam/bronzed-coastal-glam_001_%40lizelreyez_DbXxO4cDUTs-1.jpg",
-  "images/inspiration/Classic%20bridal/classic-bridal_001_%40beccimcivormakeupartistry_Dfl5rd5n9cW-1.jpg",
-  "images/inspiration/Classic%20bridal/classic-bridal_024_%40dhruvbosephotography.in_DcTX99UHZXb.jpg",
-  "images/videos/bridal_classic-bridal_jessielynnmakeup_DZ7zo30Obim.mp4",
-  "images/inspiration/Groom%20grooming/groom-grooming_027_%40makeupbyaadhi_DSWp1TkEzom.jpg",
-  "images/inspiration/Groom%20grooming/groom-grooming_021_%40chandansadhu.7_DfRjodUExsp.jpg",
-  "images/inspiration/Groom%20grooming/groom-grooming_007_%40vidhisha_makeupandhair_DeeGTnaiCdx.jpg",
-  "images/inspiration/Groom%20grooming/groom-grooming_017_%40tinted_kisses_by_rajani_DP1DTWcAT9f.jpg",
-  "images/inspiration/Groom%20grooming/groom-grooming_005_%40itlelo_makeup_DOVQUMODwaL.jpg",
-  "images/inspiration/Natural%20radiant%20bride/natural-radiant-bride_011_%40itlelo_makeup_DPDykDWE-jZ-1.jpg",
-  "images/inspiration/Classic%20bridal/classic-bridal_009_%40sheridanmeyers_DfO1MRmiSJ6.jpg",
-  "images/chanel/Editorial/shoot-look_05_scared-to-love-male-model.jpg",
-  "images/inspiration/Stage%20and%20theatre/stage-and-theatre_009_%40reb_artistryfx_DfIQFTLDLTM.jpg",
-  "images/inspiration/Beauty%20close-up/beauty-close-up_004_%40nencymakeup_DecCJNNiJxE.jpg",
-  "images/videos/editorial_lip-art_gickmaria_DWUj5K0xUI2.mp4",
-  "images/inspiration/Stage%20and%20theatre/stage-and-theatre_027_%40meicrosoft_DQJ4oMTEXjY.jpg",
-  "images/videos/fx_sfx-and-prosthetics_friends.with.gh0sts_DKkpU9Kxor9.mp4",
-  "images/videos/fx_sfx-and-prosthetics_artistryby.liv_DND-2TjpDS-.mp4",
-  "images/videos/fx_sfx-and-prosthetics_forsurprise_DQcJa0FCNQO.mp4",
-  "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_026_%40angada_glamz_DeJ_7aCglX4.jpg",
-  "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_030_%40wolfs_fx_DblHaEVig7q.webp",
-  "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_018_%40heavenleigh_17_DaTFDicgJE_.jpg",
-  "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_008_%40manicmakeupart_BUt8yyZA-x9.jpg",
-  "images/inspiration/Fancy%20dress/fancy-dress_022_%40artem_brinn_DcbDeLhCK9n.jpg",
-  "images/inspiration/Cosplay%20recreation/cosplay-recreation_022_%40sasha_jamm_DblIvOziJ3c.jpg",
-  "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_013_%40alicewillardsfx_Db_BhRKgFdB.jpg",
-  "images/videos/parties_glitter-bar-and-gems_whatistombadoing_DYHMkGeRgMg.mp4",
-  "images/inspiration/Christmas%20and%20New%20Year/christmas-and-new-year_021_%40lenaaleew_CW_O0xOtbIt.jpg",
-  "images/inspiration/Express%20designs/express-designs_023_%40peach_fuzz_xoxo_ClmVwLSOLHe.jpg",
-  "images/videos/parties_glitter-bar-and-gems_rudecosmetics_DUyh0--AaPL.mp4",
-  "images/inspiration/Glitter%20bar%20and%20gems/glitter-bar-and-gems_020_%40pariya_nshad_DcTHTzCkXem.jpg",
-  "images/inspiration/Glitter%20bar%20and%20gems/glitter-bar-and-gems_001_%40beccimcivormakeupartistry_DRBY4mDkvui.jpg"
- ],
+ "hidden": [],
  "pinned": {},
  "captions": {},
  "moved": {
@@ -531,6 +471,18 @@ window.SITE_OVERRIDES = {
      "section": "parties",
      "image": "images/inspiration/Glitter%20bar%20and%20gems/glitter-bar-and-gems_001_%40beccimcivormakeupartistry_DRBY4mDkvui.jpg",
      "detail": ""
+    }
+   ]
+  },
+  {
+   "saved": "2026-11-12T01:13:27.756846+00:00",
+   "changes": [
+    {
+     "time": "2026-11-12",
+     "action": "apply-removals",
+     "section": "",
+     "image": "",
+     "detail": "59 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
     }
    ]
   }

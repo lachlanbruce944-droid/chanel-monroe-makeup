@@ -34,6 +34,10 @@ for a in js('affiliates.js', 'AFFILIATES') or []:
 rej = os.path.join(ROOT, 'data', 'rejected.json')   # {"code": "reason"} posts reviewed and not used
 for c, why in (json.load(open(rej, encoding='utf-8')) if os.path.exists(rej) else {}).items():
     rows.append(dict(kind='rejected-post', key=c, name='', section='', file='', status='rejected: ' + why, source='https://www.instagram.com/p/%s/' % c))
+rmp = os.path.join(ROOT, 'data', 'removed.json')   # applied removals (tools/apply_removals.py); files in M:\CMM-Site\_removed
+for r in (json.load(open(rmp, encoding='utf-8')) if os.path.exists(rmp) else []):
+    rows.append(dict(kind='removed', key=r['code'], name='', section=r['section'], file=r['file'], status='removed %s: %s' % (r['removed'], r['reason']),
+                     source='https://www.instagram.com/p/%s/' % r['code'] if r['code'] else ''))
 with open(os.path.join(ROOT, 'REGISTER.csv'), 'w', encoding='utf-8-sig', newline='') as f:
     w = csv.DictWriter(f, fieldnames=['kind', 'key', 'name', 'section', 'file', 'status', 'source']); w.writeheader(); w.writerows(rows)
 dupes = {}

@@ -84,6 +84,14 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (removals applied)
+- Applied removals: all 59 items hidden in Edit mode are off the site (44 inspiration photos, 14 clips, 1 of Chanel's photos: shoot-look_05 Scared to Love).
+  - The files and video posters (73 files) were moved, not deleted, to `M:\CMM-Site\_removed\final-draft\…`. Copy one back and re-add its CSV row to undo.
+  - Rows were dropped from credits.csv, videos.csv and chanel/index.csv.
+  - The hidden list in overrides.js is now empty. A backup is at `M:\CMM-Site\overrides-before-removals.js`.
+- Each removed item is listed in `data/removed.json` with its Instagram code and shows in REGISTER.csv as kind `removed`. **Never re-add these.**
+- Script: `tools/apply_removals.py`. Run it again whenever more items are hidden, then `build_media.py` and `build_register.py`.
+- Clips now total 55. Natural has 4 left: top it up.
 ### 2026-11-12 (catalogue, clips round 2, SEO, register)
 - **REGISTER.csv** (`final-draft/`, built by `tools/build_register.py`): every photo, clip, kit product, catalogue product, brand and affiliate, plus 139 Instagram posts already reviewed and rejected (`data/rejected.json`). **Check it before adding anything**; re-run the script after any change.
 - **Clips:** 37 more (69 total), all checked frame by frame for text overlays, captions and watermarks. Transcoded to H.264 with no audio for iPhone/Safari. Scripts in `tools/video-round2/`.
