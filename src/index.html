@@ -763,6 +763,22 @@ body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{position:st
   body[data-pricing="fit"] .po .page-h p{font-size:clamp(10.5px,2.8vh,13px)}
   body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{height:calc(var(--vh) - 70px)!important}
 }
+
+/* Layout bands: nav | title | images | footer strip. Each band has its own space, so nothing can overlap.
+   The images take whatever height is left between the title and the footer strip (--fz). */
+@media (orientation:landscape) and (max-height:520px){
+:root{--fz:clamp(52px,16vh,70px)}
+#gallery:not([hidden]){display:flex!important;flex-direction:column;height:calc(var(--vh) - var(--hdr));padding-bottom:var(--fz)!important;box-sizing:border-box;overflow:hidden}
+#gallery .ghead{flex:none;margin-top:0!important;padding-top:clamp(2px,1vh,6px)!important;padding-bottom:clamp(4px,1.8vh,9px)!important;align-items:center!important}
+#gallery .ghead h1{line-height:1.05}
+body[data-g="bridal"] #gallery .ghead h1{font-size:clamp(19px,6.2vh,27px)!important}
+#gallery .track{flex:1 1 0!important;height:auto!important;min-height:0!important}
+.fbrand,.fab{bottom:calc((var(--fz) - clamp(34px,10vh,42px)) / 2 + env(safe-area-inset-bottom))!important}
+#gallery .capbar{bottom:calc((var(--fz) - clamp(40px,11.5vh,52px)) / 2 + env(safe-area-inset-bottom))!important}
+.info{padding-bottom:calc(var(--fz) + 12px)!important}
+/* active-page underline sits just under the nav text */
+body[data-nav="a"] .nav .gbtn{padding-top:clamp(9px,2.9vh,13px)!important;padding-bottom:clamp(1px,.6vh,3px)!important}
+}
 </style>
 </head>
 <body data-g="natural">
