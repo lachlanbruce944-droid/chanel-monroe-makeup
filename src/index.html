@@ -572,6 +572,15 @@ body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:
 .track{height:min(calc(var(--vh) * var(--img-pct)),calc(var(--vh) - var(--hdr) - var(--foot) - 70px))!important}
 /* no rule under the main nav */
 body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!important}
+/* photo popup: description sits to the right of the image on landscape screens */
+@media (orientation:landscape){
+  .lb{padding:4vh 64px}
+  .lb figure{flex-direction:row;align-items:center;justify-content:center;gap:clamp(18px,3vw,36px);max-width:100%}
+  .lb img,.lb video{max-width:min(62vw,1000px);max-height:88vh}
+  .lb figcaption{text-align:left;width:min(30ch,26vw);flex:none;font-size:14px;line-height:1.5}
+  .lb figcaption b{margin-bottom:6px}
+}
+@media (orientation:landscape) and (max-height:520px){.lb{padding:12px 58px}.lb img,.lb video{max-height:calc(var(--vh) - 24px)}.lb figcaption{font-size:12.5px}}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}.car img{-webkit-user-drag:none}
 </style>
