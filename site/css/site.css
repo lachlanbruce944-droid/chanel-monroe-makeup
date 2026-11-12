@@ -612,15 +612,16 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   /* the first row of each page is in view on arrival: compact intros on all three pages */
   body[data-g="affiliates"] .info,body[data-g="brands"] .info,body[data-g="products"] .info{padding-top:2px!important}
   body[data-g="affiliates"] .info h1,body[data-g="brands"] .info h1,body[data-g="products"] .info h1{font-size:clamp(20px,6.2vh,28px);margin:0 0 2px}
-  body[data-g="brands"] .info .lead,body[data-g="products"] .info .lead{font-size:clamp(11px,3.1vh,13.5px);max-width:70ch;margin-bottom:4px}
+  body[data-g="brands"] .info .lead,body[data-g="products"] .info .lead{font-size:clamp(11px,3.1vh,13.5px);max-width:84ch;margin-bottom:4px}
   body[data-g="brands"] .info .hint,body[data-g="products"] .info .hint{font-size:clamp(9px,2.4vh,11px);margin:0 0 2px}
   body[data-g="brands"] .info h3,body[data-g="products"] .info h3{font-size:clamp(14px,4.4vh,19px);margin:clamp(4px,1.6vh,10px) 0 2px}
   /* affiliates: bigger profile pictures */
-  body[data-g="affiliates"] .info{--av:clamp(88px,27vh,140px)}
+  body[data-g="affiliates"] .info{--av:clamp(80px,24.5vh,136px)}
+  body[data-g="affiliates"] .info .lead{max-width:78ch!important}
   /* products: a little smaller so a whole row fits the screen */
   body[data-g="products"] .car .rail{gap:clamp(8px,1.4vw,12px);padding:4px 6px 8px}
-  body[data-g="products"] .prod{width:clamp(112px,31vh,170px);border-radius:10px}
-  body[data-g="products"] .prod .pi{height:clamp(84px,25vh,150px);padding:8px}
+  body[data-g="products"] .prod{width:clamp(104px,28vh,160px);border-radius:10px}
+  body[data-g="products"] .prod .pi{height:clamp(72px,21vh,130px);padding:6px}
   body[data-g="products"] .prod .pt{padding:6px 8px 8px;font-size:clamp(9.5px,2.6vh,11.5px);line-height:1.25}
   body[data-g="products"] .prod .pt small{font-size:clamp(8px,2.1vh,9.5px);margin-bottom:1px}
   body[data-g="products"] .prod .pt em{font-size:clamp(9px,2.3vh,10.5px);margin-top:3px}
