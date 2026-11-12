@@ -699,3 +699,24 @@ body[data-afftile="b"][data-g="affiliates"] .car .card[data-aff],body[data-affti
 body[data-afftile="b"][data-g="affiliates"] .car .card[data-aff] img.av,body[data-afftile="c"][data-g="affiliates"] .car .card[data-aff] img.av{width:var(--av)!important;height:var(--av)!important;margin:0!important;border-width:3px!important}
 body[data-afftile="b"][data-g="affiliates"] .car .rail,body[data-afftile="c"][data-g="affiliates"] .car .rail{gap:clamp(14px,2.4vw,26px)!important;padding:6px 6px 10px!important}
 #remix{display:none!important}
+/* cut-out product photos are transparent: no blending needed, a soft shadow grounds them */
+img.cut{mix-blend-mode:normal!important;filter:drop-shadow(0 10px 14px rgba(40,30,20,.16))}
+/* pricing: no position dots in the photo gallery */
+.po .pdots{display:none!important}
+/* pricing layout "fit": whole page on one screen, slimmer style menu */
+body[data-pricing="fit"] .po .page{overflow:hidden!important}
+body[data-pricing="fit"] .po[data-layout="b"] .po-tabs{width:clamp(118px,15vw,170px);padding:18px 8px;gap:2px}
+body[data-pricing="fit"] .po-tabs h3{font-size:clamp(18px,4vh,24px);margin:0 8px 8px}
+body[data-pricing="fit"] .po-tabs button{padding:clamp(6px,1.6vh,10px) 9px;font-size:clamp(11.5px,2.9vh,13.5px)}
+body[data-pricing="fit"] .po-tabs button span{font-size:clamp(9.5px,2.3vh,11px)}
+body[data-pricing="fit"] .po[data-layout="b"] .page.on{grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(8px,2vh,16px) clamp(14px,2vw,24px)}
+body[data-pricing="fit"] .po[data-layout="b"] .page.on .page-imgs{height:100%!important;min-height:0!important}
+body[data-pricing="fit"] .po[data-layout="b"] .page.on .plist{overflow:hidden}
+/* pricing layout "sticky": the price list scrolls, the photo stays in the middle of the window */
+body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{position:sticky;top:clamp(8px,2vh,16px);align-self:start;height:min(70vh,520px)!important;min-height:0!important}
+@media (orientation:landscape) and (max-height:520px){
+  body[data-pricing="fit"] .po .page{padding:clamp(10px,3vh,20px) clamp(12px,2vw,22px) clamp(8px,2vh,14px)!important}
+  body[data-pricing="fit"] .po .page-h h2{font-size:clamp(20px,6vh,30px)}
+  body[data-pricing="fit"] .po .page-h p{font-size:clamp(10.5px,2.8vh,13px)}
+  body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{height:calc(var(--vh) - 70px)!important}
+}

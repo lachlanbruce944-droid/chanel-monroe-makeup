@@ -309,11 +309,14 @@ function catalog(){if(_cat)return _cat;var items=[],seen={};
   var cats=CAT_ORDER.filter(function(c){return items.some(function(p){return p.cat===c})});
   items.forEach(function(p){if(cats.indexOf(p.cat)<0)cats.push(p.cat)});
   return _cat={items:items,cats:cats}}
+/* product photos: transparent cut-out (tools/cutout_products.py) when uploaded, else the original photo */
+function pimg(u){var k=u&&(window.PRODUCT_CUTOUTS||{})[u];return k&&window.MEDIA_BASE?window.MEDIA_BASE+k:u}
+function pimgTag(u,extra){var c=pimg(u);return '<img '+(extra||'')+' src="'+c+'"'+(c!==u?' data-o="'+u+'" class="cut"':'')+' onerror="if(this.dataset.o){this.src=this.dataset.o;this.removeAttribute(\'data-o\');this.classList.remove(\'cut\')}else{this.style.visibility=\'hidden\'}"'}
 function prodCard(p){var im=p.img||brandLogo(p.brand);
-  return '<div class="prod" role="button" tabindex="0" data-prod="'+p.i+'"><div class="pi'+(p.img?'':' logoonly')+'">'+(im?'<img loading="lazy" src="'+im+'" alt="'+esc(p.brand+' '+p.name)+'" onerror="this.style.visibility=\'hidden\'">':'')+'</div><div class="pt"><small>'+esc(p.brand)+'</small>'+esc(p.name)+(p.kit?'<em>In Chanel’s kit</em>':'')+'</div></div>'}
+  return '<div class="prod" role="button" tabindex="0" data-prod="'+p.i+'"><div class="pi'+(p.img?'':' logoonly')+'">'+(im?(p.img?pimgTag(p.img,'loading="lazy"'):'<img loading="lazy" src="'+im+'"')+' alt="'+esc(p.brand+' '+p.name)+'">':'')+'</div><div class="pt"><small>'+esc(p.brand)+'</small>'+esc(p.name)+(p.kit?'<em>In Chanel’s kit</em>':'')+'</div></div>'}
 function shopName(u){var h=(String(u).match(/^https?:\/\/([^/]+)/)||[])[1]||'';h=h.replace(/^www\.|^au\./,'');return ({'adorebeauty.com.au':'Adore Beauty','mecca.com':'MECCA','sephora.com.au':'Sephora','spacenk.com':'Space NK','davidjones.com':'David Jones'})[h]||h}
 function openProduct(p){var im=p.img||brandLogo(p.brand),B=(window.BRANDS_INFO||{})[p.brand];
-  $('pmBox').innerHTML='<div class="pm-img'+(p.img?'':' logoonly')+'">'+(im?'<img src="'+im+'" alt="'+esc(p.brand+' '+p.name)+'">':'')+'</div><div class="pm-info"><div class="sin"><small class="pm-brand">'+(B||brandLogo(p.brand)?'<button class="lnk" data-brand="'+esc(p.brand)+'">'+esc(p.brand)+' ›</button>':esc(p.brand))+'</small><h2>'+esc(p.name)+'</h2>'+
+  $('pmBox').innerHTML='<div class="pm-img'+(p.img?'':' logoonly')+'">'+(im?(p.img?pimgTag(p.img):'<img src="'+im+'"')+' alt="'+esc(p.brand+' '+p.name)+'">':'')+'</div><div class="pm-info"><div class="sin"><small class="pm-brand">'+(B||brandLogo(p.brand)?'<button class="lnk" data-brand="'+esc(p.brand)+'">'+esc(p.brand)+' ›</button>':esc(p.brand))+'</small><h2>'+esc(p.name)+'</h2>'+
     '<p class="pm-cat">'+esc(p.cat)+(p.price?' · '+esc(p.price):'')+'</p>'+(p.kit?'<p class="pm-kit">One of the products Chanel uses on clients.</p>':'')+
     '<div class="pm-desc">'+(p.desc?esc(p.desc).replace(/\n+/g,'<br><br>'):'<span class="soft">Description coming soon.</span>')+'</div>'+
     (p.url?'<a class="pill solid" href="'+p.url+'" target="_blank" rel="noopener sponsored">View at '+esc(shopName(p.url))+' ↗</a>':'')+
@@ -325,7 +328,7 @@ function openBrand(name){var B=(window.BRANDS_INFO||{})[name]||{},logo=brandLogo
   $('bmBox').innerHTML='<div class="bm-head"><div class="sin">'+(logo?'<img class="bm-logo" src="'+logo+'" alt="'+esc(name)+'">':'<h2>'+esc(name)+'</h2>')+
     (facts.length?'<dl class="bm-facts">'+facts.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+esc(f[1])+'</dd></div>'}).join('')+'</dl>':'')+
     (B.about?'<p class="bm-about">'+esc(B.about)+'</p>':'')+(url?'<a class="pill solid" href="'+url+'" target="_blank" rel="noopener">Visit '+esc(name)+' ↗</a>':'')+'</div></div>'+
-    (mine.length?'<div class="bm-grid" style="grid-template-rows:repeat('+Math.ceil(mine.length/3)+',minmax(0,1fr))">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi"><img src="'+(p.img||logo)+'" alt="" onerror="this.style.visibility=\'hidden\'"></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
+    (mine.length?'<div class="bm-grid" style="grid-template-rows:repeat('+Math.ceil(mine.length/3)+',minmax(0,1fr))">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi">'+(p.img?pimgTag(p.img):'<img src="'+logo+'"')+' alt=""></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
   $('brandMod').classList.add('open');var bh=$('bmBox').querySelector('.bm-head');fitPanel(bh);var lg=bh.querySelector('img');if(lg&&!lg.complete)lg.addEventListener('load',function(){fitPanel(bh)},{once:true})}
 document.addEventListener('click',function(e){var b=e.target.closest('[data-brand]'),p=e.target.closest('[data-prod]');
   if(p&&!e.defaultPrevented){var it=catalog().items[+p.dataset.prod];if(it){$('brandMod').classList.remove('open');openProduct(it)}return}
@@ -518,13 +521,20 @@ $('goFull').addEventListener('click',function(){var d=document.documentElement,f
   wt=setTimeout(wnext,Math.max(3500,WL[0].length*62+1200));
   upd()})();
 /* ---- Settings: try design options while browsing (remembered on this device) ---- */
-var SETTINGS=[{key:'afftile',label:'Affiliate tile size',opts:[['a','Standard','pictures with names and handles'],['b','Medium','pictures only, 55% of the screen'],['c','Large','pictures only, 80% of the screen']]}];
+var SETTINGS=[{key:'afftile',label:'Affiliate tile size',opts:[['a','Standard','pictures with names and handles'],['b','Medium','pictures only, 55% of the screen'],['c','Large','pictures only, 80% of the screen']]},
+  {key:'pricing',label:'Pricing layout',opts:[['fit','Fit to window','everything on one screen, slimmer style menu'],['sticky','Photo stays in view','prices scroll, the photo stays in the middle']]}];
 function getSet(k,d){try{return localStorage.getItem('cmm-'+k)||d}catch(e){return d}}
 function setSet(k,v){try{localStorage.setItem('cmm-'+k,v)}catch(e){}document.body.dataset[k]=v}
 SETTINGS.forEach(function(s){document.body.dataset[s.key]=getSet(s.key,s.opts[0][0])});
 document.body.insertAdjacentHTML('beforeend','<div class="setp" id="setp" role="dialog" aria-label="Settings" hidden><h4>Settings</h4>'+SETTINGS.map(function(s){
   return '<fieldset><legend>'+s.label+'</legend>'+s.opts.map(function(o){return '<label><input type="radio" name="'+s.key+'" value="'+o[0]+'"'+(document.body.dataset[s.key]===o[0]?' checked':'')+'><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></label>'}).join('')+'</fieldset>'}).join('')+'</div>');
-$('setp').addEventListener('change',function(e){if(e.target.name){setSet(e.target.name,e.target.value);if(page==='affiliates')openPage('affiliates')}});
+$('setp').addEventListener('change',function(e){if(e.target.name){setSet(e.target.name,e.target.value);if(page==='affiliates')openPage('affiliates');fitPricing()}});
+/* pricing "fit to window": the price list and footer scale down until the whole page fits, no scrolling */
+function fitPricing(){var pg=$('poPages').children[poIdx];if(!pg)return;var parts=[pg.querySelector('.plist'),pg.querySelector('.page-f')].filter(Boolean);
+  parts.forEach(function(p){p.style.zoom=1});pg.scrollTop=0;if(document.body.dataset.pricing!=='fit'||!po.classList.contains('open'))return;
+  var z=1;while(z>0.55&&pg.scrollHeight>pg.clientHeight+1){z-=0.03;parts.forEach(function(p){p.style.zoom=z})}}
+var _poGo=poGo;poGo=function(i,f){_poGo(i,f);requestAnimationFrame(fitPricing)};
+window.addEventListener('resize',function(){if(po.classList.contains('open'))fitPricing()});
 function setpOpen(on){var p=$('setp'),g=$('gear');if(!g)return;p.hidden=!on;g.setAttribute('aria-expanded',on);
   if(on){var r=g.getBoundingClientRect();p.style.top=(r.bottom+6)+'px';p.style.right=Math.max(8,innerWidth-r.right-4)+'px'}}
 document.addEventListener('click',function(e){if(e.target.closest('#gear')){setpOpen($('setp').hidden);return}if(!e.target.closest('#setp'))setpOpen(false)});
