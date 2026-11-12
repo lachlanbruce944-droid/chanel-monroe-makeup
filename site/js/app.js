@@ -192,11 +192,16 @@ $('remix').onclick=function(){if(!sub)SEL[GROUPS[cur].id]=pick(GROUPS[cur]);go(c
 /* ---- lightbox ---- */
 var lbk=0;
 function lbShow(k){lbk=(k+shown.length)%shown.length;var it=shown[lbk];
-  $('lbMedia').innerHTML=it.type==='video'?'<video src="'+it.src+'" muted loop playsinline autoplay controls></video>':'<img src="'+it.src+'" alt="'+esc(desc(it))+'">';
+  $('lbMedia').innerHTML=it.type==='video'?'<div class="vwrap"><video src="'+it.src+'" muted loop playsinline autoplay disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback"></video><button class="vpp" aria-label="Pause"></button></div>':'<img src="'+it.src+'" alt="'+esc(desc(it))+'">';
   $('lbCap').innerHTML='<b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)}
 $('track').addEventListener('click',function(e){if(EDIT||moved>6||e.target.closest('a'))return;var t=e.target.closest('.tile');if(!t)return;lbShow(+t.dataset.k);$('lb').classList.add('open')});
 function lbClose(){$('lb').classList.remove('open');$('lbMedia').innerHTML=''}
-$('lbX').onclick=lbClose;$('lbL').onclick=function(){lbShow(lbk-1)};$('lbR').onclick=function(){lbShow(lbk+1)};
+$('lbX').onclick=lbClose;
+/* clips: autoplay and loop with no player controls; tap to pause, tap again to play */
+$('lbMedia').addEventListener('click',function(e){var w=e.target.closest('.vwrap');if(!w)return;var v=w.querySelector('video');
+  if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});w.classList.remove('paused');w.querySelector('.vpp').setAttribute('aria-label','Pause')}
+  else{v.pause();w.classList.add('paused');w.querySelector('.vpp').setAttribute('aria-label','Play')}
+  w.classList.add('flash');clearTimeout(w._t);w._t=setTimeout(function(){w.classList.remove('flash')},700)});$('lbL').onclick=function(){lbShow(lbk-1)};$('lbR').onclick=function(){lbShow(lbk+1)};
 $('lb').addEventListener('click',function(e){if(e.target===$('lb'))lbClose()});
 
 /* ---- pricing (style photos are inspiration only, not Chanel's work) ---- */

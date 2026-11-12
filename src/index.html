@@ -709,6 +709,17 @@ body[data-g="products"] .prod .pi{height:clamp(240px,46vh,440px)!important}
   body[data-g="products"] .prod .pi{height:clamp(150px,50vh,250px)!important}
   body[data-g="products"] .prod .pt{font-size:clamp(10px,2.8vh,12px)!important}
 }
+/* clip viewer: no controls, a quiet pause / play mark */
+.lb .vwrap{position:relative;display:inline-block;cursor:pointer;line-height:0}
+.lb .vwrap video{display:block}
+.lb video::-webkit-media-controls{display:none!important}
+.vpp{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;border:0;background:rgba(0,0,0,.45);
+  -webkit-backdrop-filter:blur(4px);backdrop-filter:blur(4px);opacity:0;transition:opacity .3s;pointer-events:none}
+.vpp::before,.vpp::after{content:"";position:absolute;top:21px;width:7px;height:22px;border-radius:2px;background:#fff}
+.vpp::before{left:23px}.vpp::after{left:34px}
+.vwrap.paused .vpp::before{left:26px;width:0;height:0;border-radius:0;background:none;border-style:solid;border-width:11px 0 11px 18px;border-color:transparent transparent transparent #fff}
+.vwrap.paused .vpp::after{display:none}
+.vwrap.paused .vpp,.vwrap.flash .vpp{opacity:1}
 </style>
 </head>
 <body data-g="natural">
@@ -977,11 +988,16 @@ $('remix').onclick=function(){if(!sub)SEL[GROUPS[cur].id]=pick(GROUPS[cur]);go(c
 /* ---- lightbox ---- */
 var lbk=0;
 function lbShow(k){lbk=(k+shown.length)%shown.length;var it=shown[lbk];
-  $('lbMedia').innerHTML=it.type==='video'?'<video src="'+it.src+'" muted loop playsinline autoplay controls></video>':'<img src="'+it.src+'" alt="'+esc(desc(it))+'">';
+  $('lbMedia').innerHTML=it.type==='video'?'<div class="vwrap"><video src="'+it.src+'" muted loop playsinline autoplay disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback"></video><button class="vpp" aria-label="Pause"></button></div>':'<img src="'+it.src+'" alt="'+esc(desc(it))+'">';
   $('lbCap').innerHTML='<b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)}
 $('track').addEventListener('click',function(e){if(EDIT||moved>6||e.target.closest('a'))return;var t=e.target.closest('.tile');if(!t)return;lbShow(+t.dataset.k);$('lb').classList.add('open')});
 function lbClose(){$('lb').classList.remove('open');$('lbMedia').innerHTML=''}
-$('lbX').onclick=lbClose;$('lbL').onclick=function(){lbShow(lbk-1)};$('lbR').onclick=function(){lbShow(lbk+1)};
+$('lbX').onclick=lbClose;
+/* clips: autoplay and loop with no player controls; tap to pause, tap again to play */
+$('lbMedia').addEventListener('click',function(e){var w=e.target.closest('.vwrap');if(!w)return;var v=w.querySelector('video');
+  if(v.paused){var p=v.play();if(p&&p.catch)p.catch(function(){});w.classList.remove('paused');w.querySelector('.vpp').setAttribute('aria-label','Pause')}
+  else{v.pause();w.classList.add('paused');w.querySelector('.vpp').setAttribute('aria-label','Play')}
+  w.classList.add('flash');clearTimeout(w._t);w._t=setTimeout(function(){w.classList.remove('flash')},700)});$('lbL').onclick=function(){lbShow(lbk-1)};$('lbR').onclick=function(){lbShow(lbk+1)};
 $('lb').addEventListener('click',function(e){if(e.target===$('lb'))lbClose()});
 
 /* ---- pricing (style photos are inspiration only, not Chanel's work) ---- */
