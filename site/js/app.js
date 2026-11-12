@@ -370,7 +370,7 @@ $('info').addEventListener('click',function(e){var c=e.target.closest('[data-aff
   $('affBox').innerHTML='<div class="side"><div class="sin"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
     (a.posts!=null?'<div class="stats"><span><b>'+fmtN(a.posts)+'</b>posts</span><span><b>'+fmtN(a.followers)+'</b>followers</span></div>':'')+
     '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div></div>'+
-    '<div class="g9">'+(a.imgs.length?a.imgs.map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
+    '<div class="g9" style="grid-template-rows:repeat('+Math.max(1,Math.ceil(Math.min(9,a.imgs.length)/3))+',minmax(0,1fr))">'+(a.imgs.length?a.imgs.slice(0,9).map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
   $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
 /* the profile panel never scrolls: its content scales down until it fits */
 function fitAff(){var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
