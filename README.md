@@ -1,25 +1,37 @@
-﻿# Chanel Monroe Makeup
+# Chanel Monroe Makeup: website
 
-Website for Chanel Monroe Makeup, a mobile makeup artist on the Gold Coast.
+Mobile makeup artist on the Gold Coast. Read **WORKLOG.md** before changing anything.
 
-## What's here
+## How it is hosted
+| Part | Where | What |
+|---|---|---|
+| Site (pages, styles, scripts, small data) | **GitHub Pages**, from `site/` | about 1 MB; deployed automatically by `.github/workflows/pages.yml` on every push to `main` |
+| Photos and clips (the heavy content) | **Supabase Storage**, public bucket `media` | about 226 MB of WebP photos (1080px + 540px copies) and 720p clips |
 
-| Path | What it is |
-|---|---|
-| `index.html` | The website (layout, look, animations). Open it in a browser. |
-| `gallery-data.js` | Site content: gallery photos, captions, bio lines, brands, products, booking links. |
-| `settings/` | `site-settings.js` (business name, email, socials) and `pricing-settings.js` (prices per look). |
-| `chanel-monroe-makeup-email.html` | One-file copy of the site with every image built in, for emailing. |
-| `images/gallery/` | Gallery photos currently used by the site (Pexels stock placeholders). |
-| `images/brands/` | Brand logos for the Brands section. |
-| `images/affiliates/` | Instagram profile pictures for the 25 affiliates (hair, nail, tattoo, cosmetics, photography), named by handle. `affiliates.csv` lists names and profile links. |
-| `images/instagram/` | Chanel's own work from [@chanelmonroemakeup](https://www.instagram.com/chanelmonroemakeup/), original resolution, sorted by style section and named by look key (e.g. `halloween_03_...jpg`). `index.csv` lists each photo's post link, date, size and caption. |
-| `inspiration/credits.csv` | 1,109 style-reference posts by other artists across the 37 Inspiration styles, with artist handle and post link. The images themselves are not in this public repo because they belong to those artists. |
-| `video/` | Bio video goes here (e.g. `bio.mp4`). |
+Media URLs look like `https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/...`.
 
-See `README.txt` for how to edit text, prices and photos.
+## Folders
+```
+site/        the built site that GitHub Pages serves (do not edit by hand: rebuild it)
+  index.html  slim page
+  css/site.css, js/app.js, js/config.js   (config.js holds the media address)
+  data/, settings/                         small data files, paths already pointing at Supabase
+  images/icons/                            favicon + app icons (the only images on GitHub)
+src/         the editable source (mirror of the working copy M:\CMM-Site\final-draft, without media)
+  index.html, data/, settings/, tools/, SEO.md, REGISTER.csv
+legacy/      the first mock-up site, kept for reference
+```
+Working copy with all original media: `M:\CMM-Site\final-draft`. Optimised media mirror: `M:\CMM-Site\media`.
 
-## View the site
+## Updating the site
+1. Edit in `M:\CMM-Site\final-draft` (open index.html there to preview with local media).
+2. New photos/clips: `python tools/optimize_media.py` then `python tools/upload_media.py` (asks for the Supabase secret key).
+3. `python tools/build_site.py C:\Users\USER\repos\chanel-monroe-makeup\site`
+4. Copy changed source files into `src/`, commit, push. Pages redeploys in about a minute.
 
-Open `index.html` in Chrome, Edge or Safari, or turn on GitHub Pages (Settings > Pages > Deploy from branch > `main` / root).
-
+## Speed
+- Only what is on screen loads: photos use `loading="lazy"` + `decoding="async"`, clips load and play only while visible
+  (IntersectionObserver, `preload="none"`), popups load their photos when opened.
+- Phones and 1x screens get the 540px copy through `srcset`; only the first two photos are high priority.
+- CSS and JS are separate files, so browsers cache them; media is served with a one-year cache header from Supabase's CDN.
+- Phones: landscape only. Portrait shows a "turn your phone sideways" screen with a full-screen button.

@@ -1,16 +1,18 @@
-
+﻿
 # Other artists' reference photos and clips stay local (M:\CMM-Site\final-draft)
-final-draft/images/inspiration/**/*.jpg
-final-draft/images/inspiration/**/*.webp
-final-draft/images/videos/*.mp4
-final-draft/images/videos/*.jpg
+src/images/inspiration/**/*.jpg
+src/images/inspiration/**/*.webp
+src/images/videos/*.mp4
+src/images/videos/*.jpg
 
 
 # Other people's photos used by the final draft (kept local only)
-final-draft/images/affiliates/*/*/
-final-draft/images/products/
-final-draft/images/chanel/comments/
-final-draft/data/*-raw.json
-final-draft/data/raw/
-final-draft/images/lessons/*.mp4
-final-draft/images/lessons/*.jpg
+src/images/affiliates/*/*/
+src/images/products/
+src/images/chanel/comments/
+src/data/*-raw.json
+src/data/raw/
+src/images/lessons/*.mp4
+src/images/lessons/*.jpg
+
+# heavy media lives in Supabase Storage (bucket 'media'); local mirror at M:\CMM-Site\media

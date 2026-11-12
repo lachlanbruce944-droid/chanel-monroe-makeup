@@ -494,10 +494,49 @@ body.editing .tile .ecap{display:block}
 body.editing .tile figcaption{display:none}
 .tile.pinned::after{content:"PINNED";position:absolute;right:10px;bottom:50px;background:#ffcf5a;color:#111;font-size:10px;font-weight:600;letter-spacing:.1em;padding:3px 7px;border-radius:99px;z-index:2}
 .tile.isHidden{opacity:.35}
+/* ===== Phones: landscape only. Portrait shows a "turn sideways" screen; landscape gets a compact layout ===== */
+#rotate{display:none}
+@media (orientation:portrait) and (max-width:760px){
+  #rotate{display:flex;position:fixed;inset:0;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 32px;text-align:center;
+    background:radial-gradient(420px 420px at 0% 0%,#ff3d8b 0,transparent 68%),radial-gradient(440px 440px at 100% 100%,#2ee6c8 0,transparent 66%),radial-gradient(260px 260px at 100% 40%,#ff9a2e 0,transparent 66%),#140b1f;color:#fff;font-family:var(--ff)}
+  #rotate .rb{font-family:"Pinyon Script",cursive;font-size:46px;line-height:1}
+  #rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:30px}
+  #rotate p{margin:0;font-size:15px;line-height:1.5;color:#efe6f5;max-width:300px}
+  #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15px 28px;border-radius:99px;border:0;background:#fff;color:#140b1f}
+  #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
+  @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+  body>*:not(#rotate):not(script){visibility:hidden}
+}
+@media (orientation:landscape) and (max-height:520px){
+  :root{--hdr:40px;--foot:54px}
+  .nav .gbtn{padding:10px 10px;font-size:11.5px;letter-spacing:.06em}
+  .nav .dd{display:none!important}
+  .subs{padding:4px clamp(12px,3vw,24px) 0;gap:6px}
+  .subs .chip{font-size:10.5px;padding:4px 10px;white-space:nowrap}
+  .ghead{padding:4px clamp(12px,3vw,24px) 2px;gap:10px}
+  .ghead h1{font-size:22px}
+  .ghead p{display:none}
+  .track{height:calc(var(--vh) - var(--hdr) - var(--foot) - 78px)!important;min-height:0!important;gap:8px;padding:0 clamp(12px,3vw,24px)}
+  .fbrand,.fab{bottom:calc(7px + env(safe-area-inset-bottom));height:40px}
+  .fbrand{font-size:15px;padding:6px 10px;left:max(10px,env(safe-area-inset-left))}
+  .fab{right:max(10px,env(safe-area-inset-right));gap:6px}
+  .fab .pill{padding:8px 13px;font-size:11px}
+  #gallery .capbar{left:200px;right:200px;bottom:calc(5px + env(safe-area-inset-bottom));height:44px;min-height:44px}
+  .capbar .desc{font-size:14px!important}.capbar .src{font-size:10px}
+  .info{padding:4px max(16px,env(safe-area-inset-left)) calc(var(--foot) + 20px)!important}
+  .info h1{font-size:28px}
+}
 </style>
 </head>
 <body data-g="natural">
 <noscript><h1>Chanel Monroe Makeup: mobile makeup artist on the Gold Coast</h1><p>Bridal and wedding makeup, formal and event glam, editorial and photoshoot makeup, SFX and Halloween characters, and party face paint across the Gold Coast, from Coolangatta to Coomera. Trained at the Huxley School of Makeup. Mobile: I come to you. <a href="https://www.instagram.com/chanelmonroemakeup/">Instagram @chanelmonroemakeup</a></p></noscript>
+<div id="rotate" role="dialog" aria-modal="true" aria-labelledby="rotT">
+  <p class="rb">Chanel Monroe</p>
+  <svg role="img" aria-label="Turn your phone sideways" width="120" height="120" viewBox="0 0 120 120"><g class="ph"><rect x="42" y="28" width="36" height="64" rx="7" fill="none" stroke="#ffd23f" stroke-width="3.5"></rect><circle cx="60" cy="84" r="2.5" fill="#ffd23f"></circle></g></svg>
+  <h2 id="rotT">Turn your phone sideways</h2>
+  <p>This site is made for landscape, so every look shows edge to edge.</p>
+  <button type="button" id="goFull">Go full screen</button>
+</div>
 <div id="tint"></div><div id="bgfx"></div>
 
 <a class="brand fbrand" href="./" id="brand">Chanel Monroe <i>Makeup</i></a>
@@ -690,10 +729,14 @@ $('subs').addEventListener('click',function(e){var x=e.target.closest('.chip');i
 var groupsOpt=null;
 function moveOptions(it){if(!groupsOpt){groupsOpt=GROUPS.map(function(g){return '<optgroup label="'+g.name+'">'+g.subs.map(function(s){return '<option value="'+g.id+'|'+esc(s)+'">'+esc(s)+'</option>'}).join('')+'</optgroup>'}).join('')}
   return '<select data-a="move" title="Move to another style">'+groupsOpt.replace('value="'+it.g+'|'+esc(it.s)+'"','value="'+it.g+'|'+esc(it.s)+'" selected')+'</select>'}
+/* hosted build (js/config.js sets MEDIA_M): every gallery photo also has a 540px copy, name.m.webp.
+   The browser picks the smaller one on phones and 1x screens; local preview has no copies, so no srcset. */
+function small(u){return window.MEDIA_M&&/\.webp$/.test(u)&&/\/images\/(inspiration|chanel)\//.test(u)&&!/\/comments\//.test(u)?u.replace(/\.webp$/,'.m.webp'):u}
+function srcset(u){var s=small(u);return s===u?'':' srcset="'+s+' 540w, '+u+' 1080w" sizes="(max-width:760px) 72vw, 34vw"'}
 function tileHTML(it,k){
   var w=Math.max(.56,Math.min(1,(it.w||4)/(it.h||5))), pins=O.pinned[key(GROUPS[cur],sub)]||[], pinned=pins.indexOf(it.src)>=0;
   var media=it.type==='video'?'<video muted loop playsinline preload="none" onerror="var t=this.closest(\'.tile\');if(t)t.remove()" poster="'+(it.poster||'')+'" data-src="'+it.src+'"></video><span class="vtag">Clip</span>'
-    :'<img loading="'+(k<6?'eager':'lazy')+'" src="'+it.src+'" alt="'+esc(desc(it))+'" onerror="this.closest(\'.tile\').remove()">';
+    :'<img loading="'+(k<3?'eager':'lazy')+'" decoding="async"'+(k<2?' fetchpriority="high"':'')+' src="'+it.src+'"'+srcset(it.src)+' alt="'+esc(desc(it))+'" onerror="this.closest(\'.tile\').remove()">';
   return '<figure class="tile'+(pinned?' pinned':'')+(hid(it)?' isHidden':'')+'" data-k="'+k+'" draggable="'+EDIT+'" style="aspect-ratio:'+w+'">'+media+(it.own?'<span class="own">Chanel’s work</span>':'')+
     '<figcaption><b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)+'</figcaption>'+
     (EDIT?'<div class="ectl"><button data-a="pin" class="'+(pinned?'on':'')+'" title="Pin: always show here, in this order">📌</button><button data-a="hide" class="'+(hid(it)?'on':'')+'" title="Hide from the site">✕</button>'+moveOptions(it)+'</div><div class="ecap" contenteditable="true" data-a="cap" title="Edit the description">'+esc(desc(it))+'</div>':'')+'</figure>';
@@ -929,7 +972,7 @@ function buildAboutGrid(own){
   /* every photo appears exactly once; columns chosen so the rows come out even (21 photos = 7 x 3) */
   var N=own.length,COLS=[9,8,7,6,5].filter(function(c){return N%c===0})[0]||Math.min(9,N),cells=shuffle(own);
   grid.style.gridTemplateColumns=window.matchMedia('(max-width:760px)').matches?'':'repeat('+COLS+',1fr)';
-  grid.innerHTML=cells.map(function(x,i){return '<div class="cell" data-i="'+i+'"><img loading="'+(i<18?'eager':'lazy')+'" src="'+x.src+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></div>'}).join('');
+  grid.innerHTML=cells.map(function(x,i){return '<div class="cell" data-i="'+i+'"><img loading="'+(i<9?'eager':'lazy')+'" decoding="async" src="'+small(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></div>'}).join('');
   grid.onclick=function(e){var c=e.target.closest('.cell');if(!c)return;igOpen(own,own.indexOf(cells[+c.dataset.i]))};
   gridTimer=setInterval(function(){
     if(!document.body.contains(grid)||page!=='about'){clearInterval(gridTimer);return}
@@ -937,7 +980,7 @@ function buildAboutGrid(own){
     if(N<2)return; /* two tiles swap places with a crossfade, so the grid keeps moving without ever repeating a photo */
     var a=Math.floor(Math.random()*N),b=(a+1+Math.floor(Math.random()*(N-1)))%N;
     [[a,cells[b]],[b,cells[a]]].forEach(function(p){var cell=grid.children[p[0]],old=cell.querySelector('img:last-of-type'),next=p[1];
-      var img=new Image();img.alt=desc(next);img.className='out';img.onload=function(){cell.appendChild(img);requestAnimationFrame(function(){img.classList.remove('out');old.classList.add('out')});setTimeout(function(){old.remove()},1000);cell.querySelector('span').textContent=desc(next)};img.src=next.src});
+      var img=new Image();img.alt=desc(next);img.className='out';img.onload=function(){cell.appendChild(img);requestAnimationFrame(function(){img.classList.remove('out');old.classList.add('out')});setTimeout(function(){old.remove()},1000);cell.querySelector('span').textContent=desc(next)};img.src=small(next.src)});
     var t=cells[a];cells[a]=cells[b];cells[b]=t;
   },3200);
 }
@@ -990,6 +1033,10 @@ document.addEventListener('keydown',function(e){
   else if($('lb').classList.contains('open')){if(e.key==='ArrowRight')lbShow(lbk+1);if(e.key==='ArrowLeft')lbShow(lbk-1)}
 });
 if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding:14px;background:#fdd;margin:0">data/media.js is missing: run tools/build-media.ps1.</p>');
+/* phones: full screen + landscape lock where the browser allows (Android); iPhone Safari ignores both, the turn-sideways screen still guides */
+$('goFull').addEventListener('click',function(){var d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;
+  var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
+  try{var r=f&&f.call(d);if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}});
 renderNav();remixAll();buildPricing();go(0);
 if(/[?&]edit/.test(location.search))setEdit(true);
 })();

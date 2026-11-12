@@ -84,6 +84,34 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (hosting: GitHub Pages + Supabase Storage; landscape-only phones)
+- **Repo restructured** (see README.md): `site/` = built site served by GitHub Pages (workflow `.github/workflows/pages.yml`); `src/` = editable source (was `final-draft/`); `legacy/` = the first mock-up.
+- **Media → Supabase Storage** (project `makeup-website`, ref qxiugfatpybldluipcyy, Free plan: 1 GB storage, 5 GB egress a month). Public bucket `media` created.
+  - `tools/optimize_media.py` turned 1.24 GB into **226 MB** at `M:\CMM-Site\media`:
+    - photos are WebP at 1080px plus a 540px copy (`.m.webp`)
+    - affiliate photos are 480px and avatars 320px
+    - clips are 720p H.264 with posters as WebP
+    - names are lower case with no spaces or @
+  - `media/manifest.json` maps the old paths to the new ones (copy in `src/data/media-manifest.json`).
+  - Lessons clips are not uploaded (the tab is hidden).
+  - **Upload still to run:** `python tools/upload_media.py` asks for the Supabase secret key in the terminal. A temporary public upload window was refused, rightly. It skips files already uploaded, and every file gets a one-year cache header.
+- **Build:** `python tools/build_site.py <repo>\site`.
+  - Splits index.html into css/site.css + js/app.js + js/config.js.
+  - Repoints every `images/...` path in the scripts and data at Supabase (icons stay on GitHub).
+  - Output is about 1.2 MB.
+  - A second argument points it at a local media server for testing: `python -m http.server 8767 --directory M:\CMM-Site\media`.
+- **Speed:**
+  - srcset gives phones and 1x screens the 540px copy.
+  - Lazy loading and async decoding on every photo; only the first 2 tiles are high priority and only the first 3 load straight away.
+  - Clips load and play only while visible.
+  - The About grid uses the 540px copies.
+  - A preconnect to Supabase is added.
+  - Tested: only 8 of 29 gallery tiles were fetched on first load.
+- **Phones landscape only:**
+  - Portrait (≤760px wide) shows a "Turn your phone sideways" screen in the spectrum-night style, with a Go full screen button. That button also locks landscape on Android; iPhone ignores both.
+  - New compact layout for landscape phones (height ≤520px). Tested at 874×402: photos, caption and buttons all fit.
+- Lessons tab hidden (`SHOW_LESSONS=false` in renderNav).
+- **To do:** enable GitHub Pages (Settings → Pages → Source: GitHub Actions), run the upload, then check the live site.
 ### 2026-11-12 (Lessons tab, 100 more affiliates, footer)
 - **Lessons tab:** new nav item after Parties & Seasons, with a divider on each side.
   - 60 tutorial clips with sound, mostly 20–60 s, in 15 chapters: skin prep, diet, daily routine, skincare, SPF, check-ups (derms, skin checks, allergies), wardrobe, colours, makeup looks, hair, nails, cosmetic tattoo, tattoos & unique features (cover-ups, vitiligo, freckles), make it last, removal & cleaning.
