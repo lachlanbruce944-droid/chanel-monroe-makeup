@@ -329,19 +329,24 @@ function startCarousels(root){
     if(fits){c.classList.add('still');return}
     var gap=parseFloat(getComputedStyle(rail).columnGap)||16;rail.insertAdjacentHTML('beforeend',rail.innerHTML);
     [].slice.call(rail.children,rail.children.length/2).forEach(function(n){n.setAttribute('aria-hidden','true');n.tabIndex=-1});
-    var s={el:c,rail:rail,x:0,v:(k%2?-0.35:0.35),hover:false,drag:false,sx:0,ox:0,moved:0,gap:gap,fl:0,lx:0,lt:0,rest:0};
+    var s={el:c,rail:rail,x:0,v:(k%2?-0.35:0.35),hover:false,drag:false,sx:0,ox:0,moved:0,gap:gap,fl:0,lx:0,lt:0,rest:0,half:0,vis:true,sy:0,lock:'',pid:-1};
+    s.half=(rail.scrollWidth+gap)/2;if(carIO){s.vis=false;carIO.observe(c)}c._car=s;
     c.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')s.hover=true});c.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){s.hover=false;end()}});
-    function end(){if(!s.drag)return;s.drag=false;c.classList.remove('drag');s.rest=performance.now()+1200}
-    c.addEventListener('pointerdown',function(e){s.drag=true;s.fl=0;s.moved=0;s.sx=e.clientX;s.ox=s.x;s.lx=e.clientX;s.lt=performance.now();c.classList.add('drag')});
-    c.addEventListener('pointermove',function(e){if(!s.drag)return;s.moved=Math.max(s.moved,Math.abs(e.clientX-s.sx));s.x=s.ox+(e.clientX-s.sx);var now=performance.now(),dt=Math.max(1,now-s.lt);s.fl=0.8*s.fl+0.2*((e.clientX-s.lx)/dt*16);s.lx=e.clientX;s.lt=now;if(s.moved>6&&!c.hasPointerCapture(e.pointerId)){try{c.setPointerCapture(e.pointerId)}catch(_){}}});
+    function end(){if(!s.drag)return;s.drag=false;s.lock='';c.classList.remove('drag');s.rest=performance.now()+1200}
+    c.addEventListener('pointerdown',function(e){s.drag=true;s.lock=e.pointerType==='mouse'?'x':'';s.pid=e.pointerId;s.fl=0;s.moved=0;s.sx=e.clientX;s.sy=e.clientY;s.ox=s.x;s.lx=e.clientX;s.lt=performance.now();c.classList.add('drag')});
+    c.addEventListener('pointermove',function(e){if(!s.drag)return;if(!s.lock){var ax=Math.abs(e.clientX-s.sx),ay=Math.abs(e.clientY-s.sy);if(ax<6&&ay<6)return;s.lock=ax>ay?'x':'y'}if(s.lock==='y'){end();return}s.moved=Math.max(s.moved,Math.abs(e.clientX-s.sx));s.x=s.ox+(e.clientX-s.sx);var now=performance.now(),dt=Math.max(1,now-s.lt);s.fl=0.8*s.fl+0.2*((e.clientX-s.lx)/dt*16);s.lx=e.clientX;s.lt=now;if(s.moved>6&&!c.hasPointerCapture(e.pointerId)){try{c.setPointerCapture(e.pointerId)}catch(_){}}});
     c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);c.addEventListener('lostpointercapture',end);
     c.addEventListener('click',function(e){if(s.moved>6){e.preventDefault();e.stopPropagation()}},true);
     c.addEventListener('wheel',function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY)){s.x-=e.deltaX;e.preventDefault()}},{passive:false});
     cars.push(s)});
 }
-(function spin(){var busy=document.querySelector('.mod.open')||document.hidden;
-  cars.forEach(function(s){if(!document.body.contains(s.el))return;var half=(s.rail.scrollWidth+s.gap)/2;if(!s.drag&&Math.abs(s.fl)>0.05){s.x+=s.fl;s.fl*=0.94}else if(!s.hover&&!s.drag&&!busy&&performance.now()>s.rest)s.x-=s.v;
-    if(half>0){while(s.x<=-half)s.x+=half;while(s.x>0)s.x-=half}s.rail.style.transform='translateX('+s.x+'px)'});
+/* rows only animate while on screen; widths are measured once (and on resize), never every frame */
+var carIO=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){if(e.target._car)e.target._car.vis=e.isIntersecting})},{rootMargin:'60px 0px'}):null;
+var pageScroll=0;$('info').addEventListener('scroll',function(){pageScroll=performance.now()+350},{passive:true});
+window.addEventListener('resize',function(){cars.forEach(function(s){s.half=(s.rail.scrollWidth+s.gap)/2})});
+(function spin(){var busy=document.querySelector('.mod.open')||document.hidden||performance.now()<pageScroll;
+  cars.forEach(function(s){if(!s.vis||!s.el.isConnected)return;var half=s.half;if(!s.drag&&Math.abs(s.fl)>0.05){s.x+=s.fl;s.fl*=0.94}else if(!s.hover&&!s.drag&&!busy&&performance.now()>s.rest)s.x-=s.v;
+    if(half>0){while(s.x<=-half)s.x+=half;while(s.x>0)s.x-=half}s.rail.style.transform='translate3d('+s.x.toFixed(1)+'px,0,0)'});
   requestAnimationFrame(spin)})();
 
 /* ---- Lessons: short tutorial clips with sound (data/lessons.js), in chapter order; tap one to watch ---- */
