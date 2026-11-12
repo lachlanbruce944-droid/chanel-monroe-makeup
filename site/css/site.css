@@ -589,3 +589,17 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .aff .bio{font-size:clamp(9px,2.5vh,10.5px);line-height:1.35;margin-bottom:8px}.aff .side .pill{margin:5px 0;padding:8px 12px;font-size:11px}
   #affMod .x{top:clamp(12px,3vh,20px);right:clamp(46px,7.5vw,70px)}
 }
+/* pricing: a rotating gallery of whole photos (nothing cropped) instead of tall cropped tiles */
+.po .page-imgs,.po[data-layout] .page.on .page-imgs{display:block!important;position:relative;overflow:hidden;border-radius:12px;background:#111;grid-template-columns:none!important;grid-template-rows:none!important}
+.po .page-imgs figure{position:absolute!important;inset:0;margin:0;border-radius:0;opacity:0;transition:opacity .9s ease;background:transparent;display:block!important}
+.po .page-imgs figure.on{opacity:1}
+.po .page-imgs figure::before{content:"";position:absolute;inset:-24px;background:var(--bg) center/cover no-repeat;filter:blur(22px) brightness(.75);transform:scale(1.05)}
+.po .page-imgs img{position:relative;z-index:1;width:100%;height:100%;object-fit:contain!important}
+.po .page-imgs figcaption{z-index:2}
+.po .pdots{position:absolute;z-index:3;top:10px;left:0;right:0;display:flex;justify-content:center;gap:5px}
+.po .pdots i{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45);transition:background .3s,transform .3s}
+.po .pdots i.on{background:#fff;transform:scale(1.25)}
+.po[data-layout="b"] .page.on .page-imgs{min-height:340px;height:100%}
+@media (orientation:landscape) and (max-height:520px){
+  .po[data-layout="b"] .page.on .page-imgs,.po .page-imgs{min-height:0;height:calc(var(--vh) - 150px)}
+}

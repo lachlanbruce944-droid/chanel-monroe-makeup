@@ -203,8 +203,9 @@ var cur$=LP.currency||'$';function money(n){return cur$+Number(n).toLocaleString
 var poIdx=0,po=$('po');
 function buildPricing(){
   $('poPages').innerHTML=GROUPS.map(function(g,i){
-    var four=shuffle(items().filter(function(x){return x.g===g.id&&!x.own&&x.type!=='video'&&!hid(x)})).slice(0,4);
-    var imgs=four.map(function(it){return '<figure><img loading="lazy" src="'+it.src+'" alt="'+esc(desc(it))+'" onerror="this.parentNode.remove()"><figcaption>'+esc(it.s)+' · '+esc(it.by)+'</figcaption></figure>'}).join('');
+    var four=shuffle(items().filter(function(x){return x.g===g.id&&!x.own&&x.type!=='video'&&!hid(x)})).slice(0,8);
+    var imgs=four.map(function(it,n){return '<figure'+(n?'':' class="on"')+' style="--bg:url(&quot;'+it.src+'&quot;)"><img loading="lazy" src="'+it.src+'" alt="'+esc(desc(it))+'" onerror="this.parentNode.remove()"><figcaption>'+esc(it.s)+' · '+esc(it.by)+'</figcaption></figure>'}).join('')+
+      (four.length>1?'<div class="pdots">'+four.map(function(_,n){return '<i'+(n?'':' class="on"')+'></i>'}).join('')+'</div>':'');
     var rows=g.looks.map(function(k){var L=LOOKS[k];if(!L)return '';return '<li><b>'+esc(L.name)+'</b><span class="amt">'+(L.from?'<small>from</small>':'')+money(L.price)+'<small>'+esc(L.unit)+'</small></span><span class="inc">'+esc(L.includes)+'</span></li>'}).join('');
     return '<section class="page" data-g="'+g.id+'"><div class="page-h"><h2>'+g.name+'</h2><p>'+g.tag+'</p></div><div class="page-imgs">'+imgs+'</div><ul class="plist">'+rows+'</ul>'+
       '<div class="page-f"><span>Minimum booking '+money(LP.minimumBooking||0)+' · '+(LP.depositPct||0)+'% deposit secures your date · travel included within '+(LP.includedKm||0)+' km · style photos are inspiration, credited to their artists</span><a class="pill solid" style="text-decoration:none" href="'+((window.BOOKING_LINKS||{})[g.id]||BOOK)+'" target="_blank" rel="noopener">Book '+g.name+'</a></div></section>'}).join('');
@@ -217,6 +218,12 @@ function poGo(i,fromScroll){poIdx=(i+GROUPS.length)%GROUPS.length;po.setAttribut
   [].forEach.call($('poTabs').querySelectorAll('button'),function(x,k){x.setAttribute('aria-current',k===poIdx)});
   if(po.dataset.layout==='a')$('poPages').style.transform='translateX('+(-100*poIdx)+'%)';
   if(po.dataset.layout==='c'&&!fromScroll){var c=$('poPages').children[poIdx],v=$('poView');v.scrollTo({left:c.offsetLeft-(v.clientWidth-c.offsetWidth)/2,behavior:'smooth'})}}
+/* pricing photos: one full photo at a time, crossfading every few seconds */
+setInterval(function(){if(!po.classList.contains('open')||document.hidden)return;
+  var pg=$('poPages').children[poIdx];if(!pg)return;var box=pg.querySelector('.page-imgs');if(!box)return;
+  var f=[].slice.call(box.querySelectorAll('figure')),d=[].slice.call(box.querySelectorAll('.pdots i'));if(f.length<2)return;
+  var k=f.findIndex(function(x){return x.classList.contains('on')}),n=(k+1)%f.length;
+  f.forEach(function(x,j){x.classList.toggle('on',j===n)});d.forEach(function(x,j){x.classList.toggle('on',j===n)})},3800);
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
 $('openPricing').onclick=function(){poOpen(page?0:cur)};
 $('poX').onclick=function(){po.classList.remove('open')};
