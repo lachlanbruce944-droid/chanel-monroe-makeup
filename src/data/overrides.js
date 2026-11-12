@@ -485,6 +485,29 @@ window.SITE_OVERRIDES = {
      "detail": "59 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
     }
    ]
+  },
+  {
+   "at": "2026-11-12T16:12",
+   "note": "Lachlan asked to remove the @chris_mufx SFX and prosthetics image",
+   "changes": [
+    {
+     "image": "images/inspiration/SFX%20and%20prosthetics/sfx-and-prosthetics_028_%40chris_mufx_DfIHzmAjbfk.jpg",
+     "action": "hide",
+     "section": "SFX and prosthetics"
+    }
+   ]
+  },
+  {
+   "saved": "2026-11-12T06:13:21.655473+00:00",
+   "changes": [
+    {
+     "time": "2026-11-12",
+     "action": "apply-removals",
+     "section": "",
+     "image": "",
+     "detail": "1 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
+    }
+   ]
   }
  ]
 };
