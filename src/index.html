@@ -545,7 +545,7 @@ body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 
   .nav .gbtn{padding:9px clamp(3px,.65vw,7px);font-size:clamp(9px,1.2vw,11px);letter-spacing:.04em}
   :root{--img-pct:.65}
   .track{height:min(calc(var(--vh) * var(--img-pct)),calc(var(--vh) - var(--hdr) - 92px))!important}
-  .ghead{padding-top:2px}.gsub{font-size:10px}
+  .ghead{padding-top:0;margin-top:-7px}.gsub{font-size:10px}
   .nav .sep{margin:10px 4px}
   /* captions: a touch smaller and lifted off the bottom edge */
   #gallery .capbar{bottom:calc(14px + env(safe-area-inset-bottom));height:40px;min-height:40px}
@@ -564,7 +564,7 @@ body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:
 /* sub-categories now run together in one strip; the current one shows beside the style title */
 #subs,.subs{display:none!important}
 .info .hint{margin:-6px 0 14px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
-.ghead{align-items:baseline}
+.ghead{align-items:baseline;margin-top:-8px}
 .gsub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);opacity:0;transform:translateX(-6px);transition:opacity .3s ease,transform .3s ease;white-space:nowrap}
 .gsub.on{opacity:1;transform:none}
 .gsub:not(:empty)::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;vertical-align:middle;margin-right:10px;opacity:.6}
