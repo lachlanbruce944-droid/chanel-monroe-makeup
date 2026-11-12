@@ -696,7 +696,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 /* products: just the product, no card or white box. Product photos sit on white, so 'multiply' lets the
    page colour show through the white and the bottle/compact appears cut out. Sized like the style gallery. */
 .prod,.prod:hover{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
-.prod .pi{background:none!important;padding:0!important}
+.prod .pi{background:var(--bg,#f6f1ea)!important;padding:0!important;isolation:isolate}
 .prod .pi img,.pm-img img,.bm-pi img{mix-blend-mode:multiply}
 .prod .pt{border-top:0!important;padding:8px 2px 0!important;text-align:center}
 .prod:hover .pi img{transform:scale(1.04)}.prod .pi img{transition:transform .35s ease}
