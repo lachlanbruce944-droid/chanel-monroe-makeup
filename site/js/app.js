@@ -134,7 +134,7 @@ function small(u){return window.MEDIA_M&&/\.webp$/.test(u)&&/\/images\/(inspirat
 function srcset(u){var s=small(u);return s===u?'':' srcset="'+s+' 800w, '+u+' 1600w" sizes="(max-height:520px) 40vw, (max-width:760px) 72vw, 34vw"'}
 function tileHTML(it,k){
   var w=Math.max(.56,Math.min(1,(it.w||4)/(it.h||5))), pins=O.pinned[key(GROUPS[cur],sub)]||[], pinned=pins.indexOf(it.src)>=0;
-  var media=it.type==='video'?'<video muted loop playsinline preload="none" onerror="var t=this.closest(\'.tile\');if(t)t.remove()" poster="'+(it.poster||'')+'" data-src="'+it.src+'"></video><span class="vtag">Clip</span>'
+  var media=it.type==='video'?'<video muted loop playsinline preload="none" onerror="var t=this.closest(\'.tile\');if(t)t.remove()" poster="'+(it.poster||'')+'" data-src="'+it.src+'"></video>'
     :'<img loading="'+(k<3?'eager':'lazy')+'" decoding="async"'+(k<2?' fetchpriority="high"':'')+' src="'+it.src+'"'+srcset(it.src)+' alt="'+esc(desc(it))+'" onerror="this.closest(\'.tile\').remove()">';
   return '<figure class="tile'+(pinned?' pinned':'')+(hid(it)?' isHidden':'')+'" data-k="'+k+'" draggable="'+EDIT+'" style="aspect-ratio:'+w+'">'+media+(it.own?'<span class="own">Chanel’s work</span>':'')+
     '<figcaption><b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)+'</figcaption>'+
