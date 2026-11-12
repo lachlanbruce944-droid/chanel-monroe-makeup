@@ -6,20 +6,7 @@ window.SITE_OVERRIDES = {
  "hidden": [],
  "pinned": {},
  "captions": {},
- "moved": {
-  "images/inspiration/Maternity%20glow/maternity-glow_009_%40faces.by.leyla_DfaP6FNDRGJ.jpg": {
-   "g": "bridal",
-   "s": "Classic bridal"
-  },
-  "images/inspiration/Clean%20polished/clean-polished_023_%40maisonrouge_salon_DfChZeTjkjo.jpg": {
-   "g": "parties",
-   "s": "Express designs"
-  },
-  "images/inspiration/Maternity%20glow/maternity-glow_026_%40facestoriesbyhiralkale_DaQd6YqiZD2.jpg": {
-   "g": "glam",
-   "s": "Soft glam"
-  }
- },
+ "moved": {},
  "log": [
   {
    "saved": "2026-11-11T18:29:53.804Z",
@@ -506,6 +493,39 @@ window.SITE_OVERRIDES = {
      "section": "",
      "image": "",
      "detail": "1 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
+    }
+   ]
+  },
+  {
+   "at": "2026-11-12T17:55",
+   "note": "Lachlan asked to remove these images (saved from Edit mode as moves)",
+   "changes": [
+    {
+     "image": "images/inspiration/Maternity glow/maternity-glow_009_@faces.by.leyla_DfaP6FNDRGJ.jpg",
+     "action": "hide",
+     "section": "Maternity glow"
+    },
+    {
+     "image": "images/inspiration/Clean polished/clean-polished_023_@maisonrouge_salon_DfChZeTjkjo.jpg",
+     "action": "hide",
+     "section": "Clean polished"
+    },
+    {
+     "image": "images/inspiration/Maternity glow/maternity-glow_026_@facestoriesbyhiralkale_DaQd6YqiZD2.jpg",
+     "action": "hide",
+     "section": "Maternity glow"
+    }
+   ]
+  },
+  {
+   "saved": "2026-11-12T07:55:42.841468+00:00",
+   "changes": [
+    {
+     "time": "2026-11-12",
+     "action": "apply-removals",
+     "section": "",
+     "image": "",
+     "detail": "3 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
     }
    ]
   }

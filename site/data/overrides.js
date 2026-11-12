@@ -6,20 +6,7 @@ window.SITE_OVERRIDES = {
  "hidden": [],
  "pinned": {},
  "captions": {},
- "moved": {
-  "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/maternity-glow/maternity-glow_009_faces.by.leyla_dfap6fndrgj.webp": {
-   "g": "bridal",
-   "s": "Classic bridal"
-  },
-  "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/clean-polished/clean-polished_023_maisonrouge_salon_dfchzetjkjo.webp": {
-   "g": "parties",
-   "s": "Express designs"
-  },
-  "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/maternity-glow/maternity-glow_026_facestoriesbyhiralkale_daqd6yqizd2.webp": {
-   "g": "glam",
-   "s": "Soft glam"
-  }
- },
+ "moved": {},
  "log": [
   {
    "saved": "2026-11-11T18:29:53.804Z",
@@ -506,6 +493,39 @@ window.SITE_OVERRIDES = {
      "section": "",
      "image": "",
      "detail": "1 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
+    }
+   ]
+  },
+  {
+   "at": "2026-11-12T17:55",
+   "note": "Lachlan asked to remove these images (saved from Edit mode as moves)",
+   "changes": [
+    {
+     "image": "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/maternity-glow/maternity-glow_009_faces.by.leyla_dfap6fndrgj.webp",
+     "action": "hide",
+     "section": "Maternity glow"
+    },
+    {
+     "image": "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/clean-polished/clean-polished_023_maisonrouge_salon_dfchzetjkjo.webp",
+     "action": "hide",
+     "section": "Clean polished"
+    },
+    {
+     "image": "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/inspiration/maternity-glow/maternity-glow_026_facestoriesbyhiralkale_daqd6yqizd2.webp",
+     "action": "hide",
+     "section": "Maternity glow"
+    }
+   ]
+  },
+  {
+   "saved": "2026-11-12T07:55:42.841468+00:00",
+   "changes": [
+    {
+     "time": "2026-11-12",
+     "action": "apply-removals",
+     "section": "",
+     "image": "",
+     "detail": "3 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
     }
    ]
   }
