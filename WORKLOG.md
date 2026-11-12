@@ -50,7 +50,7 @@ The complete copy with all reference photos and clips is `M:\CMM-Site\final-draf
 - Brand facts left blank where they couldn't be confirmed: LaGlam, Oil 'o' Eve, Makeup Cartel, Loving Tan, Lash & Brow, Noosa Naturals, Fusion, Danessa's year and Mehron's founder.
 - No catalogue products yet for Charlotte Tilbury, NARS, Laura Mercier, MECCA Cosmetica, Danessa Myricks, Mehron, Ben Nye, Cannabella, Clean Beauty Market or LaGlam: they're not on Adore Beauty and have no public Shopify feed. 152 catalogue items have no description, so their popup shows the shop link only.
 - SEO steps that need the domain or Chanel: canonical URL, sitemap.xml, Google Business Profile, directories (see SEO.md).
-- Hidden items are hidden only; "apply the removals" has not been run.
+- Retry checklist and Google Business Profile draft: Claude Doc "Chanel Monroe Makeup: retry checklist & Google Business Profile" (https://claude.ai/artifact/LQjkivoQJEEE5taw4wBx2N).
 - Re-scrape affiliate photos and Chanel's comments now and then; both are snapshots from 2026-11-12.
 
 ## Chanel's Instagram: scrape register (@chanelmonroemakeup)
