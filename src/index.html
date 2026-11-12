@@ -693,6 +693,22 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .bm-grid{padding:10px;gap:8px}.bm-p{font-size:clamp(9px,2.5vh,11px);padding:6px}
   #prodMod .x,#brandMod .x{top:clamp(12px,3vh,20px);right:clamp(46px,7.5vw,70px)}
 }
+/* products: just the product, no card or white box. Product photos sit on white, so 'multiply' lets the
+   page colour show through the white and the bottle/compact appears cut out. Sized like the style gallery. */
+.prod,.prod:hover{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
+.prod .pi{background:none!important;padding:0!important}
+.prod .pi img,.pm-img img,.bm-pi img{mix-blend-mode:multiply}
+.prod .pt{border-top:0!important;padding:8px 2px 0!important;text-align:center}
+.prod:hover .pi img{transform:scale(1.04)}.prod .pi img{transition:transform .35s ease}
+body[data-g="products"] .prod{width:clamp(200px,24vw,320px)!important}
+body[data-g="products"] .prod .pi{height:clamp(240px,46vh,440px)!important}
+.pm-img{background:none!important}
+.bm-p,.bm-p:hover{background:none!important;border:0!important;box-shadow:none!important}
+@media (orientation:landscape) and (max-height:520px){
+  body[data-g="products"] .prod{width:clamp(150px,44vh,250px)!important}
+  body[data-g="products"] .prod .pi{height:clamp(150px,50vh,250px)!important}
+  body[data-g="products"] .prod .pt{font-size:clamp(10px,2.8vh,12px)!important}
+}
 </style>
 </head>
 <body data-g="natural">
@@ -1088,7 +1104,7 @@ function openBrand(name){var B=(window.BRANDS_INFO||{})[name]||{},logo=brandLogo
   $('bmBox').innerHTML='<div class="bm-head"><div class="sin">'+(logo?'<img class="bm-logo" src="'+logo+'" alt="'+esc(name)+'">':'<h2>'+esc(name)+'</h2>')+
     (facts.length?'<dl class="bm-facts">'+facts.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+esc(f[1])+'</dd></div>'}).join('')+'</dl>':'')+
     (B.about?'<p class="bm-about">'+esc(B.about)+'</p>':'')+(url?'<a class="pill solid" href="'+url+'" target="_blank" rel="noopener">Visit '+esc(name)+' ↗</a>':'')+'</div></div>'+
-    (mine.length?'<div class="bm-grid" style="grid-template-rows:repeat('+Math.ceil(mine.length/3)+',minmax(0,1fr))">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi"><img loading="lazy" src="'+(p.img||logo)+'" alt=""></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
+    (mine.length?'<div class="bm-grid" style="grid-template-rows:repeat('+Math.ceil(mine.length/3)+',minmax(0,1fr))">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi"><img src="'+(p.img||logo)+'" alt="" onerror="this.style.visibility=\'hidden\'"></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
   $('brandMod').classList.add('open');var bh=$('bmBox').querySelector('.bm-head');fitPanel(bh);var lg=bh.querySelector('img');if(lg&&!lg.complete)lg.addEventListener('load',function(){fitPanel(bh)},{once:true})}
 document.addEventListener('click',function(e){var b=e.target.closest('[data-brand]'),p=e.target.closest('[data-prod]');
   if(p&&!e.defaultPrevented){var it=catalog().items[+p.dataset.prod];if(it){$('brandMod').classList.remove('open');openProduct(it)}return}

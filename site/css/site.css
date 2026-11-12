@@ -653,3 +653,19 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .bm-grid{padding:10px;gap:8px}.bm-p{font-size:clamp(9px,2.5vh,11px);padding:6px}
   #prodMod .x,#brandMod .x{top:clamp(12px,3vh,20px);right:clamp(46px,7.5vw,70px)}
 }
+/* products: just the product, no card or white box. Product photos sit on white, so 'multiply' lets the
+   page colour show through the white and the bottle/compact appears cut out. Sized like the style gallery. */
+.prod,.prod:hover{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
+.prod .pi{background:none!important;padding:0!important}
+.prod .pi img,.pm-img img,.bm-pi img{mix-blend-mode:multiply}
+.prod .pt{border-top:0!important;padding:8px 2px 0!important;text-align:center}
+.prod:hover .pi img{transform:scale(1.04)}.prod .pi img{transition:transform .35s ease}
+body[data-g="products"] .prod{width:clamp(200px,24vw,320px)!important}
+body[data-g="products"] .prod .pi{height:clamp(240px,46vh,440px)!important}
+.pm-img{background:none!important}
+.bm-p,.bm-p:hover{background:none!important;border:0!important;box-shadow:none!important}
+@media (orientation:landscape) and (max-height:520px){
+  body[data-g="products"] .prod{width:clamp(150px,44vh,250px)!important}
+  body[data-g="products"] .prod .pi{height:clamp(150px,50vh,250px)!important}
+  body[data-g="products"] .prod .pt{font-size:clamp(10px,2.8vh,12px)!important}
+}
