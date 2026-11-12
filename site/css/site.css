@@ -558,7 +558,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .fbrand,.fab{bottom:calc(clamp(5px,2vh,10px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,42px)}
   .fbrand{font-size:clamp(12.5px,3.7vh,16px)}
   .fab .pill{padding:clamp(6px,1.9vh,9px) clamp(10px,1.6vw,14px);font-size:clamp(9.5px,2.7vh,11.5px)}
-  #gallery .capbar{left:clamp(140px,23vw,230px);right:clamp(140px,23vw,230px);bottom:calc(clamp(8px,3.5vh,16px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,46px);min-height:0}
+  #gallery .capbar{left:clamp(172px,26vw,240px);right:clamp(172px,26vw,240px);bottom:calc(clamp(8px,3.5vh,16px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,46px);min-height:0}
   .capbar .desc{font-size:clamp(10.5px,3.1vh,13.5px)!important}.capbar .sub,.capbar .src{font-size:clamp(8.5px,2.4vh,10px)}
   html button.x{width:clamp(34px,10vh,42px);height:clamp(34px,10vh,42px)}
   .info h1{font-size:clamp(22px,7vh,30px)}
