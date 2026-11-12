@@ -84,6 +84,21 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (Lessons tab, 100 more affiliates, footer)
+- **Lessons tab:** new nav item after Parties & Seasons, with a divider on each side.
+  - 60 tutorial clips with sound, mostly 20–60 s, in 15 chapters: skin prep, diet, daily routine, skincare, SPF, check-ups (derms, skin checks, allergies), wardrobe, colours, makeup looks, hair, nails, cosmetic tattoo, tattoos & unique features (cover-ups, vitiligo, freckles), make it last, removal & cleaning.
+  - Captions were allowed. Clips without captions are listed first in each chapter (CLEAN list in `tools/build_lessons.py`).
+  - Clicking a card opens a player with sound, the creator credit and an Instagram link. It stops playing when closed.
+  - Data: `images/lessons/lessons.csv` → `python tools/build_lessons.py` → `data/lessons.js`. The clips are other creators' work, so the files are git-ignored.
+  - Pipeline scripts are in `tools/lessons/` (stage1 = mux + frame sheets, stage2 = encode + csv, trim, shrink to 720p). Reviewed and unused codes are in `M:\CMM-Site\CMM-Lessons\rejected.json`.
+- **Affiliates:** 100 more Gold Coast accounts, 20 per section, so each section now has 25 (125 in total).
+  - Found through Instagram keyword search. Each was checked: public, Gold Coast or a suburb in the bio or name, 250+ followers, 9+ posts, relevant to the section.
+  - Script: `tools/add_affiliates.py <batch>` then `build_people.py`. The batch is at `M:\CMM-Site\CMM-Affiliates\batch2`.
+  - Backups: `M:\CMM-Site\affiliates-before-batch2.csv` and `affiliates-raw-before-batch2.json`.
+  - **Message each one before going live.**
+- **Footer:** the bottom row now has 12px above and below it. `--foot` is 84px; the caption is centred with the buttons.
+- **Nav mockups** (not built): Design canvas "Chanel Monroe Makeup: compact nav options" (https://claude.ai/artifact/9Y1okd9xGskgiS5Yusoz41). It shows the current nav plus options A (one-line switcher), B (slim tabs), C (menu button + floating title) and D (side rail).
+- REGISTER.csv now lists lessons (kind `lesson`) and all 125 affiliates.
 ### 2026-11-12 (removals applied)
 - Applied removals: all 59 items hidden in Edit mode are off the site (44 inspiration photos, 14 clips, 1 of Chanel's photos: shoot-look_05 Scared to Love).
   - The files and video posters (73 files) were moved, not deleted, to `M:\CMM-Site\_removed\final-draft\…`. Copy one back and re-add its CSV row to undo.
