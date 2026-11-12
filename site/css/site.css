@@ -698,3 +698,4 @@ body[data-afftile="b"][data-g="affiliates"] .car .card[data-aff] :is(b,small),bo
 body[data-afftile="b"][data-g="affiliates"] .car .card[data-aff],body[data-afftile="c"][data-g="affiliates"] .car .card[data-aff]{width:var(--av)!important;padding:0!important}
 body[data-afftile="b"][data-g="affiliates"] .car .card[data-aff] img.av,body[data-afftile="c"][data-g="affiliates"] .car .card[data-aff] img.av{width:var(--av)!important;height:var(--av)!important;margin:0!important;border-width:3px!important}
 body[data-afftile="b"][data-g="affiliates"] .car .rail,body[data-afftile="c"][data-g="affiliates"] .car .rail{gap:clamp(14px,2.4vw,26px)!important;padding:6px 6px 10px!important}
+#remix{display:none!important}
