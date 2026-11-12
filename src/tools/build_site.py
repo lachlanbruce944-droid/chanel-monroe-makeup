@@ -28,18 +28,19 @@ if os.path.exists(OUT):
 os.makedirs(os.path.join(OUT, 'css'), exist_ok=True); os.makedirs(os.path.join(OUT, 'js'), exist_ok=True)
 
 html = open(os.path.join(SRC, 'index.html'), encoding='utf-8').read()
+import hashlib; V = hashlib.sha1(html.encode('utf-8')).hexdigest()[:8]   # cache-buster: changes whenever the page changes
 styles = re.findall(r'<style>(.*?)</style>', html, re.S)
 first = True
 def style_sub(m):
     global first
-    if first: first = False; return '<link rel="stylesheet" href="css/site.css">'
+    if first: first = False; return '<link rel="stylesheet" href="css/site.css?v=' + V + '">'
     return ''
 html = re.sub(r'<style>.*?</style>\n?', style_sub, html, flags=re.S)
 scripts = re.findall(r'<script>(.*?)</script>', html, re.S)          # inline app code (not JSON-LD, not src=)
 first = True
 def script_sub(m):
     global first
-    if first: first = False; return '<script src="js/config.js"></script>\n<script src="js/app.js"></script>'
+    if first: first = False; return '<script src="js/config.js?v=' + V + '"></script>\n<script src="js/app.js?v=' + V + '"></script>'
     return ''
 html = re.sub(r'<script>.*?</script>\n?', script_sub, html, flags=re.S)
 html = html.replace('<link rel="preconnect" href="https://fonts.googleapis.com">',
