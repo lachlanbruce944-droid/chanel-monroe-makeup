@@ -752,6 +752,9 @@ body[data-pricing="fit"] .po-tabs button span{font-size:clamp(9.5px,2.3vh,11px)}
 body[data-pricing="fit"] .po[data-layout="b"] .page.on{grid-template-rows:auto minmax(0,1fr) auto;gap:clamp(8px,2vh,16px) clamp(14px,2vw,24px)}
 body[data-pricing="fit"] .po[data-layout="b"] .page.on .page-imgs{height:100%!important;min-height:0!important}
 body[data-pricing="fit"] .po[data-layout="b"] .page.on .plist{overflow:hidden;align-self:stretch!important;min-height:0;height:100%;align-content:start}
+body[data-pricing="fit"] .po html,body[data-pricing="fit"] .po button.x.x{width:clamp(26px,7vh,32px);height:clamp(26px,7vh,32px);border-radius:9px;top:10px;right:10px}
+body[data-pricing="fit"] .po button.x.x::before,body[data-pricing="fit"] .po button.x.x::after{width:13px;height:2.5px}
+body[data-pricing="fit"] .po .page-h{padding-right:40px}
 /* pricing layout "sticky": the price list scrolls, the photo stays in the middle of the window */
 body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{position:sticky;top:clamp(8px,2vh,16px);align-self:start;height:min(70vh,520px)!important;min-height:0!important}
 @media (orientation:landscape) and (max-height:520px){
