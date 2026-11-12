@@ -803,11 +803,16 @@ function go(i,s){
   page=null;$('gallery').hidden=false;$('info').hidden=true;
   cur=i;sub=s||null;var g=GROUPS[i];document.body.dataset.g=g.id;markNav();renderSubs();
   $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(DESC[sub]||[''])[0]+'.':g.tag;
-  shown=(sub||EDIT)?pick(g,sub):bySub(g,SEL[g.id]);
+  shown=(sub||EDIT)?pick(g,sub):bySub(g,SEL[g.id]);if(!EDIT)shown=spreadVideos(shown);
   $('track').innerHTML=shown.map(tileHTML).join('');
   $('gSub').textContent='';$('gSub').classList.remove('on');observeVideos();$('strip').scrollLeft=0;centreIdx=-1;dir=1;setTimeout(findCentre,60);closeDd();
 }
 function bySub(g,list){var o={};g.subs.forEach(function(s,i){o[s]=i});return list.map(function(x,i){return {x:x,i:i}}).sort(function(a,b){var p=(a.x.s in o?o[a.x.s]:999),q=(b.x.s in o?o[b.x.s]:999);return p-q||a.i-b.i}).map(function(r){return r.x})}
+/* never two clips side by side: a clip that would follow another waits for the next photo */
+function spreadVideos(list){var V=function(x){return x&&x.type==='video'},out=[],wait=[];
+  list.forEach(function(x){if(V(x)&&V(out[out.length-1])){wait.push(x);return}out.push(x);if(!V(x)&&wait.length)out.push(wait.shift())});
+  for(var i=out.length;i>0&&wait.length;i--){if(!V(out[i-1])&&!V(out[i]))out.splice(i,0,wait.shift())}
+  return out.concat(wait)}
 function closeDd(){var a=document.activeElement;if(a&&a.closest&&a.closest('.dd'))a.blur()}
 function setCap(it){var c=$('cap');c.classList.add('out');
   setTimeout(function(){$('capSub').textContent=it.s;$('capDesc').textContent=desc(it);$('capSrc').innerHTML=credit(it);c.classList.remove('out')},220);
