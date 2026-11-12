@@ -367,11 +367,16 @@ new MutationObserver(function(){if(!$('lessonMod').classList.contains('open')){v
 function fmtN(n){return n==null?'':n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
 $('info').addEventListener('click',function(e){var c=e.target.closest('[data-aff]');if(!c)return;var a=(window.AFFILIATES||[])[+c.dataset.aff];if(!a)return;
   var ig='https://www.instagram.com/'+a.h+'/';
-  $('affBox').innerHTML='<div class="side"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
+  $('affBox').innerHTML='<div class="side"><div class="sin"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
     (a.posts!=null?'<div class="stats"><span><b>'+fmtN(a.posts)+'</b>posts</span><span><b>'+fmtN(a.followers)+'</b>followers</span></div>':'')+
-    '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div>'+
+    '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div></div>'+
     '<div class="g9">'+(a.imgs.length?a.imgs.map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
-  $('affMod').classList.add('open')});
+  $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
+/* the profile panel never scrolls: its content scales down until it fits */
+function fitAff(){var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
+  var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),z=1;
+  while(z>0.55&&w.getBoundingClientRect().height>room+1){z-=0.03;w.style.zoom=z}}
+window.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff()});
 
 /* ---- Instagram-style post popup for Chanel's work (photo left, caption + comments right) ---- */
 var igList=[],igk=0;

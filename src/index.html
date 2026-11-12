@@ -583,6 +583,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 @media (orientation:landscape) and (max-height:520px){.lb{padding:12px 58px}.lb img,.lb video{max-height:calc(var(--vh) - 24px)}.lb figcaption{font-size:12.5px}}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}
+.aff .side{overflow:hidden;display:flex;flex-direction:column;justify-content:center}.aff .side .sin{width:100%}
 #info{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}.car img{-webkit-user-drag:none}
 /* About: photo tile left, name and lines right */
 .about-hero{display:flex;align-items:center;gap:clamp(16px,3vw,36px);margin-bottom:clamp(10px,3vh,26px)}
@@ -616,7 +617,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   /* affiliate profile popup keeps its desktop shape: profile on the left, photo grid on the right */
   #affMod.mod{padding:clamp(8px,2.5vh,16px) clamp(40px,7vw,64px)}
   .aff{grid-template-columns:minmax(190px,30%) 1fr;height:calc(var(--vh) - 2 * clamp(8px,2.5vh,16px));max-height:none;border-radius:14px;overflow:hidden}
-  .aff .side{border-bottom:0;border-right:1px solid var(--line,#ddd3c7);padding:clamp(12px,3.5vh,20px) 14px;overflow-y:auto}
+  .aff .side{border-bottom:0;border-right:1px solid var(--line,#ddd3c7);padding:clamp(12px,3.5vh,20px) 14px}
   .aff .side img.av{width:clamp(56px,17vh,90px);height:clamp(56px,17vh,90px);margin-bottom:8px}
   .aff h2{font-size:clamp(16px,4.8vh,21px)}.aff .role{font-size:11.5px;margin-bottom:8px}
   .aff .stats{font-size:11px;margin-bottom:8px;gap:12px}.aff .stats b{font-size:13px}
@@ -1067,11 +1068,16 @@ new MutationObserver(function(){if(!$('lessonMod').classList.contains('open')){v
 function fmtN(n){return n==null?'':n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
 $('info').addEventListener('click',function(e){var c=e.target.closest('[data-aff]');if(!c)return;var a=(window.AFFILIATES||[])[+c.dataset.aff];if(!a)return;
   var ig='https://www.instagram.com/'+a.h+'/';
-  $('affBox').innerHTML='<div class="side"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
+  $('affBox').innerHTML='<div class="side"><div class="sin"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
     (a.posts!=null?'<div class="stats"><span><b>'+fmtN(a.posts)+'</b>posts</span><span><b>'+fmtN(a.followers)+'</b>followers</span></div>':'')+
-    '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div>'+
+    '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div></div>'+
     '<div class="g9">'+(a.imgs.length?a.imgs.map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
-  $('affMod').classList.add('open')});
+  $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
+/* the profile panel never scrolls: its content scales down until it fits */
+function fitAff(){var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
+  var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),z=1;
+  while(z>0.55&&w.getBoundingClientRect().height>room+1){z-=0.03;w.style.zoom=z}}
+window.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff()});
 
 /* ---- Instagram-style post popup for Chanel's work (photo left, caption + comments right) ---- */
 var igList=[],igk=0;
