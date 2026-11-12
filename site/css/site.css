@@ -512,12 +512,12 @@ body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 
   .capbar .desc{font-size:12.5px!important;line-height:1.15}.capbar .sub{font-size:9.5px}.capbar .src{font-size:9.5px}
 }
 /* close button: its own tile, bold, smooth */
-html button.x{width:40px;height:40px;border-radius:12px;border:0;padding:0;background:rgba(255,255,255,.96);color:#141414;font-size:0;text-shadow:none;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;transition:transform .2s ease,box-shadow .2s ease}
-html button.x::before,html button.x::after{content:"";position:absolute;width:18px;height:3px;border-radius:3px;background:currentColor}
-html button.x::before{transform:rotate(45deg)}html button.x::after{transform:rotate(-45deg)}
-html button.x:hover{transform:scale(1.07);box-shadow:0 8px 22px rgba(0,0,0,.34)}
-html button.x:active{transform:scale(.95)}
-html button.x:focus-visible{outline:3px solid var(--acc,#c8a27a);outline-offset:2px}
+html button.x.x{width:40px;height:40px;border-radius:12px;border:0;padding:0;background:rgba(255,255,255,.96);color:#141414;font-size:0;text-shadow:none;box-shadow:0 6px 18px rgba(0,0,0,.28);cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:6;transition:transform .2s ease,box-shadow .2s ease}
+html button.x.x::before,html button.x.x::after{content:"";position:absolute;width:18px;height:3px;border-radius:3px;background:currentColor}
+html button.x.x::before{transform:rotate(45deg)}html button.x.x::after{transform:rotate(-45deg)}
+html button.x.x:hover{transform:scale(1.07);box-shadow:0 8px 22px rgba(0,0,0,.34)}
+html button.x.x:active{transform:scale(.95)}
+html button.x.x:focus-visible{outline:3px solid var(--acc,#c8a27a);outline-offset:2px}
 /* while any popup is open, fade the floating buttons and captions away */
 .fab,.fbrand,#gallery .capbar{transition:opacity .3s ease,visibility .3s}
 body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:0!important;visibility:hidden;pointer-events:none}
@@ -560,6 +560,6 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .fab .pill{padding:clamp(6px,1.9vh,9px) clamp(10px,1.6vw,14px);font-size:clamp(9.5px,2.7vh,11.5px)}
   #gallery .capbar{left:clamp(172px,26vw,240px);right:clamp(172px,26vw,240px);bottom:calc(clamp(8px,3.5vh,16px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,46px);min-height:0}
   .capbar .desc{font-size:clamp(10.5px,3.1vh,13.5px)!important}.capbar .sub,.capbar .src{font-size:clamp(8.5px,2.4vh,10px)}
-  html button.x{width:clamp(34px,10vh,42px);height:clamp(34px,10vh,42px)}
+  html button.x.x{width:clamp(34px,10vh,42px);height:clamp(34px,10vh,42px)}
   .info h1{font-size:clamp(22px,7vh,30px)}
 }
