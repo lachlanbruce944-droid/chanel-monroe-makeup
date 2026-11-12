@@ -493,7 +493,7 @@ $('goFull').addEventListener('click',function(){var d=document.documentElement,f
   function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
   function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
     $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
-    $('goFull').textContent=p?'Go full screen':'Enter the site'}
+    $('goFull').textContent='Explore'}
   ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
   document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
   /* if the browser refuses full screen, offer a way in after the first try */
