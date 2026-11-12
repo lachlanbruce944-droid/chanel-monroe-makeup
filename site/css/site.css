@@ -616,8 +616,9 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   body[data-g="brands"] .info .hint,body[data-g="products"] .info .hint{font-size:clamp(9px,2.4vh,11px);margin:0 0 2px}
   body[data-g="brands"] .info h3,body[data-g="products"] .info h3{font-size:clamp(14px,4.4vh,19px);margin:clamp(4px,1.6vh,10px) 0 2px}
   /* affiliates: bigger profile pictures */
-  body[data-g="affiliates"] .info{--av:clamp(80px,24.5vh,136px)}
-  body[data-g="affiliates"] .info .lead{max-width:78ch!important}
+  body[data-g="affiliates"] .info{--av:clamp(78px,23.5vh,132px)}
+  body[data-g="affiliates"] .info .lead{max-width:none!important;padding-right:clamp(40px,8vw,90px)}
+  body[data-g="affiliates"] .car .card[data-aff] b{line-height:1.2}
   /* products: a little smaller so a whole row fits the screen */
   body[data-g="products"] .car .rail{gap:clamp(8px,1.4vw,12px);padding:4px 6px 8px}
   body[data-g="products"] .prod{width:clamp(104px,28vh,160px);border-radius:10px}
