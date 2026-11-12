@@ -466,6 +466,8 @@ body.gate #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15p
 body.gate #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
 body.gate>*:not(#rotate):not(script){visibility:hidden}
 @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+body.gate #rotate .wl{min-height:3em;max-width:440px;font-size:16px;transition:opacity .45s ease,transform .45s ease}
+body.gate #rotate .wl.out{opacity:0;transform:translateY(6px)}
 body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 10px;text-decoration:underline;font-weight:500}
 @media (orientation:landscape){body.gate #rotate{gap:14px}body.gate #rotate svg{display:none}body.gate #rotate .rb{font-size:40px}}
 

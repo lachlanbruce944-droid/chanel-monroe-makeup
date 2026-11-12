@@ -449,13 +449,23 @@ $('goFull').addEventListener('click',function(){var d=document.documentElement,f
   function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
   function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
     $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
-    $('rotate').querySelector('p:not(.rb)').textContent=p?'This site is made for landscape, so every look shows edge to edge.':'Full screen gives every look the whole screen. You can leave any time.';
     $('goFull').textContent=p?'Go full screen':'Enter the site'}
   ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
   document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
   /* if the browser refuses full screen, offer a way in after the first try */
   $('goFull').addEventListener('click',function(){setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
   $('goOn').onclick=function(){skip=true;upd()};
+  /* welcome lines, one at a time, held long enough to read (about 16 characters a second, never under 3.5s) */
+  var WL=['Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.',
+    'This is a place to explore looks: natural, glam, bridal, editorial, FX and parties.',
+    'Each style has its own gallery. Swipe sideways and the details follow along.',
+    'Affiliates are the local artists I trust and work with: hair, nails, brows, lashes and photographers.',
+    'Brands and Products show what’s in my kit, and what I actually reach for on clients.',
+    'Found a look you love? Tap Pricing or Enquire, and I’ll come to you.'],wi=0,wt=0;
+  function wnext(){var el=$('wl');if(!document.body.classList.contains('gate')){wt=setTimeout(wnext,1000);return}
+    el.classList.add('out');setTimeout(function(){wi=(wi+1)%WL.length;el.textContent=WL[wi];el.classList.remove('out');
+      wt=setTimeout(wnext,Math.max(3500,WL[wi].length*62+1200))},450)}
+  wt=setTimeout(wnext,Math.max(3500,WL[0].length*62+1200));
   upd()})();
 renderNav();remixAll();buildPricing();go(0);
 if(/[?&]edit/.test(location.search))setEdit(true);
