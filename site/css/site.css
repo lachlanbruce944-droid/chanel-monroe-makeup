@@ -503,7 +503,8 @@ body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 
   :root{--hdr:48px}
   .nav{overflow:visible;mask:none;-webkit-mask:none;justify-content:center;gap:0;padding:6px max(32px,calc(env(safe-area-inset-right) + 12px)) 0 max(32px,calc(env(safe-area-inset-left) + 12px))}
   .nav .gbtn{padding:9px clamp(3px,.65vw,7px);font-size:clamp(9px,1.2vw,11px);letter-spacing:.04em}
-  .track{height:calc(var(--vh) - var(--hdr) - var(--foot) - 40px)!important}
+  :root{--img-pct:.65}
+  .track{height:min(calc(var(--vh) * var(--img-pct)),calc(var(--vh) - var(--hdr) - 92px))!important}
   .ghead{padding-top:2px}.gsub{font-size:10px}
   .nav .sep{margin:10px 4px}
   /* captions: a touch smaller and lifted off the bottom edge */
@@ -527,6 +528,9 @@ body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:
 .gsub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);opacity:0;transform:translateX(-6px);transition:opacity .3s ease,transform .3s ease;white-space:nowrap}
 .gsub.on{opacity:1;transform:none}
 .gsub:not(:empty)::before{content:"";display:inline-block;width:18px;height:1px;background:currentColor;vertical-align:middle;margin-right:10px;opacity:.6}
-.track{height:calc(var(--vh) - var(--hdr) - var(--foot) - 78px)!important}
+:root{--img-pct:.66}
+.track{height:min(calc(var(--vh) * var(--img-pct)),calc(var(--vh) - var(--hdr) - var(--foot) - 70px))!important}
+/* no rule under the main nav */
+body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!important}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}.car img{-webkit-user-drag:none}
