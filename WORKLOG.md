@@ -87,10 +87,11 @@ Rule for new posts: keep one slide per distinct pose or angle; drop slides that 
 ### 2026-11-12 (hosting: GitHub Pages + Supabase Storage; landscape-only phones)
 - **Repo restructured** (see README.md): `site/` = built site served by GitHub Pages (workflow `.github/workflows/pages.yml`); `src/` = editable source (was `final-draft/`); `legacy/` = the first mock-up.
 - **Media → Supabase Storage** (project `makeup-website`, ref qxiugfatpybldluipcyy, Free plan: 1 GB storage, 5 GB egress a month). Public bucket `media` created.
-  - `tools/optimize_media.py` turned 1.24 GB into **226 MB** at `M:\CMM-Site\media`:
-    - photos are WebP at 1080px plus a 540px copy (`.m.webp`)
-    - affiliate photos are 480px and avatars 320px
-    - clips are 720p H.264 with posters as WebP
+  - `tools/optimize_media.py` turned 1.24 GB into **746 MB** at `M:\CMM-Site\media` (first 226 MB, raised at Lachlan's request):
+    - photos are WebP at 1600px (q88) plus an 800px copy (`.m.webp`)
+    - affiliate photos are 720px and avatars 480px
+    - clips are 1080p H.264 CRF 21 with 720px WebP posters
+    - about 250 MB of the 1 GB free storage is left; Free plan egress is 5 GB a month, so bigger files mean fewer free visits
     - names are lower case with no spaces or @
   - `media/manifest.json` maps the old paths to the new ones (copy in `src/data/media-manifest.json`).
   - Lessons clips are not uploaded (the tab is hidden).
