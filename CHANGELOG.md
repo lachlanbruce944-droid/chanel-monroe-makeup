@@ -1,6 +1,12 @@
-﻿# Changelog
+# Changelog
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
+
+### 2026-11-12 (settings, pricing layouts, product cut-outs, clips)
+- Settings button (gear) at the end of the nav: Affiliate tile size (standard, medium 55%, large 80%) and Pricing layout (fit to window, photo stays in view). Choices are remembered per device.
+- Pricing: no position dots on the photo gallery; 'fit' scales the price list so the whole page fits; slimmer style menu.
+- Products: tools/cutout_products.py makes transparent cut-outs of 513 of 544 product photos (M:\CMM-Site\media\products\cutout, 15 MB). The site uses them once uploaded (tools/upload_media.py) and falls back to the original photo until then.
+- Clips: autoplay and loop with no player controls; tap to pause or play. New mix button removed. Entry button reads Explore.
 
 ### 2026-11-12 (content guidelines, popups, products)
 - Added docs/content-guidelines.md (what photos, clips, lessons, affiliates, brands and products are suitable, file standards) and CLAUDE.md (start-here notes for AI assistants).
