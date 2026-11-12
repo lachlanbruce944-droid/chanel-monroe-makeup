@@ -745,7 +745,15 @@ body[data-nav="a"] .nav .gbtn{padding-top:clamp(9px,calc(2.9 * var(--uvh)),13px)
 
 /* Pricing: every style tab always fits in the side bar; the close X tucks into the corner of the tile */
 @media (orientation:landscape){
-.po[data-layout="b"] .po-tabs{display:flex!important;flex-direction:column;justify-content:flex-start;gap:clamp(0px,calc(.5 * var(--uvh)),3px)!important;padding:clamp(8px,calc(2.6 * var(--uvh)),16px) 8px!important;overflow-y:auto;overscroll-behavior:contain;min-height:0;box-sizing:border-box}
+/* narrow landscape phones (under 760px wide) keep the same side-tab pricing layout instead of the portrait stack */
+.po .po-sheet{width:calc(calc(100 * var(--uvw)) - 2 * clamp(10px,calc(3 * var(--uvw)),26px))!important;height:calc(var(--vh) - 2 * clamp(8px,calc(4 * var(--uvh)),28px))!important;max-height:none!important;border-radius:14px!important}
+.po[data-layout="b"] .po-sheet{flex-direction:row!important}
+.po[data-layout="b"] .po-tabs{width:clamp(104px,calc(17 * var(--uvw)),150px)!important;flex:none!important;overflow-x:hidden!important}
+.po[data-layout="b"] .po-tabs h3{display:block!important}
+.po[data-layout="b"] .po-tabs button{white-space:normal!important}
+.po[data-layout="b"] .po-tabs button span{display:block!important}
+.po[data-layout="b"] .page.on{display:grid!important}
+.po[data-layout="b"] .po-tabs{display:flex!important;flex-direction:column!important;justify-content:flex-start;gap:clamp(0px,calc(.5 * var(--uvh)),3px)!important;padding:clamp(8px,calc(2.6 * var(--uvh)),16px) 8px!important;overflow-y:auto;overscroll-behavior:contain;min-height:0;box-sizing:border-box}
 .po[data-layout="b"] .po-tabs h3{font-size:clamp(15px,calc(3.8 * var(--uvh)),22px)!important;margin:0 8px clamp(3px,calc(1.2 * var(--uvh)),8px)!important;flex:none}
 .po[data-layout="b"] .po-tabs button{flex:0 1 auto;min-height:0;padding:clamp(3px,calc(1.15 * var(--uvh)),8px) 9px!important;font-size:clamp(10.5px,calc(2.7 * var(--uvh)),13px)!important;line-height:1.15}
 .po[data-layout="b"] .po-tabs button span{font-size:clamp(8.5px,calc(2.1 * var(--uvh)),10.5px)!important;margin-top:1px!important}

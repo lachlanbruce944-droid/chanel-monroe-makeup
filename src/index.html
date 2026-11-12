@@ -784,7 +784,15 @@ body[data-nav="a"] .nav .gbtn{padding-top:clamp(9px,2.9vh,13px)!important;paddin
 
 /* Pricing: every style tab always fits in the side bar; the close X tucks into the corner of the tile */
 @media (orientation:landscape) and (max-height:520px){
-.po[data-layout="b"] .po-tabs{display:flex!important;flex-direction:column;justify-content:flex-start;gap:clamp(0px,.5vh,3px)!important;padding:clamp(8px,2.6vh,16px) 8px!important;overflow-y:auto;overscroll-behavior:contain;min-height:0;box-sizing:border-box}
+/* narrow landscape phones (under 760px wide) keep the same side-tab pricing layout instead of the portrait stack */
+.po .po-sheet{width:calc(100vw - 2 * clamp(10px,3vw,26px))!important;height:calc(var(--vh) - 2 * clamp(8px,4vh,28px))!important;max-height:none!important;border-radius:14px!important}
+.po[data-layout="b"] .po-sheet{flex-direction:row!important}
+.po[data-layout="b"] .po-tabs{width:clamp(104px,17vw,150px)!important;flex:none!important;overflow-x:hidden!important}
+.po[data-layout="b"] .po-tabs h3{display:block!important}
+.po[data-layout="b"] .po-tabs button{white-space:normal!important}
+.po[data-layout="b"] .po-tabs button span{display:block!important}
+.po[data-layout="b"] .page.on{display:grid!important}
+.po[data-layout="b"] .po-tabs{display:flex!important;flex-direction:column!important;justify-content:flex-start;gap:clamp(0px,.5vh,3px)!important;padding:clamp(8px,2.6vh,16px) 8px!important;overflow-y:auto;overscroll-behavior:contain;min-height:0;box-sizing:border-box}
 .po[data-layout="b"] .po-tabs h3{font-size:clamp(15px,3.8vh,22px)!important;margin:0 8px clamp(3px,1.2vh,8px)!important;flex:none}
 .po[data-layout="b"] .po-tabs button{flex:0 1 auto;min-height:0;padding:clamp(3px,1.15vh,8px) 9px!important;font-size:clamp(10.5px,2.7vh,13px)!important;line-height:1.15}
 .po[data-layout="b"] .po-tabs button span{font-size:clamp(8.5px,2.1vh,10.5px)!important;margin-top:1px!important}
