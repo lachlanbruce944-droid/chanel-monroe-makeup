@@ -733,10 +733,21 @@ body[data-pricing="sticky"] .po[data-layout="b"] .page.on .page-imgs{position:st
 #gallery .ghead{flex:none;margin-top:0!important;padding-top:clamp(2px,calc(1 * var(--uvh)),6px)!important;padding-bottom:clamp(4px,calc(1.8 * var(--uvh)),9px)!important;align-items:center!important}
 #gallery .ghead h1{line-height:1.05}
 body[data-g="bridal"] #gallery .ghead h1{font-size:clamp(19px,calc(6.2 * var(--uvh)),27px)!important}
+#gallery .strip{flex:1 1 0;min-height:0;display:flex;flex-direction:column}
 #gallery .track{flex:1 1 0!important;height:auto!important;min-height:0!important}
+#gallery .track>*{max-height:100%}
 .fbrand,.fab{bottom:calc((var(--fz) - clamp(34px,calc(10 * var(--uvh)),42px)) / 2 + env(safe-area-inset-bottom))!important}
 #gallery .capbar{bottom:calc((var(--fz) - clamp(40px,calc(11.5 * var(--uvh)),52px)) / 2 + env(safe-area-inset-bottom))!important}
 .info{padding-bottom:calc(var(--fz) + 12px)!important}
 /* active-page underline sits just under the nav text */
 body[data-nav="a"] .nav .gbtn{padding-top:clamp(9px,calc(2.9 * var(--uvh)),13px)!important;padding-bottom:clamp(1px,calc(.6 * var(--uvh)),3px)!important}
+}
+
+/* Pricing: every style tab always fits in the side bar; the close X tucks into the corner of the tile */
+@media (orientation:landscape){
+.po[data-layout="b"] .po-tabs{display:flex!important;flex-direction:column;justify-content:flex-start;gap:clamp(0px,calc(.5 * var(--uvh)),3px)!important;padding:clamp(8px,calc(2.6 * var(--uvh)),16px) 8px!important;overflow-y:auto;overscroll-behavior:contain;min-height:0;box-sizing:border-box}
+.po[data-layout="b"] .po-tabs h3{font-size:clamp(15px,calc(3.8 * var(--uvh)),22px)!important;margin:0 8px clamp(3px,calc(1.2 * var(--uvh)),8px)!important;flex:none}
+.po[data-layout="b"] .po-tabs button{flex:0 1 auto;min-height:0;padding:clamp(3px,calc(1.15 * var(--uvh)),8px) 9px!important;font-size:clamp(10.5px,calc(2.7 * var(--uvh)),13px)!important;line-height:1.15}
+.po[data-layout="b"] .po-tabs button span{font-size:clamp(8.5px,calc(2.1 * var(--uvh)),10.5px)!important;margin-top:1px!important}
+body .po button.x.x{top:4px!important;right:4px!important;width:clamp(22px,calc(6 * var(--uvh)),28px)!important;height:clamp(22px,calc(6 * var(--uvh)),28px)!important;border-radius:8px!important}
 }
