@@ -675,7 +675,9 @@ function renderNav(){
   h+=GROUPS.map(function(g,i){
     var subs=g.subs.map(function(s){return '<button data-g="'+i+'" data-s="'+esc(s)+'">'+esc(s)+'<small>'+items().filter(function(x){return !x.own&&x.s===s&&!hid(x)}).length+'</small></button>'}).join('');
     return '<div class="item"><button class="gbtn" data-g="'+i+'">'+g.name+'</button><div class="dd"><button data-g="'+i+'" data-s=""><b>All '+g.name+'</b></button>'+subs+'</div></div>'}).join('');
-  h+='<span class="sep"></span><div class="item"><button class="gbtn" data-p="lessons">Lessons</button></div><span class="sep"></span>'+PAGES.slice(1).filter(function(p){return p.id!=='lessons'}).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
+  /* Lessons tab hidden for now (redesign later): set SHOW_LESSONS = true to bring it back */
+  var SHOW_LESSONS=false;
+  h+='<span class="sep"></span>'+(SHOW_LESSONS?'<div class="item"><button class="gbtn" data-p="lessons">Lessons</button></div><span class="sep"></span>':'')+PAGES.slice(1).filter(function(p){return p.id!=='lessons'}).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
   $('nav').innerHTML=h;markNav();
 }
 function markNav(){[].forEach.call($('nav').querySelectorAll('.gbtn'),function(x){x.setAttribute('aria-current',page?x.dataset.p===page:(x.dataset.g!=null&&+x.dataset.g===cur))})}
