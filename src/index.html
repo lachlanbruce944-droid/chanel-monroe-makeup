@@ -496,17 +496,19 @@ body.editing .tile figcaption{display:none}
 .tile.isHidden{opacity:.35}
 /* ===== Phones: landscape only. Portrait shows a "turn sideways" screen; landscape gets a compact layout ===== */
 #rotate{display:none}
-@media (orientation:portrait) and (max-width:760px){
-  #rotate{display:flex;position:fixed;inset:0;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 32px;text-align:center;
-    background:radial-gradient(420px 420px at 0% 0%,#ff3d8b 0,transparent 68%),radial-gradient(440px 440px at 100% 100%,#2ee6c8 0,transparent 66%),radial-gradient(260px 260px at 100% 40%,#ff9a2e 0,transparent 66%),#140b1f;color:#fff;font-family:var(--ff)}
-  #rotate .rb{font-family:"Pinyon Script",cursive;font-size:46px;line-height:1}
-  #rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:30px}
-  #rotate p{margin:0;font-size:15px;line-height:1.5;color:#efe6f5;max-width:300px}
-  #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15px 28px;border-radius:99px;border:0;background:#fff;color:#140b1f}
-  #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
-  @keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
-  body>*:not(#rotate):not(script){visibility:hidden}
-}
+/* entry gate on phones and tablets: landscape + full screen first (script sets body.gate) */
+body.gate #rotate{display:flex;position:fixed;inset:0;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 32px;text-align:center;
+background:radial-gradient(420px 420px at 0% 0%,#ff3d8b 0,transparent 68%),radial-gradient(440px 440px at 100% 100%,#2ee6c8 0,transparent 66%),radial-gradient(260px 260px at 100% 40%,#ff9a2e 0,transparent 66%),#140b1f;color:#fff;font-family:var(--ff)}
+body.gate #rotate .rb{font-family:"Pinyon Script",cursive;font-size:46px;line-height:1}
+body.gate #rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:30px}
+body.gate #rotate p{margin:0;font-size:15px;line-height:1.5;color:#efe6f5;max-width:300px}
+body.gate #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15px 28px;border-radius:99px;border:0;background:#fff;color:#140b1f}
+body.gate #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
+body.gate>*:not(#rotate):not(script){visibility:hidden}
+@keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
+body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 10px;text-decoration:underline;font-weight:500}
+@media (orientation:landscape){body.gate #rotate{gap:14px}body.gate #rotate svg{display:none}body.gate #rotate .rb{font-size:40px}}
+
 @media (orientation:landscape) and (max-height:520px){
   :root{--hdr:40px;--foot:54px}
   .nav .gbtn{padding:10px 10px;font-size:11.5px;letter-spacing:.06em}
@@ -576,6 +578,7 @@ body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:
   <h2 id="rotT">Turn your phone sideways</h2>
   <p>This site is made for landscape, so every look shows edge to edge.</p>
   <button type="button" id="goFull">Go full screen</button>
+  <button type="button" class="alt" id="goOn" hidden>Continue without full screen</button>
 </div>
 <div id="tint"></div><div id="bgfx"></div>
 
@@ -1085,6 +1088,19 @@ if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding
 $('goFull').addEventListener('click',function(){var d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;
   var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
   try{var r=f&&f.call(d);if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}});
+(function(){var d=document.documentElement,canFs=!!(d.requestFullscreen||d.webkitRequestFullscreen),skip=false;
+  var dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)');
+  function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
+  function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
+    $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
+    $('rotate').querySelector('p:not(.rb)').textContent=p?'This site is made for landscape, so every look shows edge to edge.':'Full screen gives every look the whole screen. You can leave any time.';
+    $('goFull').textContent=p?'Go full screen':'Enter the site'}
+  ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
+  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
+  /* if the browser refuses full screen, offer a way in after the first try */
+  $('goFull').addEventListener('click',function(){setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
+  $('goOn').onclick=function(){skip=true;upd()};
+  upd()})();
 renderNav();remixAll();buildPricing();go(0);
 if(/[?&]edit/.test(location.search))setEdit(true);
 })();

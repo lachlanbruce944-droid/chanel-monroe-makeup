@@ -444,6 +444,19 @@ if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding
 $('goFull').addEventListener('click',function(){var d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;
   var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
   try{var r=f&&f.call(d);if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}});
+(function(){var d=document.documentElement,canFs=!!(d.requestFullscreen||d.webkitRequestFullscreen),skip=false;
+  var dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)');
+  function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
+  function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
+    $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
+    $('rotate').querySelector('p:not(.rb)').textContent=p?'This site is made for landscape, so every look shows edge to edge.':'Full screen gives every look the whole screen. You can leave any time.';
+    $('goFull').textContent=p?'Go full screen':'Enter the site'}
+  ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
+  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
+  /* if the browser refuses full screen, offer a way in after the first try */
+  $('goFull').addEventListener('click',function(){setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
+  $('goOn').onclick=function(){skip=true;upd()};
+  upd()})();
 renderNav();remixAll();buildPricing();go(0);
 if(/[?&]edit/.test(location.search))setEdit(true);
 })();
