@@ -232,11 +232,11 @@ function openPage(id){
   }
   if(id==='affiliates'){
     var AF=window.AFFILIATES||[],cats=[];AF.forEach(function(a){if(cats.indexOf(a.cat)<0)cats.push(a.cat)});
-    h='<h1>Affiliates</h1><p class="lead">'+esc((sec('affiliates').lines||[])[0]||'The local artists I trust and work alongside.')+' Tap anyone to see their work.</p>'+cats.map(function(c){
+    h='<h1>Affiliates</h1><p class="lead">My people. These are the Gold Coast artists and creatives I trust, work alongside and happily send you to: hair, nails, brows, lashes, photographers and more. If I’m booked out, or you need a whole glam team for the big day, start here.</p><p class="hint">Tap anyone to see their work.</p>'+cats.map(function(c){
       return '<h3>'+esc(c)+'</h3>'+carousel(AF.map(function(a,i){return a.cat!==c?'':'<div class="card" data-aff="'+i+'"><img class="av" src="'+a.avatar+'" alt="" onerror="this.style.visibility=\'hidden\'"><b>'+esc(a.role)+'</b><small>@'+esc(a.h)+'</small></div>'}).join(''))}).join('');
   }
   if(id==='brands'){
-    h='<h1>Brands</h1><p class="lead">'+esc((sec('brands').lines||[])[0]||'The brands in my kit.')+'</p>'+sec('brands').groups.map(function(g){
+    h='<h1>Brands</h1><p class="lead">The brands that have earned a spot in my kit. I choose them for how they wear on real skin in Gold Coast heat and humidity, from Aussie-made favourites to the pro brands I trust under camera lights.</p><p class="hint">Tap a logo to learn more about the brand.</p>'+sec('brands').groups.map(function(g){
       return '<h3>'+esc(g.name)+'</h3>'+carousel(g.tiles.map(function(t){return '<div class="logo" role="button" tabindex="0" data-brand="'+esc(t.text)+'" title="'+esc(t.text)+'">'+(t.src?'<img loading="lazy" src="'+t.src+'" alt="'+esc(t.text)+'">':esc(t.text))+'</div>'}).join(''))}).join('')+
       '<p class="note-small">'+esc((sec('brands').lines||[]).slice(-1)[0]||'')+' ModelCo closed in 2025: its link goes to the brand’s old site, which now points to MCoBeauty.</p>';
   }
@@ -244,7 +244,7 @@ function openPage(id){
   if(id==='products'){
     /* catalogue: "In Chanel's kit" first, then every category (up to 25 each); tap a product for its details */
     var C=catalog(),kit=(sec('products').groups.filter(function(g){return /kit/i.test(g.name)})[0]||{tiles:[]}).tiles;
-    h='<h1>Products</h1><p class="lead">'+esc((sec('products').lines||[])[0]||'The products I actually reach for on clients.')+' Tap any product for details.</p>'+C.cats.map(function(c){
+    h='<h1>Products</h1><p class="lead">The products I actually reach for on clients, sorted by what they do. Use it as a shopping list after your appointment, or to build your own kit at home. Prices and shades change, so check with the store before you buy.</p><p class="hint">Tap any product for details.</p>'+C.cats.map(function(c){
       var list=C.items.filter(function(p){return p.cat===c});if(!list.length)return '';
       return '<h3>'+esc(c)+' <small class="cnt">'+list.length+'</small></h3>'+carousel(list.slice(0,25).map(prodCard).join(''))}).join('')+
       (kit.length?'<h3>Also in the kit</h3><ul class="kitlist">'+kit.map(function(t){return '<li>'+esc(t.text)+'</li>'}).join('')+'</ul>':'')+

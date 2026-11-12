@@ -13,7 +13,7 @@ MAN = json.load(open(r'M:\CMM-Site\media\manifest.json', encoding='utf-8'))
 
 def to_cdn(path):
     raw = urllib.parse.unquote(path)
-    if raw.startswith('images/icons/'): return path
+    if raw.startswith(('images/icons/', 'images/brands/')): return path   # icons + small brand logos ship with the site
     if raw in MAN: return BASE + MAN[raw]
     return BASE + raw   # folder prefixes built at runtime (e.g. 'images/brands/'), brand logos keep their names
 
@@ -59,9 +59,10 @@ for folder in ('data', 'settings'):
         if f == 'lessons.js': text = '/* Lessons tab hidden for now. */\nwindow.LESSONS = [];\n'
         open(os.path.join(OUT, folder, f), 'w', encoding='utf-8').write(rewrite(text))
 shutil.copytree(os.path.join(SRC, 'images', 'icons'), os.path.join(OUT, 'images', 'icons'), ignore=shutil.ignore_patterns('*.ttf'))
+shutil.copytree(os.path.join(SRC, 'images', 'brands'), os.path.join(OUT, 'images', 'brands'))
 for f in ('robots.txt',):
     if os.path.exists(os.path.join(SRC, f)): shutil.copy(os.path.join(SRC, f), OUT)
 open(os.path.join(OUT, '.nojekyll'), 'w').close()
 size = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)
-left = [m for m in LIT.findall(open(os.path.join(OUT, 'js', 'app.js'), encoding='utf-8').read()) if not m[1].startswith('images/icons')]
+left = [m for m in LIT.findall(open(os.path.join(OUT, 'js', 'app.js'), encoding='utf-8').read()) if not m[1].startswith(('images/icons', 'images/brands'))]
 print('site built:', round(size / 1024), 'KB;', len(styles), 'style blocks,', len(scripts), 'scripts; local media paths left:', len(left))

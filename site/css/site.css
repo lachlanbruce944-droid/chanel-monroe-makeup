@@ -518,6 +518,7 @@ html button.x:focus-visible{outline:3px solid var(--acc,#c8a27a);outline-offset:
 body.pop-open .fab,body.pop-open .fbrand,body.pop-open #gallery .capbar{opacity:0!important;visibility:hidden;pointer-events:none}
 /* sub-categories now run together in one strip; the current one shows beside the style title */
 #subs,.subs{display:none!important}
+.info .hint{margin:-6px 0 14px;font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--acc)}
 .ghead{align-items:baseline}
 .gsub{font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);opacity:0;transform:translateX(-6px);transition:opacity .3s ease,transform .3s ease;white-space:nowrap}
 .gsub.on{opacity:1;transform:none}
