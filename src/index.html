@@ -696,7 +696,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 /* products: just the product, no card or white box. Product photos sit on white, so 'multiply' lets the
    page colour show through the white and the bottle/compact appears cut out. Sized like the style gallery. */
 .prod,.prod:hover{background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important;overflow:visible}
-.prod .pi{background:var(--bg,#f6f1ea)!important;padding:0!important;isolation:isolate}
+.prod .pi{background:var(--pagebg,var(--bg,#f6f1ea))!important;padding:0!important;isolation:isolate}
 .prod .pi img,.pm-img img,.bm-pi img{mix-blend-mode:multiply}
 .prod .pt{border-top:0!important;padding:8px 2px 0!important;text-align:center}
 .prod:hover .pi img{transform:scale(1.04)}.prod .pi img{transition:transform .35s ease}
@@ -1057,7 +1057,7 @@ function openPage(id){
       (kit.length?'<h3>Also in the kit</h3><ul class="kitlist">'+kit.map(function(t){return '<li>'+esc(t.text)+'</li>'}).join('')+'</ul>':'')+
       '<p class="note-small">'+esc((sec('products').lines||[]).slice(-1)[0]||'')+'</p>';
   }
-  el.innerHTML=h;el.scrollTop=0;requestAnimationFrame(function(){el.scrollTop=0});
+  el.innerHTML=h;el.scrollTop=0;var pbg=function(){document.documentElement.style.setProperty('--pagebg',getComputedStyle(document.body).backgroundColor)};pbg();setTimeout(pbg,700);requestAnimationFrame(function(){el.scrollTop=0});
   if(id==='about')buildAboutGrid(own);
   startCarousels(el);
 }

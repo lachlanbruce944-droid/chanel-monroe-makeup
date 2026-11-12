@@ -272,7 +272,7 @@ function openPage(id){
       (kit.length?'<h3>Also in the kit</h3><ul class="kitlist">'+kit.map(function(t){return '<li>'+esc(t.text)+'</li>'}).join('')+'</ul>':'')+
       '<p class="note-small">'+esc((sec('products').lines||[]).slice(-1)[0]||'')+'</p>';
   }
-  el.innerHTML=h;el.scrollTop=0;requestAnimationFrame(function(){el.scrollTop=0});
+  el.innerHTML=h;el.scrollTop=0;var pbg=function(){document.documentElement.style.setProperty('--pagebg',getComputedStyle(document.body).backgroundColor)};pbg();setTimeout(pbg,700);requestAnimationFrame(function(){el.scrollTop=0});
   if(id==='about')buildAboutGrid(own);
   startCarousels(el);
 }

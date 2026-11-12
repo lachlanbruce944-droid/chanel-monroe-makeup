@@ -1,4 +1,4 @@
-# Chanel Monroe Makeup — website
+﻿# Chanel Monroe Makeup â€” website
 
 The website for **Chanel Monroe Makeup**, a mobile makeup artist on the Gold Coast (Instagram [@chanelmonroemakeup](https://www.instagram.com/chanelmonroemakeup/)).
 Visitors browse looks by style (natural, glam, bridal, editorial, character & FX, parties), see pricing, local affiliate artists, and the brands and products in Chanel's kit, then enquire.
@@ -28,6 +28,7 @@ src/                                 Source the site is built from
   images/**/*.csv                    Credit records for every photo and clip (the files themselves live on Supabase)
   tools/                             Build, publish, media and content scripts (Python 3.12)
 docs/
+  content-guidelines.md              What content is suitable (photos, clips, affiliates, brands, products)
   content-register.csv               Every item on the site, plus everything rejected or removed
   project-status.md                  Current state and open items
   editing-guide.md                   Edit mode and day-to-day content changes
@@ -35,6 +36,7 @@ docs/
   seo-plan.md                        Local SEO plan
 CHANGELOG.md                         Dated log of every change
 CONTRIBUTING.md                      How to add, change or remove content without duplicates
+CLAUDE.md                            Start-here notes for AI assistants working on the repo
 ```
 
 ## Build and publish

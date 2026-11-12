@@ -1,16 +1,22 @@
-# Changelog
+﻿# Changelog
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-12 (content guidelines, popups, products)
+- Added docs/content-guidelines.md (what photos, clips, lessons, affiliates, brands and products are suitable, file standards) and CLAUDE.md (start-here notes for AI assistants).
+- Brand and product popups now work like the affiliate popup: fixed height, nothing scrolls, text panel scales to fit, brand product grid fills its box.
+- Products: no card backgrounds, white photo backgrounds blended into the page, sized like the style gallery photos.
+- Media naming rules (tools/media_names.py) and a one-off rename tool (tools/migrate_media_names.py, dry run done: 3,269 renames, 43 unused files to delete). The rename runs when the owner enters the Supabase secret key.
+
 ### 2026-11-12 (repository clean-up)
 - Repository now holds only what the site and its build need. Removed the first mock-up (`legacy/`, archived at `M:\CMM-Site\_archive\legacy-mockup`), Chanel's and affiliates' original photos (served from Supabase), the unused font file, and one-off pipeline scripts (archived at `M:\CMM-Site\_archive\repo-tools`).
-- Documentation renamed for review: `WORKLOG.md` split into `CHANGELOG.md`, `docs/project-status.md` and `docs/instagram-review-log.md`; `REGISTER.csv` → `docs/content-register.csv`; editing guide and SEO plan moved to `docs/`; workflow renamed `deploy-pages.yml`. Added `README.md` (architecture, layout, publishing) and `CONTRIBUTING.md` (content rules).
+- Documentation renamed for review: `WORKLOG.md` split into `CHANGELOG.md`, `docs/project-status.md` and `docs/instagram-review-log.md`; `REGISTER.csv` â†’ `docs/content-register.csv`; editing guide and SEO plan moved to `docs/`; workflow renamed `deploy-pages.yml`. Added `README.md` (architecture, layout, publishing) and `CONTRIBUTING.md` (content rules).
 - New `tools/publish.py`: rebuilds the register, builds `site/`, mirrors only whitelisted source into `src/` (removes anything else) and refreshes the register in `docs/`.
 - New `tools/check_duplicate.py`: checks an Instagram link, post code, @handle, product URL or name against the register, removed and rejected logs before anything is added.
 
 ### 2026-11-12 (pricing gallery, affiliate popup, removals)
 - Pricing: each style shows up to 8 whole, uncropped photos as a crossfading gallery (about 4 s each) over a blurred fill, with position dots.
-- Affiliate popup: no scrolling on any screen; the profile panel scales to fit and the 3×3 photo grid fills its box. Smaller bio text.
+- Affiliate popup: no scrolling on any screen; the profile panel scales to fit and the 3Ã—3 photo grid fills its box. Smaller bio text.
 - About: bigger photo tile, top-aligned with the name, whole picture shown.
 - Carousels: widths measured once, only on-screen rows animate, rows pause while the page scrolls, swipe direction locked (vertical swipes scroll the page).
 - Removed the @chris_mufx SFX and prosthetics image (moved to `_removed`, logged in `data/removed.json`).
@@ -27,7 +33,7 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
 
 ### 2026-11-12 (hosting: GitHub Pages + Supabase Storage; landscape-only phones)
 - **Repo restructured** (see README.md): `site/` = built site served by GitHub Pages (workflow `.github/workflows/pages.yml`); `src/` = editable source (was `final-draft/`); `legacy/` = the first mock-up.
-- **Media → Supabase Storage** (project `makeup-website`, ref qxiugfatpybldluipcyy, Free plan: 1 GB storage, 5 GB egress a month). Public bucket `media` created.
+- **Media â†’ Supabase Storage** (project `makeup-website`, ref qxiugfatpybldluipcyy, Free plan: 1 GB storage, 5 GB egress a month). Public bucket `media` created.
   - `tools/optimize_media.py` turned 1.24 GB into **746 MB** at `M:\CMM-Site\media` (first 226 MB, raised at Lachlan's request):
     - photos are WebP at 1600px (q88) plus an 800px copy (`.m.webp`)
     - affiliate photos are 720px and avatars 480px
@@ -50,16 +56,16 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
   - A preconnect to Supabase is added.
   - Tested: only 8 of 29 gallery tiles were fetched on first load.
 - **Phones landscape only:**
-  - Portrait (≤760px wide) shows a "Turn your phone sideways" screen in the spectrum-night style, with a Go full screen button. That button also locks landscape on Android; iPhone ignores both.
-  - New compact layout for landscape phones (height ≤520px). Tested at 874×402: photos, caption and buttons all fit.
+  - Portrait (â‰¤760px wide) shows a "Turn your phone sideways" screen in the spectrum-night style, with a Go full screen button. That button also locks landscape on Android; iPhone ignores both.
+  - New compact layout for landscape phones (height â‰¤520px). Tested at 874Ã—402: photos, caption and buttons all fit.
 - Lessons tab hidden (`SHOW_LESSONS=false` in renderNav).
-- **To do:** enable GitHub Pages (Settings → Pages → Source: GitHub Actions), run the upload, then check the live site.
+- **To do:** enable GitHub Pages (Settings â†’ Pages â†’ Source: GitHub Actions), run the upload, then check the live site.
 ### 2026-11-12 (Lessons tab, 100 more affiliates, footer)
 - **Lessons tab:** new nav item after Parties & Seasons, with a divider on each side.
-  - 60 tutorial clips with sound, mostly 20–60 s, in 15 chapters: skin prep, diet, daily routine, skincare, SPF, check-ups (derms, skin checks, allergies), wardrobe, colours, makeup looks, hair, nails, cosmetic tattoo, tattoos & unique features (cover-ups, vitiligo, freckles), make it last, removal & cleaning.
+  - 60 tutorial clips with sound, mostly 20â€“60 s, in 15 chapters: skin prep, diet, daily routine, skincare, SPF, check-ups (derms, skin checks, allergies), wardrobe, colours, makeup looks, hair, nails, cosmetic tattoo, tattoos & unique features (cover-ups, vitiligo, freckles), make it last, removal & cleaning.
   - Captions were allowed. Clips without captions are listed first in each chapter (CLEAN list in `tools/build_lessons.py`).
   - Clicking a card opens a player with sound, the creator credit and an Instagram link. It stops playing when closed.
-  - Data: `images/lessons/lessons.csv` → `python tools/build_lessons.py` → `data/lessons.js`. The clips are other creators' work, so the files are git-ignored.
+  - Data: `images/lessons/lessons.csv` â†’ `python tools/build_lessons.py` â†’ `data/lessons.js`. The clips are other creators' work, so the files are git-ignored.
   - Pipeline scripts are in `tools/lessons/` (stage1 = mux + frame sheets, stage2 = encode + csv, trim, shrink to 720p). Reviewed and unused codes are in `M:\CMM-Site\CMM-Lessons\rejected.json`.
 - **Affiliates:** 100 more Gold Coast accounts, 20 per section, so each section now has 25 (125 in total).
   - Found through Instagram keyword search. Each was checked: public, Gold Coast or a suburb in the bio or name, 250+ followers, 9+ posts, relevant to the section.
@@ -71,7 +77,7 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
 - REGISTER.csv now lists lessons (kind `lesson`) and all 125 affiliates.
 ### 2026-11-12 (removals applied)
 - Applied removals: all 59 items hidden in Edit mode are off the site (44 inspiration photos, 14 clips, 1 of Chanel's photos: shoot-look_05 Scared to Love).
-  - The files and video posters (73 files) were moved, not deleted, to `M:\CMM-Site\_removed\final-draft\…`. Copy one back and re-add its CSV row to undo.
+  - The files and video posters (73 files) were moved, not deleted, to `M:\CMM-Site\_removed\final-draft\â€¦`. Copy one back and re-add its CSV row to undo.
   - Rows were dropped from credits.csv, videos.csv and chanel/index.csv.
   - The hidden list in overrides.js is now empty. A backup is at `M:\CMM-Site\overrides-before-removals.js`.
 - Each removed item is listed in `data/removed.json` with its Instagram code and shows in REGISTER.csv as kind `removed`. **Never re-add these.**
@@ -97,7 +103,7 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
 - **SEO:** title, description, OG tags, BeautySalon JSON-LD (15 suburbs), noscript H1 and robots.txt. Competitor review and next steps are in `SEO.md`.
 ### 2026-11-12 (carousels, popups, Chanel only in About)
 - Style sections now show inspiration only. Chanel's own photos appear only in About (`pick()` skips `own`; the `mix` option no longer adds her photos).
-- About: clicking a tile opens an Instagram-style popup: photo on the left; caption and her real Instagram comments (with replies, avatars, dates) pinned on the right. Arrows or ← → move between photos. Data: `data/comments.js` (`window.IG_POSTS`, keyed by post URL, 18 posts, 89 comments), built by `tools/build_people.py` from `data/comments-raw.json`. Commenter avatars: `images/chanel/comments/` (local only).
+- About: clicking a tile opens an Instagram-style popup: photo on the left; caption and her real Instagram comments (with replies, avatars, dates) pinned on the right. Arrows or â† â†’ move between photos. Data: `data/comments.js` (`window.IG_POSTS`, keyed by post URL, 18 posts, 89 comments), built by `tools/build_people.py` from `data/comments-raw.json`. Commenter avatars: `images/chanel/comments/` (local only).
 - Affiliates, Brands, Products are now horizontal auto-rotating carousels (loop, pause on hover, drag or trackpad to move; rows alternate direction).
 - Affiliates: click a card for a popup with avatar, bio, posts/followers, a 3 x 3 grid of their 9 latest posts (each links to the post), Instagram and website buttons. Data: `data/affiliates.js`, built from `data/affiliates-raw.json` + `images/affiliates/affiliates.csv`. Photos: `images/affiliates/<cat>/<handle>/01-09.jpg` (local only). @goddesslashesx is private: no photos.
 - Brands: every logo links to the brand's official site (`BRAND_URL` in index.html, checked 2026-11-12). ModelCo closed in 2025 (link redirects to MCoBeauty); LaGlam has no site (links to its Australian Made listing).
