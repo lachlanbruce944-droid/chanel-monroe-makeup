@@ -1,37 +1,62 @@
-﻿# Chanel Monroe Makeup: website
+# Chanel Monroe Makeup — website
 
-Mobile makeup artist on the Gold Coast. Read **WORKLOG.md** before changing anything.
+The website for **Chanel Monroe Makeup**, a mobile makeup artist on the Gold Coast (Instagram [@chanelmonroemakeup](https://www.instagram.com/chanelmonroemakeup/)).
+Visitors browse looks by style (natural, glam, bridal, editorial, character & FX, parties), see pricing, local affiliate artists, and the brands and products in Chanel's kit, then enquire.
 
-## How it is hosted
-| Part | Where | What |
+**Live site:** https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/
+
+## Architecture
+
+| Layer | Where | What |
 |---|---|---|
-| Site (pages, styles, scripts, small data) | **GitHub Pages**, from `site/` | about 1 MB; deployed automatically by `.github/workflows/pages.yml` on every push to `main` |
-| Photos and clips (the heavy content) | **Supabase Storage**, public bucket `media` | about 746 MB: WebP photos (1600px + 800px copies), affiliate photos 720px, 1080p clips |
+| Pages, styles, scripts, data | GitHub Pages (`site/`) | Light static files, about 2.5 MB. Deployed by GitHub Actions on every push to `main`. |
+| Photos and video clips | Supabase Storage, public bucket `media` | About 750 MB of optimised WebP and MP4, served from Supabase's CDN with long cache headers. |
+| Master media | `M:\CMM-Site` (local) | Original files and the optimised mirror that is uploaded to Supabase. Not in this repository. |
 
-Media URLs look like `https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/...`.
+Pages only download what is on screen: images use lazy loading and responsive sizes (800px and 1600px copies), and clips load only while visible.
 
-## Folders
+## Repository layout
+
 ```
-site/        the built site that GitHub Pages serves (do not edit by hand: rebuild it)
-  index.html  slim page
-  css/site.css, js/app.js, js/config.js   (config.js holds the media address)
-  data/, settings/                         small data files, paths already pointing at Supabase
-  images/icons/                            favicon + app icons (the only images on GitHub)
-src/         the editable source (mirror of the working copy M:\CMM-Site\final-draft, without media)
-  index.html, data/, settings/, tools/, SEO.md, REGISTER.csv
-legacy/      the first mock-up site, kept for reference
+.github/workflows/deploy-pages.yml   Deploys site/ to GitHub Pages
+site/                                Built site, served as is (do not edit by hand)
+src/                                 Source the site is built from
+  index.html                         Markup, styles and scripts (split into site/css and site/js by the build)
+  settings/                          Business details, prices, design options
+  data/                              Content: media list, affiliates, brands, catalogue, overrides, removed/rejected logs
+  images/icons, brands, about        Small assets shipped with the site
+  images/**/*.csv                    Credit records for every photo and clip (the files themselves live on Supabase)
+  tools/                             Build, publish, media and content scripts (Python 3.12)
+docs/
+  content-register.csv               Every item on the site, plus everything rejected or removed
+  project-status.md                  Current state and open items
+  editing-guide.md                   Edit mode and day-to-day content changes
+  instagram-review-log.md            Chanel's Instagram posts already reviewed
+  seo-plan.md                        Local SEO plan
+CHANGELOG.md                         Dated log of every change
+CONTRIBUTING.md                      How to add, change or remove content without duplicates
 ```
-Working copy with all original media: `M:\CMM-Site\final-draft`. Optimised media mirror: `M:\CMM-Site\media`.
 
-## Updating the site
-1. Edit in `M:\CMM-Site\final-draft` (open index.html there to preview with local media).
-2. New photos/clips: `python tools/optimize_media.py` then `python tools/upload_media.py` (asks for the Supabase secret key).
-3. `python tools/build_site.py C:\Users\USER\repos\chanel-monroe-makeup\site`
-4. Copy changed source files into `src/`, commit, push. Pages redeploys in about a minute.
+## Build and publish
 
-## Speed
-- Only what is on screen loads: photos use `loading="lazy"` + `decoding="async"`, clips load and play only while visible
-  (IntersectionObserver, `preload="none"`), popups load their photos when opened.
-- Phones and 1x screens get the 540px copy through `srcset`; only the first two photos are high priority.
-- CSS and JS are separate files, so browsers cache them; media is served with a one-year cache header from Supabase's CDN.
-- Phones: landscape only. Portrait shows a "turn your phone sideways" screen with a full-screen button.
+Work happens in the working copy (`M:\CMM-Site\final-draft`, which mirrors `src/`). To publish:
+
+```powershell
+cd M:\CMM-Site\final-draft
+python tools\publish.py C:\Users\USER\repos\chanel-monroe-makeup
+cd C:\Users\USER\repos\chanel-monroe-makeup
+git status            # review
+# add an entry to CHANGELOG.md, then:
+git add -A; git commit -m "Short description"; git push
+```
+
+`publish.py` rebuilds the content register, builds `site/`, mirrors only the needed source files into `src/` (removing anything else), and refreshes `docs/content-register.csv`.
+New or replaced photos and clips go through `tools/optimize_media.py` and `tools/upload_media.py` first. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Phones and tablets
+
+The site is designed for landscape. On touch devices an entry screen asks visitors to turn the phone and go full screen, with a fallback when the browser refuses full screen (iPhone).
+
+## Ownership and credits
+
+Photos in the style galleries are inspiration from other artists and are credited on every image; they are not Chanel's work. Chanel's own work appears only in About. Affiliates must be contacted before the site launches.

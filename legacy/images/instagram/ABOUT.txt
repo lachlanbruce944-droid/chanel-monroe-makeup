@@ -1,4 +1,0 @@
-Chanel Monroe Makeup - images from instagram.com/chanelmonroemakeup
-Original resolution, unedited bytes as served by Instagram.
-Folders follow the website style sections; filenames start with the look key used in gallery-data.js.
-index.csv lists every file with its post link, date, size and caption (credits for photographers/models are in captions).

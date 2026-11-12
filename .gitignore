@@ -1,18 +1,19 @@
-﻿
-# Other artists' reference photos and clips stay local (M:\CMM-Site\final-draft)
-src/images/inspiration/**/*.jpg
-src/images/inspiration/**/*.webp
-src/images/videos/*.mp4
-src/images/videos/*.jpg
-
-
-# Other people's photos used by the final draft (kept local only)
-src/images/affiliates/*/*/
-src/images/products/
-src/images/chanel/comments/
-src/data/*-raw.json
+# Heavy media is served from Supabase Storage (bucket "media"); master copies live in M:\CMM-Site.
+# src/ is written by tools/publish.py, which copies only what the site and its build need.
+src/images/**/*.jpg
+src/images/**/*.jpeg
+src/images/**/*.webp
+src/images/**/*.mp4
+src/images/**/*.mov
+!src/images/brands/**
+!src/images/about/**
 src/data/raw/
-src/images/lessons/*.mp4
-src/images/lessons/*.jpg
+src/data/*-raw.json
+src/images/icons/*.ttf
 
-# heavy media lives in Supabase Storage (bucket 'media'); local mirror at M:\CMM-Site\media
+# Python and OS clutter
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db
+desktop.ini
