@@ -116,6 +116,7 @@ function renderNav(){
   /* Lessons tab hidden for now (redesign later): set SHOW_LESSONS = true to bring it back */
   var SHOW_LESSONS=false;
   h+='<span class="sep"></span>'+(SHOW_LESSONS?'<div class="item"><button class="gbtn" data-p="lessons">Lessons</button></div><span class="sep"></span>':'')+PAGES.slice(1).filter(function(p){return p.id!=='lessons'}).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
+  h+='<div class="item"><button class="gear" id="gear" type="button" aria-label="Settings" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>';
   $('nav').innerHTML=h;markNav();
 }
 function markNav(){[].forEach.call($('nav').querySelectorAll('.gbtn'),function(x){x.setAttribute('aria-current',page?x.dataset.p===page:(x.dataset.g!=null&&+x.dataset.g===cur))})}
@@ -516,6 +517,18 @@ $('goFull').addEventListener('click',function(){var d=document.documentElement,f
       wt=setTimeout(wnext,Math.max(3500,WL[wi].length*62+1200))},450)}
   wt=setTimeout(wnext,Math.max(3500,WL[0].length*62+1200));
   upd()})();
+/* ---- Settings: try design options while browsing (remembered on this device) ---- */
+var SETTINGS=[{key:'afftile',label:'Affiliate tile size',opts:[['a','Standard','pictures with names and handles'],['b','Medium','pictures only, 55% of the screen'],['c','Large','pictures only, 80% of the screen']]}];
+function getSet(k,d){try{return localStorage.getItem('cmm-'+k)||d}catch(e){return d}}
+function setSet(k,v){try{localStorage.setItem('cmm-'+k,v)}catch(e){}document.body.dataset[k]=v}
+SETTINGS.forEach(function(s){document.body.dataset[s.key]=getSet(s.key,s.opts[0][0])});
+document.body.insertAdjacentHTML('beforeend','<div class="setp" id="setp" role="dialog" aria-label="Settings" hidden><h4>Settings</h4>'+SETTINGS.map(function(s){
+  return '<fieldset><legend>'+s.label+'</legend>'+s.opts.map(function(o){return '<label><input type="radio" name="'+s.key+'" value="'+o[0]+'"'+(document.body.dataset[s.key]===o[0]?' checked':'')+'><span><b>'+o[1]+'</b><small>'+o[2]+'</small></span></label>'}).join('')+'</fieldset>'}).join('')+'</div>');
+$('setp').addEventListener('change',function(e){if(e.target.name){setSet(e.target.name,e.target.value);if(page==='affiliates')openPage('affiliates')}});
+function setpOpen(on){var p=$('setp'),g=$('gear');if(!g)return;p.hidden=!on;g.setAttribute('aria-expanded',on);
+  if(on){var r=g.getBoundingClientRect();p.style.top=(r.bottom+6)+'px';p.style.right=Math.max(8,innerWidth-r.right-4)+'px'}}
+document.addEventListener('click',function(e){if(e.target.closest('#gear')){setpOpen($('setp').hidden);return}if(!e.target.closest('#setp'))setpOpen(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(false)});
 renderNav();remixAll();buildPricing();go(0);
 if(/[?&]edit/.test(location.search))setEdit(true);
 })();
