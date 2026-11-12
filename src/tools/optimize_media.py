@@ -1,10 +1,10 @@
-"""Make web-ready copies of every image and clip for Supabase Storage (the heavy content).
+﻿"""Make web-ready copies of every image and clip for Supabase Storage (the heavy content).
 Source: final-draft/images (icons stay with the site on GitHub; lessons are hidden so skipped).
 Output: M:\\CMM-Site\\media\\images\\...  plus media/manifest.json  {original path: new path}
-  gallery photos (inspiration, chanel, products) -> name.webp (1080 wide) + name.m.webp (540 wide)
-  affiliate avatars -> 320 wide, affiliate grid photos -> 480 wide, comment avatars -> 96 wide (webp)
+  gallery photos (inspiration, chanel, products) -> name.webp (1600 wide, q88) + name.m.webp (800 wide)
+  affiliate avatars -> 480 wide, affiliate grid photos -> 720 wide, comment avatars -> 96 wide (webp)
   brand logos -> copied as they are (small, and their paths are built at runtime)
-  clips -> 720 wide H.264 CRF 26, no audio, faststart; posters -> 540 wide webp
+  clips -> 1080 wide H.264 CRF 21, no audio, faststart; posters -> 720 wide webp
 New file names: lower case, spaces -> '-', '@' dropped, so URLs need no escaping.
 Re-run safe: existing outputs are kept. Usage: python tools/optimize_media.py
 """
@@ -41,14 +41,14 @@ def do_image(rel):
         return rel, new
     im = ImageOps.exif_transpose(Image.open(src))
     if top == 'affiliates':
-        w = 320 if len(parts) == 3 else 480
-        save(im, os.path.join(OUT, *(base + '.webp').split('/')), w, 76); return rel, base + '.webp'
+        w = 480 if len(parts) == 3 else 720
+        save(im, os.path.join(OUT, *(base + '.webp').split('/')), w, 82); return rel, base + '.webp'
     if top == 'chanel' and len(parts) > 1 and parts[1] == 'comments':
         save(im, os.path.join(OUT, *(base + '.webp').split('/')), 96, 78); return rel, base + '.webp'
     if top == 'videos':   # clip poster
-        save(im, os.path.join(OUT, *(base + '.webp').split('/')), 540, 72); return rel, base + '.webp'
-    save(im, os.path.join(OUT, *(base + '.webp').split('/')), 1080, 74)
-    save(im, os.path.join(OUT, *(base + '.m.webp').split('/')), 540, 72)
+        save(im, os.path.join(OUT, *(base + '.webp').split('/')), 720, 80); return rel, base + '.webp'
+    save(im, os.path.join(OUT, *(base + '.webp').split('/')), 1600, 88)
+    save(im, os.path.join(OUT, *(base + '.m.webp').split('/')), 800, 82)
     return rel, base + '.webp'
 
 def do_video(rel):
@@ -57,7 +57,7 @@ def do_video(rel):
     os.makedirs(os.path.dirname(dst), exist_ok=True)
     if not os.path.exists(dst):
         subprocess.run([imageio_ffmpeg.get_ffmpeg_exe(), '-y', '-loglevel', 'error', '-i', os.path.join(SRC, rel), '-an', '-c:v', 'libx264',
-                        '-preset', 'veryfast', '-crf', '26', '-pix_fmt', 'yuv420p', '-vf', "scale='min(720,iw)':-2", '-movflags', '+faststart', dst + '.tmp.mp4'], check=True)
+                        '-preset', 'veryfast', '-crf', '21', '-pix_fmt', 'yuv420p', '-vf', "scale='min(1080,iw)':-2", '-movflags', '+faststart', dst + '.tmp.mp4'], check=True)
         os.replace(dst + '.tmp.mp4', dst)
     return rel, new
 

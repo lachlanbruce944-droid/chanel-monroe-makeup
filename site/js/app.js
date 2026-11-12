@@ -128,10 +128,10 @@ $('subs').addEventListener('click',function(e){var x=e.target.closest('.chip');i
 var groupsOpt=null;
 function moveOptions(it){if(!groupsOpt){groupsOpt=GROUPS.map(function(g){return '<optgroup label="'+g.name+'">'+g.subs.map(function(s){return '<option value="'+g.id+'|'+esc(s)+'">'+esc(s)+'</option>'}).join('')+'</optgroup>'}).join('')}
   return '<select data-a="move" title="Move to another style">'+groupsOpt.replace('value="'+it.g+'|'+esc(it.s)+'"','value="'+it.g+'|'+esc(it.s)+'" selected')+'</select>'}
-/* hosted build (js/config.js sets MEDIA_M): every gallery photo also has a 540px copy, name.m.webp.
+/* hosted build (js/config.js sets MEDIA_M): every gallery photo is 1600px with an 800px copy, name.m.webp.
    The browser picks the smaller one on phones and 1x screens; local preview has no copies, so no srcset. */
 function small(u){return window.MEDIA_M&&/\.webp$/.test(u)&&/\/images\/(inspiration|chanel)\//.test(u)&&!/\/comments\//.test(u)?u.replace(/\.webp$/,'.m.webp'):u}
-function srcset(u){var s=small(u);return s===u?'':' srcset="'+s+' 540w, '+u+' 1080w" sizes="(max-width:760px) 72vw, 34vw"'}
+function srcset(u){var s=small(u);return s===u?'':' srcset="'+s+' 800w, '+u+' 1600w" sizes="(max-height:520px) 40vw, (max-width:760px) 72vw, 34vw"'}
 function tileHTML(it,k){
   var w=Math.max(.56,Math.min(1,(it.w||4)/(it.h||5))), pins=O.pinned[key(GROUPS[cur],sub)]||[], pinned=pins.indexOf(it.src)>=0;
   var media=it.type==='video'?'<video muted loop playsinline preload="none" onerror="var t=this.closest(\'.tile\');if(t)t.remove()" poster="'+(it.poster||'')+'" data-src="'+it.src+'"></video><span class="vtag">Clip</span>'

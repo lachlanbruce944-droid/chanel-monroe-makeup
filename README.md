@@ -1,4 +1,4 @@
-# Chanel Monroe Makeup: website
+﻿# Chanel Monroe Makeup: website
 
 Mobile makeup artist on the Gold Coast. Read **WORKLOG.md** before changing anything.
 
@@ -6,7 +6,7 @@ Mobile makeup artist on the Gold Coast. Read **WORKLOG.md** before changing anyt
 | Part | Where | What |
 |---|---|---|
 | Site (pages, styles, scripts, small data) | **GitHub Pages**, from `site/` | about 1 MB; deployed automatically by `.github/workflows/pages.yml` on every push to `main` |
-| Photos and clips (the heavy content) | **Supabase Storage**, public bucket `media` | about 226 MB of WebP photos (1080px + 540px copies) and 720p clips |
+| Photos and clips (the heavy content) | **Supabase Storage**, public bucket `media` | about 746 MB: WebP photos (1600px + 800px copies), affiliate photos 720px, 1080p clips |
 
 Media URLs look like `https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/...`.
 
