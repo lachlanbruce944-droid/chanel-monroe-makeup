@@ -532,7 +532,8 @@ $('setp').addEventListener('change',function(e){if(e.target.name){setSet(e.targe
 /* pricing "fit to window": the price list and footer scale down until the whole page fits, no scrolling */
 function fitPricing(){var pg=$('poPages').children[poIdx];if(!pg)return;var parts=[pg.querySelector('.plist'),pg.querySelector('.page-f')].filter(Boolean);
   parts.forEach(function(p){p.style.zoom=1});pg.scrollTop=0;if(document.body.dataset.pricing!=='fit'||!po.classList.contains('open'))return;
-  var z=1;while(z>0.55&&pg.scrollHeight>pg.clientHeight+1){z-=0.03;parts.forEach(function(p){p.style.zoom=z})}}
+  var over=function(){return pg.scrollHeight>pg.clientHeight+1||parts.some(function(p){return p.scrollHeight>p.clientHeight+1})};
+  var z=1;while(z>0.5&&over()){z-=0.03;parts.forEach(function(p){p.style.zoom=z})}}
 var _poGo=poGo;poGo=function(i,f){_poGo(i,f);requestAnimationFrame(fitPricing)};
 window.addEventListener('resize',function(){if(po.classList.contains('open'))fitPricing()});
 function setpOpen(on){var p=$('setp'),g=$('gear');if(!g)return;p.hidden=!on;g.setAttribute('aria-expanded',on);
