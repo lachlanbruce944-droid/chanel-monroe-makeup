@@ -583,6 +583,26 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 @media (orientation:landscape) and (max-height:520px){.lb{padding:12px 58px}.lb img,.lb video{max-height:calc(var(--vh) - 24px)}.lb figcaption{font-size:12.5px}}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}.car img{-webkit-user-drag:none}
+/* About: photo tile left, name and lines right */
+.about-hero{display:flex;align-items:center;gap:clamp(16px,3vw,36px);margin-bottom:clamp(10px,3vh,26px)}
+.about-hero .me{flex:none;margin:0;width:clamp(96px,min(24vh,18vw),210px);aspect-ratio:1;border-radius:clamp(14px,2.2vw,22px);overflow:hidden;background:var(--card,#f3ede6);box-shadow:0 10px 28px rgba(0,0,0,.16);border:1px solid var(--line)}
+.about-hero .me img{width:100%;height:100%;object-fit:cover;display:block}
+.about-hero .me-txt{min-width:0}.about-hero .me-txt h1{margin-top:0}
+/* phones in landscape: sizes follow the screen, so the layout holds from small phones to Pro Max */
+@media (orientation:landscape) and (max-height:520px){
+  :root{--hdr:clamp(40px,12vh,52px);--foot:clamp(46px,13.5vh,60px)}
+  .nav{padding-top:clamp(3px,1.5vh,8px)}
+  .nav .gbtn{padding-top:clamp(7px,2.2vh,10px);padding-bottom:clamp(7px,2.2vh,10px)}
+  .ghead h1{font-size:clamp(17px,5.4vh,24px)}.gsub{font-size:clamp(9px,2.5vh,11px)}
+  #gallery .track{height:min(calc(var(--vh) * var(--img-pct)),calc(var(--vh) - var(--hdr) - var(--foot) - 8vh))!important;gap:clamp(6px,1.2vw,10px)}
+  .fbrand,.fab{bottom:calc(clamp(5px,2vh,10px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,42px)}
+  .fbrand{font-size:clamp(12.5px,3.7vh,16px)}
+  .fab .pill{padding:clamp(6px,1.9vh,9px) clamp(10px,1.6vw,14px);font-size:clamp(9.5px,2.7vh,11.5px)}
+  #gallery .capbar{left:clamp(140px,23vw,230px);right:clamp(140px,23vw,230px);bottom:calc(clamp(8px,3.5vh,16px) + env(safe-area-inset-bottom));height:clamp(34px,10vh,46px);min-height:0}
+  .capbar .desc{font-size:clamp(10.5px,3.1vh,13.5px)!important}.capbar .sub,.capbar .src{font-size:clamp(8.5px,2.4vh,10px)}
+  html button.x{width:clamp(34px,10vh,42px);height:clamp(34px,10vh,42px)}
+  .info h1{font-size:clamp(22px,7vh,30px)}
+}
 </style>
 </head>
 <body data-g="natural">
@@ -891,8 +911,9 @@ function openPage(id){
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
     var own=shuffle(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)}));
-    h='<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
-      '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p>'+
+    h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
+      '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
+      '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
       '<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>'+
