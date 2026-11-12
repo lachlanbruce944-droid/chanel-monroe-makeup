@@ -84,6 +84,16 @@ New posts (anything not listed here) are fine to pull; then add them to this tab
 Rule for new posts: keep one slide per distinct pose or angle; drop slides that are near-identical, and any with text, logos or products.
 
 ## Changes
+### 2026-11-12 (mobile pass)
+- About photo popup on phones: photo left, comments right. Chanel photo tile beside her name; `src/images/about/chanel.jpg` is only the 150px Instagram avatar, replace it with a proper headshot.
+- Close button is a white tile with a bold X (all popups). Pricing/Enquire, brand and captions fade while any popup is open (body.pop-open). Photo popup description sits beside the image in landscape.
+- Galleries: one strip per style, grouped by sub-category, with a live sub-category label beside the title; sub-chip row removed. Photos sized as a share of screen height (--img-pct). Captions wait until scrolling stops, and shrink only when the description wraps. Clips never sit side by side; Clip tag removed.
+- Nav: fits on screen, inset from the edges, no underline; title sits closer. Phone-landscape sizes scale with the screen (checked at 667x375 and 874x402).
+- Carousels: touch drag with flick and no freezing (pointercancel handled, hover pauses for mouse only). Affiliates on phones: desktop layout scaled down; profile popup stays side by side.
+- Brand logos and the About photo ship with the site (12 SVG logos were missing on Supabase). css/js links are version-stamped so phones pick up changes.
+- Entry gate on touch devices: landscape and full screen first (fallback link when full screen is refused), with rotating welcome lines.
+- Personal intros for Affiliates, Brands and Products.
+
 ### 2026-11-12 (hosting: GitHub Pages + Supabase Storage; landscape-only phones)
 - **Repo restructured** (see README.md): `site/` = built site served by GitHub Pages (workflow `.github/workflows/pages.yml`); `src/` = editable source (was `final-draft/`); `legacy/` = the first mock-up.
 - **Media → Supabase Storage** (project `makeup-website`, ref qxiugfatpybldluipcyy, Free plan: 1 GB storage, 5 GB egress a month). Public bucket `media` created.
