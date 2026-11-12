@@ -759,3 +759,12 @@ body[data-nav="a"] .nav .gbtn{padding-top:clamp(9px,calc(2.9 * var(--uvh)),13px)
 .po[data-layout="b"] .po-tabs button span{font-size:clamp(8.5px,calc(2.1 * var(--uvh)),10.5px)!important;margin-top:1px!important}
 body .po button.x.x{top:4px!important;right:4px!important;width:clamp(22px,calc(6 * var(--uvh)),28px)!important;height:clamp(22px,calc(6 * var(--uvh)),28px)!important;border-radius:8px!important}
 }
+
+/* Bigger images: slimmer nav, title and footer bands (same proportions on phone and desktop, which is the phone layout scaled up) */
+@media (orientation:landscape){
+:root{--hdr:clamp(36px,calc(10 * var(--uvh)),46px);--fz:clamp(48px,calc(13 * var(--uvh)),62px)}
+#gallery .ghead{padding-top:clamp(1px,calc(.6 * var(--uvh)),4px)!important;padding-bottom:clamp(2px,calc(1 * var(--uvh)),5px)!important}
+#gallery .capbar{height:clamp(38px,calc(10.5 * var(--uvh)),48px)!important;bottom:calc((var(--fz) - clamp(38px,calc(10.5 * var(--uvh)),48px)) / 2 + env(safe-area-inset-bottom))!important}
+.fbrand,.fab{height:clamp(32px,calc(9 * var(--uvh)),40px)!important;bottom:calc((var(--fz) - clamp(32px,calc(9 * var(--uvh)),40px)) / 2 + env(safe-area-inset-bottom))!important}
+body[data-nav="a"] .nav .gbtn{padding-top:clamp(7px,calc(2.3 * var(--uvh)),11px)!important}
+}
