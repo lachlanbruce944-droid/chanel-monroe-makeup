@@ -1019,7 +1019,7 @@ var st=$('strip'),dragging=false,moved=0,sx=0,sl=0,paused=false,dir=1,raf=0;
 st.addEventListener('scroll',function(){cancelAnimationFrame(raf);raf=requestAnimationFrame(findCentre)},{passive:true});
 st.addEventListener('wheel',function(e){if(Math.abs(e.deltaY)>Math.abs(e.deltaX)){st.scrollLeft+=e.deltaY;e.preventDefault()}},{passive:false});
 st.addEventListener('pointerdown',function(e){if(EDIT||e.pointerType!=='mouse')return;dragging=true;moved=0;sx=e.clientX;sl=st.scrollLeft;st.classList.add('drag')});
-window.addEventListener('pointermove',function(e){if(!dragging)return;moved=Math.max(moved,Math.abs(e.clientX-sx));st.scrollLeft=sl-(e.clientX-sx)});
+window.addEventListener('pointermove',function(e){if(!dragging)return;moved=Math.max(moved,Math.abs(e.clientX-sx));st.scrollLeft=sl-(e.clientX-sx)/(window.UIZ||1)});
 window.addEventListener('pointerup',function(){dragging=false;st.classList.remove('drag')});
 window.addEventListener('pointercancel',function(){dragging=false;st.classList.remove('drag')});
 var touchT=0,touching=false;st.addEventListener('touchstart',function(){touching=true;clearTimeout(touchT)},{passive:true});
@@ -1198,7 +1198,7 @@ function startCarousels(root){
     c.addEventListener('pointerenter',function(e){if(e.pointerType==='mouse')s.hover=true});c.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse'){s.hover=false;end()}});
     function end(){if(!s.drag)return;s.drag=false;s.lock='';c.classList.remove('drag');s.rest=performance.now()+1200}
     c.addEventListener('pointerdown',function(e){s.drag=true;s.lock=e.pointerType==='mouse'?'x':'';s.pid=e.pointerId;s.fl=0;s.moved=0;s.sx=e.clientX;s.sy=e.clientY;s.ox=s.x;s.lx=e.clientX;s.lt=performance.now();c.classList.add('drag')});
-    c.addEventListener('pointermove',function(e){if(!s.drag)return;if(!s.lock){var ax=Math.abs(e.clientX-s.sx),ay=Math.abs(e.clientY-s.sy);if(ax<6&&ay<6)return;s.lock=ax>ay?'x':'y'}if(s.lock==='y'){end();return}s.moved=Math.max(s.moved,Math.abs(e.clientX-s.sx));s.x=s.ox+(e.clientX-s.sx);var now=performance.now(),dt=Math.max(1,now-s.lt);s.fl=0.8*s.fl+0.2*((e.clientX-s.lx)/dt*16);s.lx=e.clientX;s.lt=now;if(s.moved>6&&!c.hasPointerCapture(e.pointerId)){try{c.setPointerCapture(e.pointerId)}catch(_){}}});
+    c.addEventListener('pointermove',function(e){if(!s.drag)return;if(!s.lock){var ax=Math.abs(e.clientX-s.sx),ay=Math.abs(e.clientY-s.sy);if(ax<6&&ay<6)return;s.lock=ax>ay?'x':'y'}if(s.lock==='y'){end();return}s.moved=Math.max(s.moved,Math.abs(e.clientX-s.sx));s.x=s.ox+(e.clientX-s.sx)/(window.UIZ||1);var now=performance.now(),dt=Math.max(1,now-s.lt);s.fl=0.8*s.fl+0.2*((e.clientX-s.lx)/(window.UIZ||1)/dt*16);s.lx=e.clientX;s.lt=now;if(s.moved>6&&!c.hasPointerCapture(e.pointerId)){try{c.setPointerCapture(e.pointerId)}catch(_){}}});
     c.addEventListener('pointerup',end);c.addEventListener('pointercancel',end);c.addEventListener('lostpointercapture',end);
     c.addEventListener('click',function(e){if(s.moved>6){e.preventDefault();e.stopPropagation()}},true);
     c.addEventListener('wheel',function(e){if(Math.abs(e.deltaX)>Math.abs(e.deltaY)){s.x-=e.deltaX;e.preventDefault()}},{passive:false});
@@ -1377,7 +1377,7 @@ function fitPricing(){var pg=$('poPages').children[poIdx];if(!pg)return;var part
 var _poGo=poGo;poGo=function(i,f){_poGo(i,f);requestAnimationFrame(fitPricing)};
 window.addEventListener('resize',function(){if(po.classList.contains('open'))fitPricing()});
 function setpOpen(on){var p=$('setp'),g=$('gear');if(!g)return;p.hidden=!on;g.setAttribute('aria-expanded',on);
-  if(on){var r=g.getBoundingClientRect();p.style.top=(r.bottom+6)+'px';p.style.right=Math.max(8,innerWidth-r.right-4)+'px'}}
+  if(on){var z=window.UIZ||1,r=g.getBoundingClientRect();p.style.top=(r.bottom/z+6)+'px';p.style.right=Math.max(8,(innerWidth-r.right)/z-4)+'px'}}
 document.addEventListener('click',function(e){if(e.target.closest('#gear')){setpOpen($('setp').hidden);return}if(!e.target.closest('#setp'))setpOpen(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(false)});
 renderNav();remixAll();buildPricing();go(0);

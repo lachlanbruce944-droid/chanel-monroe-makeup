@@ -46,11 +46,24 @@ html = re.sub(r'<script>.*?</script>\n?', script_sub, html, flags=re.S)
 html = html.replace('<link rel="preconnect" href="https://fonts.googleapis.com">',
                     '<link rel="preconnect" href="https://qxiugfatpybldluipcyy.supabase.co" crossorigin>\n<link rel="preconnect" href="https://fonts.googleapis.com">', 1)
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(html)
-open(os.path.join(OUT, 'css', 'site.css'), 'w', encoding='utf-8').write('\n'.join(s.strip('\n') for s in styles) + '\n')
+css = '\n'.join(s.strip('\n') for s in styles) + '\n'
+# One relative design for every landscape screen: the phone-landscape layout (designed at 874 x 402) is used on
+# tablets and desktops too, and the page is scaled up evenly to fill the screen (js/config.js sets the zoom).
+# Screen units (vh, vw, dvh) become units of that virtual canvas, so every gap keeps the same proportion.
+css = css.replace('(orientation:landscape) and (max-height:520px)', '(orientation:landscape)')
+css = re.sub(r'(?<![\w.-])(\d*\.?\d+)d?vh\b', lambda m: 'calc(%s * var(--uvh))' % m.group(1), css)
+css = re.sub(r'(?<![\w.-])(\d*\.?\d+)vw\b', lambda m: 'calc(%s * var(--uvw))' % m.group(1), css)
+css = ':root{--uvh:1vh;--uvw:1vw}\n' + css
+open(os.path.join(OUT, 'css', 'site.css'), 'w', encoding='utf-8').write(css)
 open(os.path.join(OUT, 'js', 'app.js'), 'w', encoding='utf-8').write(rewrite(';\n'.join(s.strip('\n') for s in scripts)) + '\n')
 open(os.path.join(OUT, 'js', 'config.js'), 'w', encoding='utf-8').write(
     "/* Hosted build: photos and clips come from Supabase Storage (bucket 'media'). */\n"
-    "window.MEDIA_BASE = '%s';\nwindow.MEDIA_M = true;   /* gallery photos have 540px copies (name.m.webp) */\n" % BASE)
+    "window.MEDIA_BASE = '%s';\nwindow.MEDIA_M = true;   /* gallery photos have 540px copies (name.m.webp) */\n" % BASE +
+    "/* Relative design: landscape screens bigger than the 874 x 402 phone design show that design scaled up evenly. */\n"
+    "(function(){var DW=874,DH=402,r=document.documentElement;\n"
+    "  function fit(){var w=innerWidth,h=innerHeight,s=w>h?Math.max(1,Math.min(w/DW,h/DH)):1;window.UIZ=s;\n"
+    "    r.style.zoom=s===1?'':s;r.style.setProperty('--uvh',h/s/100+'px');r.style.setProperty('--uvw',w/s/100+'px')}\n"
+    "  fit();addEventListener('resize',fit)})();\n")
 for folder in ('data', 'settings'):
     os.makedirs(os.path.join(OUT, folder), exist_ok=True)
     for f in os.listdir(os.path.join(SRC, folder)):
