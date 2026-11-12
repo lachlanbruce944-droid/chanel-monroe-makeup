@@ -543,7 +543,9 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
 @media (orientation:landscape) and (max-height:520px){.lb{padding:12px 58px}.lb img,.lb video{max-height:calc(var(--vh) - 24px)}.lb figcaption{font-size:12.5px}}
 /* carousels: horizontal drags are ours, vertical swipes still scroll the page */
 .car{touch-action:pan-y;user-select:none;-webkit-user-select:none}
-.aff .side{overflow:hidden;display:flex;flex-direction:column;justify-content:center}.aff .side .sin{width:100%}
+.aff .side{overflow:hidden!important;display:flex;flex-direction:column;justify-content:center}.aff .side .sin{width:100%}
+/* the profile popup never scrolls as a whole: fixed height, the photo grid scrolls on its own, the profile text scales to fit */
+@media (min-width:821px){.aff{height:min(760px,calc(100vh - 40px));overflow:hidden;grid-template-rows:minmax(0,1fr)}.aff .g9{height:100%;overflow-y:auto}}
 #info{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;touch-action:pan-y}.car img{-webkit-user-drag:none}
 /* About: photo tile left, name and lines right */
 .about-hero{display:flex;align-items:flex-start;gap:clamp(16px,3vw,36px);margin-bottom:clamp(10px,3vh,26px);padding-top:clamp(4px,1.5vh,12px)}
