@@ -130,7 +130,9 @@ function moveOptions(it){if(!groupsOpt){groupsOpt=GROUPS.map(function(g){return 
   return '<select data-a="move" title="Move to another style">'+groupsOpt.replace('value="'+it.g+'|'+esc(it.s)+'"','value="'+it.g+'|'+esc(it.s)+'" selected')+'</select>'}
 /* hosted build (js/config.js sets MEDIA_M): every gallery photo is 1600px with an 800px copy, name.m.webp.
    The browser picks the smaller one on phones and 1x screens; local preview has no copies, so no srcset. */
-function small(u){return window.MEDIA_M&&/\.webp$/.test(u)&&/\/images\/(inspiration|chanel)\//.test(u)&&!/\/comments\//.test(u)?u.replace(/\.webp$/,'.m.webp'):u}
+function small(u){if(!window.MEDIA_M||!/\.webp$/.test(u))return u;
+  if(/\/(gallery|chanel\/work|products)\//.test(u)&&!/-800\.webp$/.test(u))return u.replace(/\.webp$/,'-800.webp');   /* storage names (tools/media_names.py) */
+  return /\/images\/(inspiration|chanel)\//.test(u)&&!/\/comments\//.test(u)?u.replace(/\.webp$/,'.m.webp'):u}       /* older names, until the rename runs */
 function srcset(u){var s=small(u);return s===u?'':' srcset="'+s+' 800w, '+u+' 1600w" sizes="(max-height:520px) 40vw, (max-width:760px) 72vw, 34vw"'}
 function tileHTML(it,k){
   var w=Math.max(.56,Math.min(1,(it.w||4)/(it.h||5))), pins=O.pinned[key(GROUPS[cur],sub)]||[], pinned=pins.indexOf(it.src)>=0;
@@ -305,20 +307,20 @@ function prodCard(p){var im=p.img||brandLogo(p.brand);
   return '<div class="prod" role="button" tabindex="0" data-prod="'+p.i+'"><div class="pi'+(p.img?'':' logoonly')+'">'+(im?'<img loading="lazy" src="'+im+'" alt="'+esc(p.brand+' '+p.name)+'" onerror="this.style.visibility=\'hidden\'">':'')+'</div><div class="pt"><small>'+esc(p.brand)+'</small>'+esc(p.name)+(p.kit?'<em>In Chanel’s kit</em>':'')+'</div></div>'}
 function shopName(u){var h=(String(u).match(/^https?:\/\/([^/]+)/)||[])[1]||'';h=h.replace(/^www\.|^au\./,'');return ({'adorebeauty.com.au':'Adore Beauty','mecca.com':'MECCA','sephora.com.au':'Sephora','spacenk.com':'Space NK','davidjones.com':'David Jones'})[h]||h}
 function openProduct(p){var im=p.img||brandLogo(p.brand),B=(window.BRANDS_INFO||{})[p.brand];
-  $('pmBox').innerHTML='<div class="pm-img'+(p.img?'':' logoonly')+'">'+(im?'<img src="'+im+'" alt="'+esc(p.brand+' '+p.name)+'">':'')+'</div><div class="pm-info"><small class="pm-brand">'+(B||brandLogo(p.brand)?'<button class="lnk" data-brand="'+esc(p.brand)+'">'+esc(p.brand)+' ›</button>':esc(p.brand))+'</small><h2>'+esc(p.name)+'</h2>'+
+  $('pmBox').innerHTML='<div class="pm-img'+(p.img?'':' logoonly')+'">'+(im?'<img src="'+im+'" alt="'+esc(p.brand+' '+p.name)+'">':'')+'</div><div class="pm-info"><div class="sin"><small class="pm-brand">'+(B||brandLogo(p.brand)?'<button class="lnk" data-brand="'+esc(p.brand)+'">'+esc(p.brand)+' ›</button>':esc(p.brand))+'</small><h2>'+esc(p.name)+'</h2>'+
     '<p class="pm-cat">'+esc(p.cat)+(p.price?' · '+esc(p.price):'')+'</p>'+(p.kit?'<p class="pm-kit">One of the products Chanel uses on clients.</p>':'')+
     '<div class="pm-desc">'+(p.desc?esc(p.desc).replace(/\n+/g,'<br><br>'):'<span class="soft">Description coming soon.</span>')+'</div>'+
     (p.url?'<a class="pill solid" href="'+p.url+'" target="_blank" rel="noopener sponsored">View at '+esc(shopName(p.url))+' ↗</a>':'')+
-    (p.desc&&p.src?'<p class="note-small">Product description from '+esc(p.src)+'.</p>':'')+'</div>';
-  $('prodMod').classList.add('open')}
+    (p.desc&&p.src?'<p class="note-small">Product description from '+esc(p.src)+'.</p>':'')+'</div></div>';
+  $('prodMod').classList.add('open');fitPanel($('pmBox').querySelector('.pm-info'))}
 function openBrand(name){var B=(window.BRANDS_INFO||{})[name]||{},logo=brandLogo(name),url=BRAND_URL[name]||B.url,C=catalog();
   var mine=C.items.filter(function(p){return p.brand===name||(p.brand||'').toLowerCase()===name.toLowerCase()}).slice(0,9);
   var facts=[['Est.',B.est],['From',B.origin],['Founder',B.founder]].filter(function(f){return f[1]});
-  $('bmBox').innerHTML='<div class="bm-head">'+(logo?'<img class="bm-logo" src="'+logo+'" alt="'+esc(name)+'">':'<h2>'+esc(name)+'</h2>')+
+  $('bmBox').innerHTML='<div class="bm-head"><div class="sin">'+(logo?'<img class="bm-logo" src="'+logo+'" alt="'+esc(name)+'">':'<h2>'+esc(name)+'</h2>')+
     (facts.length?'<dl class="bm-facts">'+facts.map(function(f){return '<div><dt>'+f[0]+'</dt><dd>'+esc(f[1])+'</dd></div>'}).join('')+'</dl>':'')+
-    (B.about?'<p class="bm-about">'+esc(B.about)+'</p>':'')+(url?'<a class="pill solid" href="'+url+'" target="_blank" rel="noopener">Visit '+esc(name)+' ↗</a>':'')+'</div>'+
-    (mine.length?'<div class="bm-grid">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi"><img loading="lazy" src="'+(p.img||logo)+'" alt=""></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
-  $('brandMod').classList.add('open')}
+    (B.about?'<p class="bm-about">'+esc(B.about)+'</p>':'')+(url?'<a class="pill solid" href="'+url+'" target="_blank" rel="noopener">Visit '+esc(name)+' ↗</a>':'')+'</div></div>'+
+    (mine.length?'<div class="bm-grid" style="grid-template-rows:repeat('+Math.ceil(mine.length/3)+',minmax(0,1fr))">'+mine.map(function(p){return '<button class="bm-p" data-prod="'+p.i+'"><span class="bm-pi"><img loading="lazy" src="'+(p.img||logo)+'" alt=""></span><span>'+esc(p.name)+'</span></button>'}).join('')+'</div>':'<p class="note-small bm-none">Products from this brand are coming soon.</p>');
+  $('brandMod').classList.add('open');var bh=$('bmBox').querySelector('.bm-head');fitPanel(bh);var lg=bh.querySelector('img');if(lg&&!lg.complete)lg.addEventListener('load',function(){fitPanel(bh)},{once:true})}
 document.addEventListener('click',function(e){var b=e.target.closest('[data-brand]'),p=e.target.closest('[data-prod]');
   if(p&&!e.defaultPrevented){var it=catalog().items[+p.dataset.prod];if(it){$('brandMod').classList.remove('open');openProduct(it)}return}
   if(b&&!e.defaultPrevented){$('prodMod').classList.remove('open');openBrand(b.dataset.brand)}});
@@ -390,10 +392,12 @@ $('info').addEventListener('click',function(e){var c=e.target.closest('[data-aff
     '<div class="g9" style="grid-template-rows:repeat('+Math.max(1,Math.ceil(Math.min(9,a.imgs.length)/3))+',minmax(0,1fr))">'+(a.imgs.length?a.imgs.slice(0,9).map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
   $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
 /* the profile panel never scrolls: its content scales down until it fits */
-function fitAff(){var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
+function fitAff(){fitPanel($('affBox').querySelector('.side'))}
+function fitPanel(sd){var w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
   var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),z=1;
   while(z>0.55&&w.getBoundingClientRect().height>room+1){z-=0.03;w.style.zoom=z}}
-window.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff()});
+window.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff();
+  if($('prodMod').classList.contains('open'))fitPanel($('pmBox').querySelector('.pm-info'));if($('brandMod').classList.contains('open'))fitPanel($('bmBox').querySelector('.bm-head'))});
 
 /* ---- Instagram-style post popup for Chanel's work (photo left, caption + comments right) ---- */
 var igList=[],igk=0;
