@@ -2,6 +2,9 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (chat enquiry saves to Supabase)
+- New table `public.enquiries` in the Supabase project: row-level security on, the public key can only insert (consent required, size limits on every field), nobody can read rows without the service role. `enquire.html` now has the publishable key, so every sent enquiry is saved. Add `?localdb` to the address to practise without saving.
+
 ### 2026-11-14 (chat enquiry page)
 - New `enquire.html`: a chat-style enquiry over frosted glass, with an animated orb for the assistant. It asks for the booking type and style (from a list, with styles from the site's sections), date, time, suburb (distance and travel check), how many, skin, allergies and patch test, lashes, extra services, reference photos (+ on any gallery photo) and beauty-team artists. Detail tiles (style, date, time, suburb, estimate) build up above the chat. It ends with a summary, a price estimate from `settings/pricing-settings.js`, and "Choose a time for your phone consult", which opens cal.com/chanelmonroe/enquiry with name, email, phone, Style and notes filled in.
 - Every Enquire and Book button now opens the chat (`data/site-content.js` BOOKING_LINKS). Section buttons pass `?for=<section>`: Natural, Editorial and Parties fill in the booking type; Special events offers Bridal or Glam.

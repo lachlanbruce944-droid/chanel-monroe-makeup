@@ -18,8 +18,9 @@
   the live answers, the Supabase row, the Google Calendar event and the
   cal.com link while you click through.
 
-  SUPABASE: run this once in Supabase > SQL editor, then paste the
-  project's anon (public) key into CONFIG.supabaseAnonKey.
+  SUPABASE: set up on 2026-11-14 (table public.enquiries in project
+  makeup-website, with size limits and the insert-only policy below).
+  The key in CONFIG.supabaseAnonKey is the project's publishable key.
   The anon key is safe in the browser: the policy below only lets the
   public INSERT, never read.
 
@@ -556,7 +557,7 @@ const CONFIG = {
   mediaBase: 'https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/',
 
   supabaseUrl: 'https://qxiugfatpybldluipcyy.supabase.co',
-  supabaseAnonKey: 'PASTE_ANON_KEY_HERE',   // leave as-is to run in SIMULATED mode (nothing is saved)
+  supabaseAnonKey: 'sb_publishable_sGLIpIxvos66FLVI9vPSbg_qXsTT6rt',   // public key: it can only ADD enquiries (table policy), never read them
   supabaseTable: 'enquiries',
 
   calLink: 'https://cal.com/chanelmonroe/enquiry',
@@ -1226,7 +1227,7 @@ const MockDB = (() => {
     dump: () => load()
   };
 })();
-const liveMode = () => CONFIG.supabaseAnonKey && !/PASTE/.test(CONFIG.supabaseAnonKey);
+const liveMode = () => CONFIG.supabaseAnonKey && !/PASTE/.test(CONFIG.supabaseAnonKey) && !/[?&]localdb\b/.test(location.search);   // ?localdb = practise without saving to Supabase
 async function saveToSupabase(row){
   if(!liveMode()){
     await wait(600);
@@ -1239,7 +1240,8 @@ async function saveToSupabase(row){
   const id = crypto.randomUUID();
   const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.supabaseTable}`, {
     method:'POST',
-    headers:{ apikey:CONFIG.supabaseAnonKey, Authorization:'Bearer '+CONFIG.supabaseAnonKey, 'Content-Type':'application/json', Prefer:'return=minimal' },
+    headers:Object.assign({ apikey:CONFIG.supabaseAnonKey, 'Content-Type':'application/json', Prefer:'return=minimal' },
+      /^sb_/.test(CONFIG.supabaseAnonKey) ? {} : { Authorization:'Bearer '+CONFIG.supabaseAnonKey }),   // new publishable keys go in apikey only
     body: JSON.stringify({ id, ...row })
   });
   if(!r.ok) throw new Error('Supabase ' + r.status + ': ' + await r.text());
