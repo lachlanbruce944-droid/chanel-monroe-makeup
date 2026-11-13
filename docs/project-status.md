@@ -33,6 +33,7 @@ Prices live only in `settings/pricing-settings.js` (LOOK_PRICES). Do not copy pr
 - Pricing shows inspiration photos only (not Chanel's work), credited to each artist, as a rotating gallery.
 
 ## Open items
+- Enquiry emails (see CHANGELOG 2026-11-14): add the 4 Resend DNS records for chanelmonroe.net (DKIM TXT resend._domainkey; MX + TXT on "send"; CNAME rsend), save a Resend API key as the RESEND_API_KEY Edge Function secret, and run `docs/enquiry-emails.sql`. Then send a test enquiry.
 - Chat enquiry (`enquire.html`): enquiries now save to Supabase (`public.enquiries`, view them in the Supabase Table Editor). Set `CONFIG.base` to Chanel's real suburb (Robina is a placeholder) and, if wanted, `travelPerKm`. Do one test booking to check cal.com ticks the "Style" box from the link. Google Calendar events for enquiries still need the Supabase Edge Function.
 - Copy `enquire.html`, `tools/publish.py`, `tools/build_site.py`, `data/site-content.js` and `settings/pricing-settings.js` from `src/` into `M:\CMM-Site\final-draft` before the next publish, or publishing will undo the chat enquiry (these were changed in the repo directly on 2026-11-14).
 - Confirm or change the design options (mock at `M:\CMM-Site\CMM-Mock\mock.html` shows all of them). Final draft uses A, B, C, B, B.

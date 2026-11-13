@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (enquiry emails: set-up started)
+- Supabase Edge Function `enquiry-email` deployed: for each new enquiry it emails Chanel (makeup@chanelmonroe.net, reply goes to the client) the full enquiry with reference photos and artists, and emails the client a branded confirmation with a "Choose a time for your phone call" button. It sends once per enquiry and only for new rows.
+- Resend: domain chanelmonroe.net added (sending from enquiries@chanelmonroe.net). Still to do: DNS records, a Resend API key saved as the RESEND_API_KEY function secret, and the database trigger in `docs/enquiry-emails.sql`.
+
 ### 2026-11-14 (beauty team names, team matches the extra services, no scroll bars)
 - Beauty team tiles show only the artist's Instagram name (no @handle), sized to fit under the circle (two lines at most, no overlap).
 - Picking Hair, Nails, Lashes & brows, Spray tan or Photographer as an extra service shows just those artists; "Show the whole beauty team" shows everyone.
