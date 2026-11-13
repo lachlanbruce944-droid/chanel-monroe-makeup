@@ -844,3 +844,23 @@ body .po button.x.x{top:4px!important;right:4px!important;width:clamp(22px,calc(
 body[data-nav="a"] .nav .gbtn{padding-top:clamp(7px,calc(2.3 * var(--uvh)),11px)!important}
 #gallery .strip{padding:clamp(1px,calc(.5 * var(--uvh)),3px) 0!important}
 }
+
+/* Editorial: liquid background (WebGL), accent shifts red > blue > green > yellow > purple > pink.
+   Text sits on dark frosted panels so it stays readable over every colour. */
+#edLiquid{position:fixed;inset:0;width:100%;height:100%;z-index:-1;pointer-events:none;display:none}
+body[data-g="editorial"] #edLiquid{display:block}
+body[data-g="editorial"]{background:#06050b!important}
+body[data-g="editorial"].ed-nogl{background:radial-gradient(60% 70% at 25% 30%,#ff1744 0,transparent 60%),radial-gradient(60% 70% at 80% 75%,#2962ff 0,transparent 60%),#06050b!important}
+body[data-g="editorial"] #nav{background:rgba(6,5,14,.58);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body[data-g="editorial"] #nav .gbtn{color:rgba(255,255,255,.74)!important}
+body[data-g="editorial"] #nav .gbtn[aria-current="true"]{color:#fff!important;border-color:#fff!important}
+body[data-g="editorial"] #nav svg{color:#fff}
+body[data-g="editorial"] .ghead{align-self:flex-start;margin-left:clamp(8px,calc(2 * var(--uvw)),18px)!important;padding-left:clamp(8px,calc(1.6 * var(--uvw)),14px)!important;padding-right:clamp(10px,calc(2 * var(--uvw)),18px)!important;border-radius:0 0 12px 12px;background:rgba(6,5,14,.58);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body[data-g="editorial"] .ghead,body[data-g="editorial"] .ghead *{color:#fff!important}
+body[data-g="editorial"] #gallery .capbar{background:rgba(6,5,14,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:14px}
+body[data-g="editorial"] #gallery .capbar,body[data-g="editorial"] #gallery .capbar *{color:#fff!important}
+body[data-g="editorial"] #gallery .capbar .sub,body[data-g="editorial"] #gallery .capbar .src{color:rgba(255,255,255,.82)!important}
+body[data-g="editorial"] .fbrand{background:rgba(6,5,14,.62)!important;color:#fff!important}
+body[data-g="editorial"] .fbrand i{color:#fff!important}
+body[data-g="editorial"] .fab .pill{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.4)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body[data-g="editorial"] .fab .pill.solid{background:#fff!important;color:#06050b!important;border-color:#fff!important}
