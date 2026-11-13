@@ -493,21 +493,61 @@ document.addEventListener('keydown',function(e){
   else if($('lb').classList.contains('open')){if(e.key==='ArrowRight')lbShow(lbk+1);if(e.key==='ArrowLeft')lbShow(lbk-1)}
 });
 if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding:14px;background:#fdd;margin:0">data/media.js is missing: run tools/build-media.ps1.</p>');
-/* phones: full screen + landscape lock where the browser allows (Android); iPhone Safari ignores both, the turn-sideways screen still guides */
-$('goFull').addEventListener('click',function(){var d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;
-  var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
-  try{var r=f&&f.call(d);if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}});
-(function(){var d=document.documentElement,canFs=!!(d.requestFullscreen||d.webkitRequestFullscreen),skip=false;
-  var dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)');
+/* ---- Entry gate on phones and tablets (the legacy mockup's logic):
+   1. Phone upright: "Turn your phone sideways". The gate stays until it is sideways, and comes back if it turns upright.
+   2. Sideways, not full screen: Enter full screen (+ landscape lock) on Android and iPad.
+      iPhone browsers can't go full screen, so iPhone visitors are shown how to add the site to the Home Screen
+      (it opens full screen from there), with Continue in Safari.
+   Leaving full screen brings step 2 back, unless the visitor chose to continue without it (remembered for this visit).
+   Opened from the Home Screen counts as full screen. Add ?gate to the address to test the gate on a computer. ---- */
+(function(){var d=document.documentElement,R=$('rotate'),ua=navigator.userAgent,
+  iphone=/iPhone|iPod/.test(ua),ios=iphone||/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),
+  canFs=!iphone&&!!(d.requestFullscreen||d.webkitRequestFullscreen),
+  app=/CriOS/.test(ua)?'Chrome':/FxiOS/.test(ua)?'Firefox':/EdgiOS/.test(ua)?'Edge':'Safari',
+  force=/[?&]gate\b/.test(location.search),
+  dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)'),
+  skip=false,was=null,hintT=0,lastStep=null;
+  try{skip=sessionStorage.getItem('cmm-fs-skip')==='1'}catch(e){}
+  if(/[?&]gate=ios\b/.test(location.search)){iphone=ios=true;canFs=false}
   function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
-  function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
-    $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
-    $('goFull').textContent='Explore'}
-  ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
-  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
-  /* if the browser refuses full screen, offer a way in after the first try */
-  $('goFull').addEventListener('click',function(){setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
-  $('goOn').onclick=function(){skip=true;upd()};
+  var TXT={turn:['Turn your phone sideways','The galleries are made for landscape.'],
+    full:['Go full screen','Edge to edge, the way the photos are meant to be seen.'],
+    ios:['Go full screen','Edge to edge, the way the photos are meant to be seen.']};
+  $('goSafari').textContent='Continue in '+app;
+  $('step2').textContent='Full screen';
+  $('hsP1').textContent=app==='Safari'?'It’s in Safari’s bar at the top of the screen, or under •••.':'It’s in '+app+'’s address bar at the top of the screen.';
+  /* iPhone sheet: Enter full screen opens 3 steps (Share > Add to Home Screen > open from the Home Screen) */
+  var HS=$('hs'),hp=0,pages=$('hsPages').children,dots=HS.querySelectorAll('.hs-dots i');
+  function hsShow(i){hp=Math.max(0,Math.min(pages.length-1,i));HS.dataset.p=hp;
+    [].forEach.call(pages,function(p,k){p.classList.toggle('on',k===hp)});[].forEach.call(dots,function(d,k){d.classList.toggle('on',k===hp)});
+    $('hsBack').hidden=hp===0;$('hsNext').textContent=hp===pages.length-1?'Got it':'Next'}
+  function hsOpen(){hsShow(0);HS.hidden=false;$('hsNext').focus({preventScroll:true})}
+  function hsClose(){HS.hidden=true;$('goIos').focus({preventScroll:true})}
+  $('goIos').onclick=hsOpen;$('hsX').onclick=hsClose;$('hsBack').onclick=function(){hsShow(hp-1)};
+  $('hsNext').onclick=function(){if(hp<pages.length-1)hsShow(hp+1);else hsClose()};
+  HS.addEventListener('click',function(e){if(e.target===HS)hsClose()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!HS.hidden)hsClose()});
+  $('rotHint').textContent=ios?'Not turning? Swipe down from the top-right corner and switch off Portrait Orientation Lock.'
+    :'Not turning? Switch on Auto-rotate in your quick settings.';
+  function upd(){var p=por.matches,step=p?'turn':(!isFs()&&!skip)?(canFs?'full':'ios'):'',need=(dev.matches||force)&&!!step;
+    document.body.classList.add('gated');
+    if(step){R.dataset.step=step;$('rotT').textContent=TXT[step][0];$('rotP').textContent=TXT[step][1]}
+    if(step!=='ios'||!need)HS.hidden=true;   /* the sheet only belongs to the iPhone sideways step */
+    if(need!==was){document.body.classList.toggle('gate',need);
+      if(was&&!need){R.classList.add('leaving');setTimeout(function(){R.classList.remove('leaving')},650)}   /* fade the gate away */
+      if(need)R.classList.remove('leaving');was=need}
+    var hs=need&&step;if(hs!==lastStep){lastStep=hs;clearTimeout(hintT);R.classList.remove('hint-on');
+      if(hs==='turn')hintT=setTimeout(function(){R.classList.add('hint-on')},7000)}}   /* rotation-lock hint if they're still upright */
+  function goOn(){skip=true;try{sessionStorage.setItem('cmm-fs-skip','1')}catch(e){}upd()}
+  dev.addEventListener&&dev.addEventListener('change',upd);por.addEventListener&&por.addEventListener('change',upd);
+  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);
+  window.addEventListener('resize',upd);window.addEventListener('orientationchange',function(){setTimeout(upd,250)});
+  /* full screen + landscape lock where the browser allows; if it refuses, offer a way in after the first try */
+  $('goFull').addEventListener('click',function(){var f=d.requestFullscreen||d.webkitRequestFullscreen;
+    var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
+    try{var r=f&&f.call(d,{navigationUI:'hide'});if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}
+    setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
+  $('goOn').onclick=goOn;$('goSafari').onclick=goOn;
   /* welcome lines, one at a time, held long enough to read (about 16 characters a second, never under 3.5s) */
   var WL=['Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.',
     'This is a place to explore looks: natural, glam, bridal, editorial, FX and parties.',

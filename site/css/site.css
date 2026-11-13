@@ -457,20 +457,95 @@ body.editing .tile figcaption{display:none}
 .tile.isHidden{opacity:.35}
 /* ===== Phones: landscape only. Portrait shows a "turn sideways" screen; landscape gets a compact layout ===== */
 #rotate{display:none}
-/* entry gate on phones and tablets: landscape + full screen first (script sets body.gate) */
-body.gate #rotate{display:flex;position:fixed;inset:0;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 32px;text-align:center;
-background:radial-gradient(420px 420px at 0% 0%,#ff3d8b 0,transparent 68%),radial-gradient(440px 440px at 100% 100%,#2ee6c8 0,transparent 66%),radial-gradient(260px 260px at 100% 40%,#ff9a2e 0,transparent 66%),#140b1f;color:#fff;font-family:var(--ff)}
-body.gate #rotate .rb{font-family:"Pinyon Script",cursive;font-size:46px;line-height:1}
-body.gate #rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:30px}
-body.gate #rotate p{margin:0;font-size:15px;line-height:1.5;color:#efe6f5;max-width:300px}
-body.gate #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15px 28px;border-radius:99px;border:0;background:#fff;color:#140b1f}
-body.gate #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
+/* entry gate on phones and tablets (logic from the legacy mockup; script sets body.gate and #rotate[data-step]):
+   turn = phone upright, full = landscape but not full screen, ios = iPhone (no full screen in the browser: Home Screen steps) */
+body.gate{overflow:hidden;touch-action:none}
 body.gate>*:not(#rotate):not(script){visibility:hidden}
-@keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
-body.gate #rotate .wl{min-height:3em;max-width:440px;font-size:16px;transition:opacity .45s ease,transform .45s ease}
-body.gate #rotate .wl.out{opacity:0;transform:translateY(6px)}
-body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 10px;text-decoration:underline;font-weight:500}
-@media (orientation:landscape){body.gate #rotate{gap:14px}body.gate #rotate svg{display:none}body.gate #rotate .rb{font-size:40px}}
+body.gate #rotate,#rotate.leaving{display:grid}
+#rotate{position:fixed;inset:0;z-index:200;place-items:center;overflow:hidden;box-sizing:border-box;
+  padding:max(22px,env(safe-area-inset-top)) max(26px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(26px,env(safe-area-inset-left));
+  background:#120c14;color:#f6efe9;font-family:var(--ff);text-align:center;-webkit-text-size-adjust:100%;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+#rotate.leaving{opacity:0;pointer-events:none;transition:opacity .6s ease}
+#rotate .glow{position:absolute;inset:-25%;pointer-events:none;filter:blur(36px);
+  background:radial-gradient(38% 34% at 18% 22%,rgba(226,140,156,.55),transparent 70%),radial-gradient(34% 40% at 86% 78%,rgba(212,166,104,.42),transparent 70%),radial-gradient(28% 30% at 72% 12%,rgba(140,86,168,.38),transparent 70%);
+  animation:gl-drift 16s ease-in-out infinite alternate}
+@keyframes gl-drift{to{transform:translate3d(5%,-4%,0) rotate(10deg) scale(1.1)}}
+#rotate .in{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;max-width:440px}
+#rotate .lead,#rotate .act{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+#rotate .rb{margin:0;padding:0 .2em;font-family:"Pinyon Script",cursive;font-size:clamp(46px,calc(14 * var(--uvw)),66px);line-height:1.05;color:#f3d9b8;
+  background:linear-gradient(100deg,#e8c49a 0%,#fff7ee 28%,#cf9a63 50%,#fff7ee 72%,#e8c49a 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rb-shine 7s ease-in-out infinite}
+@keyframes rb-shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+#rotate .tag{margin:-4px 0 0;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(246,239,233,.66)}
+#rotate .wl{margin:6px 0 0;min-height:3em;max-width:360px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;line-height:1.4;color:rgba(246,239,233,.86);transition:opacity .45s ease,transform .45s ease}
+#rotate .wl.out{opacity:0;transform:translateY(6px)}
+#rotate .act{padding:22px 20px 18px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-sizing:border-box}
+#rotate .dev{display:block;width:84px;height:84px;margin-bottom:-4px}
+#rotate .dev .ph{animation:rot 2.6s cubic-bezier(.6,0,.3,1) infinite;transform-origin:60px 60px}
+@keyframes rot{0%,22%{transform:rotate(0)}52%,86%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+#rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:27px;line-height:1.1}
+#rotate .sub{margin:0;max-width:330px;font-size:13.5px;line-height:1.5;color:rgba(246,239,233,.72)}
+#rotate .go{min-height:50px;min-width:210px;padding:0 28px;border:0;border-radius:99px;font:600 15px/1 var(--ff);letter-spacing:.02em;color:#1c1218;cursor:pointer;
+  background:linear-gradient(180deg,#fffaf4,#f0dcc4);box-shadow:0 8px 26px rgba(0,0,0,.35),inset 0 1px 0 #fff;touch-action:manipulation}
+#rotate .go:active{transform:scale(.97)}
+#rotate .alt{min-height:44px;padding:0 12px;border:0;background:none;font:500 13px var(--ff);color:rgba(246,239,233,.75);text-decoration:underline;text-underline-offset:3px;cursor:pointer;touch-action:manipulation}
+/* iPhone full-screen sheet: three steps to add the site to the Home Screen, with an arrow up to the browser's bar */
+#rotate .hs{position:absolute;inset:0;z-index:2;display:grid;place-items:center;box-sizing:border-box;padding:inherit;background:rgba(10,6,12,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:hs-in .35s ease}
+#rotate .hs[hidden]{display:none}
+@keyframes hs-in{from{opacity:0}}
+#rotate .hs-card{position:relative;width:min(560px,100%);box-sizing:border-box;padding:22px 22px 16px;border-radius:24px;background:#fbf6f0;color:#1c1218;text-align:left;box-shadow:0 24px 70px rgba(0,0,0,.5);animation:hs-up .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes hs-up{from{transform:translateY(24px);opacity:0}}
+#rotate .hs-x{position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;cursor:pointer}
+#rotate .hs-x::before,#rotate .hs-x::after{content:"";position:absolute;left:12px;right:12px;top:19px;height:2px;border-radius:2px;background:#6d5f66;transform:rotate(45deg)}
+#rotate .hs-x::after{transform:rotate(-45deg)}
+#rotate .hs-p{display:none;grid-template-columns:110px minmax(0,1fr);gap:20px;align-items:center}
+#rotate .hs-p.on{display:grid;animation:hs-fade .35s ease}
+@keyframes hs-fade{from{opacity:0;transform:translateX(10px)}}
+#rotate .hs-ill{display:grid;place-items:center;width:110px;height:110px;border-radius:22px;background:#efe3d6}
+#rotate .hs-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px;box-sizing:border-box;place-items:stretch}
+#rotate .hs-p{grid-template-columns:150px minmax(0,1fr)}
+#rotate .hs-ill{width:150px}
+#rotate .hs-menu .r{display:flex;align-items:center;gap:5px;padding:6px 7px;border-radius:8px;font-size:9.5px;font-weight:500;background:#fff;white-space:nowrap;overflow:hidden}
+#rotate .hs-menu .r svg{flex:none;width:14px;height:14px}
+#rotate .hs-menu .dim{opacity:.45}
+#rotate .hs-menu .hi{background:#1c1218;color:#fff;animation:hs-pulse 1.6s ease-in-out infinite}
+@keyframes hs-pulse{50%{transform:scale(1.05)}}
+#rotate .hs-home{gap:6px;align-content:center;font-size:10.5px;font-weight:500}
+#rotate .hs-home img{width:60px;height:60px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+#rotate .hs-k{margin:0 0 4px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#a07a52}
+#rotate .hs h3{margin:0 0 6px;font-family:"Cormorant Garamond",serif;font-weight:600;font-size:25px;line-height:1.1}
+#rotate .hs-tx p:last-child{margin:0;font-size:13.5px;line-height:1.45;color:#5b4d55}
+#rotate .hs-nav{display:flex;align-items:center;gap:10px;margin-top:16px}
+#rotate .hs-dots{display:flex;gap:6px;margin-right:auto}
+#rotate .hs-dots i{width:7px;height:7px;border-radius:50%;background:#dccbbb;transition:width .3s,background .3s}
+#rotate .hs-dots i.on{width:20px;border-radius:4px;background:#1c1218}
+#rotate .hs .go{min-width:120px;min-height:44px;background:#1c1218;color:#fff;box-shadow:none}
+#rotate .hs .alt{color:#5b4d55}
+#rotate .hs-arrow{position:absolute;top:max(6px,env(safe-area-inset-top));right:max(40px,calc(env(safe-area-inset-right) + 24px));display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#e9c49a;animation:hs-bob 1.1s ease-in-out infinite}
+#rotate .hs:not([data-p="0"]) .hs-arrow{visibility:hidden}
+@keyframes hs-bob{50%{transform:translateY(-8px)}}
+@media (orientation:landscape) and (max-height:360px){#rotate .hs-card{padding:14px 18px 10px}#rotate .hs-p{grid-template-columns:150px minmax(0,1fr)}#rotate .hs-ill{width:150px;height:92px}#rotate .hs h3{font-size:21px}#rotate .hs-nav{margin-top:10px}}
+#rotate .steps{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,239,233,.5)}
+#rotate .steps i{width:26px;height:2px;border-radius:2px;background:rgba(246,239,233,.22)}
+#rotate .steps b{font-weight:500}
+#rotate[data-step="turn"] .steps .s1,#rotate:not([data-step="turn"]) .steps .s2{color:#e9c49a}
+#rotate .hint{margin:0;max-width:320px;font-size:12px;line-height:1.45;color:rgba(246,239,233,.6);opacity:0;transition:opacity .8s ease}
+#rotate.hint-on .hint{opacity:1}
+/* only the parts for the current step */
+#rotate:not([data-step="turn"]) .s-turn,#rotate:not([data-step="full"]) .s-full,#rotate:not([data-step="ios"]) .s-ios{display:none!important}
+/* sideways: brand and welcome on the left, the next step on the right */
+@media (orientation:landscape){
+  #rotate .in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(18px,calc(5 * var(--uvw)),56px);max-width:860px}
+  #rotate .lead{align-items:flex-start;text-align:left;gap:8px}
+  #rotate .rb{font-size:clamp(40px,calc(13 * var(--uvh)),64px);padding-left:0;margin-left:-.05em}
+  #rotate .tag{margin:0}
+  #rotate .wl{min-height:4.2em;font-size:clamp(15px,calc(4.4 * var(--uvh)),19px)}
+  #rotate .act{gap:clamp(7px,calc(2.4 * var(--uvh)),12px);padding:clamp(14px,calc(4.5 * var(--uvh)),22px) 18px}
+  #rotate .dev{width:clamp(44px,calc(15 * var(--uvh)),72px);height:clamp(44px,calc(15 * var(--uvh)),72px)}
+  #rotate h2{font-size:clamp(21px,calc(6.6 * var(--uvh)),27px)}
+  #rotate .sub{font-size:clamp(12px,calc(3.4 * var(--uvh)),13.5px)}
+  #rotate .go{min-height:clamp(42px,calc(12 * var(--uvh)),50px)}
+}
+@media (prefers-reduced-motion:reduce){#rotate .glow,#rotate .rb,#rotate .dev .ph,#rotate .hs,#rotate .hs *{animation:none!important}}
 
 @media (orientation:landscape){
   :root{--hdr:40px;--foot:54px}

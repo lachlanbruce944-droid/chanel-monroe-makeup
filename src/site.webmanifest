@@ -1,0 +1,17 @@
+{
+  "name": "Chanel Monroe Makeup",
+  "short_name": "Chanel Monroe",
+  "description": "Mobile makeup artist on the Gold Coast: bridal, glam, editorial, SFX and party makeup.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "landscape",
+  "background_color": "#120c14",
+  "theme_color": "#120c14",
+  "icons": [
+    { "src": "images/icons/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "images/icons/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "images/icons/apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}

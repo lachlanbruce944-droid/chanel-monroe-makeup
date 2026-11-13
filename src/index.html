@@ -8,6 +8,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192.png">
 <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+<!-- Home Screen launch opens the site full screen (iPhone can't go full screen in the browser) -->
+<link rel="manifest" href="site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chanel Monroe">
 <title>Mobile Makeup Artist Gold Coast | Bridal, Glam &amp; SFX | Chanel Monroe Makeup</title>
 <meta name="description" content="Chanel Monroe is a mobile makeup artist on the Gold Coast: bridal, formal and event glam, editorial shoots, SFX, Halloween and party face paint. Huxley-trained. I come to you.">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -496,20 +502,95 @@ body.editing .tile figcaption{display:none}
 .tile.isHidden{opacity:.35}
 /* ===== Phones: landscape only. Portrait shows a "turn sideways" screen; landscape gets a compact layout ===== */
 #rotate{display:none}
-/* entry gate on phones and tablets: landscape + full screen first (script sets body.gate) */
-body.gate #rotate{display:flex;position:fixed;inset:0;z-index:200;flex-direction:column;align-items:center;justify-content:center;gap:22px;padding:0 32px;text-align:center;
-background:radial-gradient(420px 420px at 0% 0%,#ff3d8b 0,transparent 68%),radial-gradient(440px 440px at 100% 100%,#2ee6c8 0,transparent 66%),radial-gradient(260px 260px at 100% 40%,#ff9a2e 0,transparent 66%),#140b1f;color:#fff;font-family:var(--ff)}
-body.gate #rotate .rb{font-family:"Pinyon Script",cursive;font-size:46px;line-height:1}
-body.gate #rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:30px}
-body.gate #rotate p{margin:0;font-size:15px;line-height:1.5;color:#efe6f5;max-width:300px}
-body.gate #rotate button{font:inherit;font-weight:600;font-size:15px;padding:15px 28px;border-radius:99px;border:0;background:#fff;color:#140b1f}
-body.gate #rotate svg .ph{animation:rot 2.4s ease-in-out infinite;transform-origin:60px 60px}
+/* entry gate on phones and tablets (logic from the legacy mockup; script sets body.gate and #rotate[data-step]):
+   turn = phone upright, full = landscape but not full screen, ios = iPhone (no full screen in the browser: Home Screen steps) */
+body.gate{overflow:hidden;touch-action:none}
 body.gate>*:not(#rotate):not(script){visibility:hidden}
-@keyframes rot{0%,25%{transform:rotate(0)}55%,100%{transform:rotate(-90deg)}}
-body.gate #rotate .wl{min-height:3em;max-width:440px;font-size:16px;transition:opacity .45s ease,transform .45s ease}
-body.gate #rotate .wl.out{opacity:0;transform:translateY(6px)}
-body.gate #rotate .alt{font-size:13px;color:#cfc3dc;background:none;padding:6px 10px;text-decoration:underline;font-weight:500}
-@media (orientation:landscape){body.gate #rotate{gap:14px}body.gate #rotate svg{display:none}body.gate #rotate .rb{font-size:40px}}
+body.gate #rotate,#rotate.leaving{display:grid}
+#rotate{position:fixed;inset:0;z-index:200;place-items:center;overflow:hidden;box-sizing:border-box;
+  padding:max(22px,env(safe-area-inset-top)) max(26px,env(safe-area-inset-right)) max(22px,env(safe-area-inset-bottom)) max(26px,env(safe-area-inset-left));
+  background:#120c14;color:#f6efe9;font-family:var(--ff);text-align:center;-webkit-text-size-adjust:100%;overscroll-behavior:none;-webkit-tap-highlight-color:transparent}
+#rotate.leaving{opacity:0;pointer-events:none;transition:opacity .6s ease}
+#rotate .glow{position:absolute;inset:-25%;pointer-events:none;filter:blur(36px);
+  background:radial-gradient(38% 34% at 18% 22%,rgba(226,140,156,.55),transparent 70%),radial-gradient(34% 40% at 86% 78%,rgba(212,166,104,.42),transparent 70%),radial-gradient(28% 30% at 72% 12%,rgba(140,86,168,.38),transparent 70%);
+  animation:gl-drift 16s ease-in-out infinite alternate}
+@keyframes gl-drift{to{transform:translate3d(5%,-4%,0) rotate(10deg) scale(1.1)}}
+#rotate .in{position:relative;display:flex;flex-direction:column;align-items:center;gap:20px;width:100%;max-width:440px}
+#rotate .lead,#rotate .act{display:flex;flex-direction:column;align-items:center;gap:12px;width:100%}
+#rotate .rb{margin:0;padding:0 .2em;font-family:"Pinyon Script",cursive;font-size:clamp(46px,14vw,66px);line-height:1.05;color:#f3d9b8;
+  background:linear-gradient(100deg,#e8c49a 0%,#fff7ee 28%,#cf9a63 50%,#fff7ee 72%,#e8c49a 100%);background-size:240% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:rb-shine 7s ease-in-out infinite}
+@keyframes rb-shine{0%,100%{background-position:100% 0}50%{background-position:0 0}}
+#rotate .tag{margin:-4px 0 0;font-size:10.5px;letter-spacing:.3em;text-transform:uppercase;color:rgba(246,239,233,.66)}
+#rotate .wl{margin:6px 0 0;min-height:3em;max-width:360px;font-family:"Cormorant Garamond",serif;font-style:italic;font-size:18px;line-height:1.4;color:rgba(246,239,233,.86);transition:opacity .45s ease,transform .45s ease}
+#rotate .wl.out{opacity:0;transform:translateY(6px)}
+#rotate .act{padding:22px 20px 18px;border-radius:22px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);-webkit-backdrop-filter:blur(18px) saturate(140%);backdrop-filter:blur(18px) saturate(140%);box-sizing:border-box}
+#rotate .dev{display:block;width:84px;height:84px;margin-bottom:-4px}
+#rotate .dev .ph{animation:rot 2.6s cubic-bezier(.6,0,.3,1) infinite;transform-origin:60px 60px}
+@keyframes rot{0%,22%{transform:rotate(0)}52%,86%{transform:rotate(-90deg)}100%{transform:rotate(0)}}
+#rotate h2{margin:0;font-family:"Cormorant Garamond",serif;font-weight:500;font-size:27px;line-height:1.1}
+#rotate .sub{margin:0;max-width:330px;font-size:13.5px;line-height:1.5;color:rgba(246,239,233,.72)}
+#rotate .go{min-height:50px;min-width:210px;padding:0 28px;border:0;border-radius:99px;font:600 15px/1 var(--ff);letter-spacing:.02em;color:#1c1218;cursor:pointer;
+  background:linear-gradient(180deg,#fffaf4,#f0dcc4);box-shadow:0 8px 26px rgba(0,0,0,.35),inset 0 1px 0 #fff;touch-action:manipulation}
+#rotate .go:active{transform:scale(.97)}
+#rotate .alt{min-height:44px;padding:0 12px;border:0;background:none;font:500 13px var(--ff);color:rgba(246,239,233,.75);text-decoration:underline;text-underline-offset:3px;cursor:pointer;touch-action:manipulation}
+/* iPhone full-screen sheet: three steps to add the site to the Home Screen, with an arrow up to the browser's bar */
+#rotate .hs{position:absolute;inset:0;z-index:2;display:grid;place-items:center;box-sizing:border-box;padding:inherit;background:rgba(10,6,12,.62);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:hs-in .35s ease}
+#rotate .hs[hidden]{display:none}
+@keyframes hs-in{from{opacity:0}}
+#rotate .hs-card{position:relative;width:min(560px,100%);box-sizing:border-box;padding:22px 22px 16px;border-radius:24px;background:#fbf6f0;color:#1c1218;text-align:left;box-shadow:0 24px 70px rgba(0,0,0,.5);animation:hs-up .4s cubic-bezier(.2,.8,.2,1)}
+@keyframes hs-up{from{transform:translateY(24px);opacity:0}}
+#rotate .hs-x{position:absolute;top:8px;right:8px;width:40px;height:40px;border:0;border-radius:50%;background:transparent;cursor:pointer}
+#rotate .hs-x::before,#rotate .hs-x::after{content:"";position:absolute;left:12px;right:12px;top:19px;height:2px;border-radius:2px;background:#6d5f66;transform:rotate(45deg)}
+#rotate .hs-x::after{transform:rotate(-45deg)}
+#rotate .hs-p{display:none;grid-template-columns:110px minmax(0,1fr);gap:20px;align-items:center}
+#rotate .hs-p.on{display:grid;animation:hs-fade .35s ease}
+@keyframes hs-fade{from{opacity:0;transform:translateX(10px)}}
+#rotate .hs-ill{display:grid;place-items:center;width:110px;height:110px;border-radius:22px;background:#efe3d6}
+#rotate .hs-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px;box-sizing:border-box;place-items:stretch}
+#rotate .hs-p{grid-template-columns:150px minmax(0,1fr)}
+#rotate .hs-ill{width:150px}
+#rotate .hs-menu .r{display:flex;align-items:center;gap:5px;padding:6px 7px;border-radius:8px;font-size:9.5px;font-weight:500;background:#fff;white-space:nowrap;overflow:hidden}
+#rotate .hs-menu .r svg{flex:none;width:14px;height:14px}
+#rotate .hs-menu .dim{opacity:.45}
+#rotate .hs-menu .hi{background:#1c1218;color:#fff;animation:hs-pulse 1.6s ease-in-out infinite}
+@keyframes hs-pulse{50%{transform:scale(1.05)}}
+#rotate .hs-home{gap:6px;align-content:center;font-size:10.5px;font-weight:500}
+#rotate .hs-home img{width:60px;height:60px;border-radius:14px;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+#rotate .hs-k{margin:0 0 4px;font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:#a07a52}
+#rotate .hs h3{margin:0 0 6px;font-family:"Cormorant Garamond",serif;font-weight:600;font-size:25px;line-height:1.1}
+#rotate .hs-tx p:last-child{margin:0;font-size:13.5px;line-height:1.45;color:#5b4d55}
+#rotate .hs-nav{display:flex;align-items:center;gap:10px;margin-top:16px}
+#rotate .hs-dots{display:flex;gap:6px;margin-right:auto}
+#rotate .hs-dots i{width:7px;height:7px;border-radius:50%;background:#dccbbb;transition:width .3s,background .3s}
+#rotate .hs-dots i.on{width:20px;border-radius:4px;background:#1c1218}
+#rotate .hs .go{min-width:120px;min-height:44px;background:#1c1218;color:#fff;box-shadow:none}
+#rotate .hs .alt{color:#5b4d55}
+#rotate .hs-arrow{position:absolute;top:max(6px,env(safe-area-inset-top));right:max(40px,calc(env(safe-area-inset-right) + 24px));display:flex;flex-direction:column;align-items:center;gap:4px;font-size:12px;font-weight:600;color:#e9c49a;animation:hs-bob 1.1s ease-in-out infinite}
+#rotate .hs:not([data-p="0"]) .hs-arrow{visibility:hidden}
+@keyframes hs-bob{50%{transform:translateY(-8px)}}
+@media (orientation:landscape) and (max-height:360px){#rotate .hs-card{padding:14px 18px 10px}#rotate .hs-p{grid-template-columns:150px minmax(0,1fr)}#rotate .hs-ill{width:150px;height:92px}#rotate .hs h3{font-size:21px}#rotate .hs-nav{margin-top:10px}}
+#rotate .steps{display:flex;align-items:center;gap:8px;margin-top:4px;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:rgba(246,239,233,.5)}
+#rotate .steps i{width:26px;height:2px;border-radius:2px;background:rgba(246,239,233,.22)}
+#rotate .steps b{font-weight:500}
+#rotate[data-step="turn"] .steps .s1,#rotate:not([data-step="turn"]) .steps .s2{color:#e9c49a}
+#rotate .hint{margin:0;max-width:320px;font-size:12px;line-height:1.45;color:rgba(246,239,233,.6);opacity:0;transition:opacity .8s ease}
+#rotate.hint-on .hint{opacity:1}
+/* only the parts for the current step */
+#rotate:not([data-step="turn"]) .s-turn,#rotate:not([data-step="full"]) .s-full,#rotate:not([data-step="ios"]) .s-ios{display:none!important}
+/* sideways: brand and welcome on the left, the next step on the right */
+@media (orientation:landscape){
+  #rotate .in{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center;gap:clamp(18px,5vw,56px);max-width:860px}
+  #rotate .lead{align-items:flex-start;text-align:left;gap:8px}
+  #rotate .rb{font-size:clamp(40px,13vh,64px);padding-left:0;margin-left:-.05em}
+  #rotate .tag{margin:0}
+  #rotate .wl{min-height:4.2em;font-size:clamp(15px,4.4vh,19px)}
+  #rotate .act{gap:clamp(7px,2.4vh,12px);padding:clamp(14px,4.5vh,22px) 18px}
+  #rotate .dev{width:clamp(44px,15vh,72px);height:clamp(44px,15vh,72px)}
+  #rotate h2{font-size:clamp(21px,6.6vh,27px)}
+  #rotate .sub{font-size:clamp(12px,3.4vh,13.5px)}
+  #rotate .go{min-height:clamp(42px,12vh,50px)}
+}
+@media (prefers-reduced-motion:reduce){#rotate .glow,#rotate .rb,#rotate .dev .ph,#rotate .hs,#rotate .hs *{animation:none!important}}
 
 @media (orientation:landscape) and (max-height:520px){
   :root{--hdr:40px;--foot:54px}
@@ -812,13 +893,49 @@ body[data-nav="a"] .nav .gbtn{padding-top:clamp(7px,2.3vh,11px)!important}
 </head>
 <body data-g="natural">
 <noscript><h1>Chanel Monroe Makeup: mobile makeup artist on the Gold Coast</h1><p>Bridal and wedding makeup, formal and event glam, editorial and photoshoot makeup, SFX and Halloween characters, and party face paint across the Gold Coast, from Coolangatta to Coomera. Trained at the Huxley School of Makeup. Mobile: I come to you. <a href="https://www.instagram.com/chanelmonroemakeup/">Instagram @chanelmonroemakeup</a></p></noscript>
-<div id="rotate" role="dialog" aria-modal="true" aria-labelledby="rotT">
-  <p class="rb">Chanel Monroe</p>
-  <svg role="img" aria-label="Turn your phone sideways" width="120" height="120" viewBox="0 0 120 120"><g class="ph"><rect x="42" y="28" width="36" height="64" rx="7" fill="none" stroke="#ffd23f" stroke-width="3.5"></rect><circle cx="60" cy="84" r="2.5" fill="#ffd23f"></circle></g></svg>
-  <h2 id="rotT">Turn your phone sideways</h2>
-  <p class="wl" id="wl" aria-live="polite">Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.</p>
-  <button type="button" id="goFull">Go full screen</button>
-  <button type="button" class="alt" id="goOn" hidden>Continue without full screen</button>
+<div id="rotate" role="dialog" aria-modal="true" aria-labelledby="rotT" aria-describedby="rotP" data-step="turn">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="in">
+    <div class="lead">
+      <p class="rb">Chanel Monroe</p>
+      <p class="tag">Mobile makeup artist · Gold Coast</p>
+      <p class="wl" id="wl" aria-live="polite">Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.</p>
+    </div>
+    <div class="act">
+      <svg class="dev s-turn" viewBox="0 0 120 120" aria-hidden="true"><path d="M30 40a36 36 0 0 1 30-20" fill="none" stroke="#e9c49a" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 6"/><path d="M55 14l6 6-7 4" fill="none" stroke="#e9c49a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><g class="ph"><rect x="44" y="30" width="32" height="60" rx="7" fill="none" stroke="#f6efe9" stroke-width="3"/><rect x="54" y="35" width="12" height="3" rx="1.5" fill="#f6efe9"/></g></svg>
+      <h2 id="rotT">Turn your phone sideways</h2>
+      <p class="sub" id="rotP">The galleries are made for landscape.</p>
+      <button type="button" class="go s-full" id="goFull">Enter full screen</button>
+      <button type="button" class="go s-ios" id="goIos" aria-haspopup="dialog">Enter full screen</button>
+      <button type="button" class="alt s-ios" id="goSafari">Continue in Safari</button>
+      <button type="button" class="alt s-full" id="goOn" hidden>Continue without full screen</button>
+      <p class="hint s-turn" id="rotHint">Not turning? Your rotation lock may be on.</p>
+      <div class="steps" aria-hidden="true"><b class="s1">Turn</b><i></i><b class="s2" id="step2">Full screen</b></div>
+    </div>
+  </div>
+  <!-- iPhone: "Enter full screen" opens these steps (iPhone browsers can't go full screen; the Home Screen icon opens it full screen) -->
+  <div class="hs" id="hs" role="dialog" aria-modal="true" aria-labelledby="hsT" hidden>
+    <div class="hs-arrow" aria-hidden="true"><svg width="34" height="44" viewBox="0 0 34 44"><path d="M17 42V6M5 17 17 4l12 13" fill="none" stroke="#e9c49a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="hsArrowT">Share is up here</span></div>
+    <div class="hs-card">
+      <button type="button" class="hs-x" id="hsX" aria-label="Close"></button>
+      <div class="hs-pages" id="hsPages">
+        <div class="hs-p on">
+          <div class="hs-ill"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#1c1218" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1"/></svg></div>
+          <div class="hs-tx"><p class="hs-k">Step 1 of 3</p><h3 id="hsT">Tap Share</h3><p id="hsP1">It’s in Safari’s bar at the top of the screen, or under •••.</p></div>
+        </div>
+        <div class="hs-p">
+          <div class="hs-ill hs-menu" aria-hidden="true"><span class="r dim">Copy</span><span class="r dim">Add Bookmark</span><span class="r hi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>Add to Home Screen</span></div>
+          <div class="hs-tx"><p class="hs-k">Step 2 of 3</p><h3>Choose Add to Home Screen</h3><p>Scroll the menu if you can’t see it, then tap Add.</p></div>
+        </div>
+        <div class="hs-p">
+          <div class="hs-ill hs-home" aria-hidden="true"><img src="images/icons/icon-192.png" alt="" width="60" height="60"><span>Chanel Monroe</span></div>
+          <div class="hs-tx"><p class="hs-k">Step 3 of 3</p><h3>Open it from your Home Screen</h3><p>It opens full screen, with no browser bars.</p></div>
+        </div>
+      </div>
+      <div class="hs-nav"><span class="hs-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></span>
+        <button type="button" class="alt" id="hsBack" hidden>Back</button><button type="button" class="go" id="hsNext">Next</button></div>
+    </div>
+  </div>
 </div>
 <div id="tint"></div><div id="bgfx"></div>
 
@@ -1378,21 +1495,61 @@ document.addEventListener('keydown',function(e){
   else if($('lb').classList.contains('open')){if(e.key==='ArrowRight')lbShow(lbk+1);if(e.key==='ArrowLeft')lbShow(lbk-1)}
 });
 if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding:14px;background:#fdd;margin:0">data/media.js is missing: run tools/build-media.ps1.</p>');
-/* phones: full screen + landscape lock where the browser allows (Android); iPhone Safari ignores both, the turn-sideways screen still guides */
-$('goFull').addEventListener('click',function(){var d=document.documentElement,f=d.requestFullscreen||d.webkitRequestFullscreen;
-  var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
-  try{var r=f&&f.call(d);if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}});
-(function(){var d=document.documentElement,canFs=!!(d.requestFullscreen||d.webkitRequestFullscreen),skip=false;
-  var dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)');
+/* ---- Entry gate on phones and tablets (the legacy mockup's logic):
+   1. Phone upright: "Turn your phone sideways". The gate stays until it is sideways, and comes back if it turns upright.
+   2. Sideways, not full screen: Enter full screen (+ landscape lock) on Android and iPad.
+      iPhone browsers can't go full screen, so iPhone visitors are shown how to add the site to the Home Screen
+      (it opens full screen from there), with Continue in Safari.
+   Leaving full screen brings step 2 back, unless the visitor chose to continue without it (remembered for this visit).
+   Opened from the Home Screen counts as full screen. Add ?gate to the address to test the gate on a computer. ---- */
+(function(){var d=document.documentElement,R=$('rotate'),ua=navigator.userAgent,
+  iphone=/iPhone|iPod/.test(ua),ios=iphone||/iPad/.test(ua)||(/Macintosh/.test(ua)&&navigator.maxTouchPoints>1),
+  canFs=!iphone&&!!(d.requestFullscreen||d.webkitRequestFullscreen),
+  app=/CriOS/.test(ua)?'Chrome':/FxiOS/.test(ua)?'Firefox':/EdgiOS/.test(ua)?'Edge':'Safari',
+  force=/[?&]gate\b/.test(location.search),
+  dev=matchMedia('(pointer:coarse) and (max-width:1366px)'),por=matchMedia('(orientation:portrait)'),
+  skip=false,was=null,hintT=0,lastStep=null;
+  try{skip=sessionStorage.getItem('cmm-fs-skip')==='1'}catch(e){}
+  if(/[?&]gate=ios\b/.test(location.search)){iphone=ios=true;canFs=false}
   function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement)||matchMedia('(display-mode:fullscreen),(display-mode:standalone)').matches||navigator.standalone===true}
-  function upd(){var p=por.matches,need=dev.matches&&(p||(canFs&&!skip&&!isFs()));document.body.classList.add('gated');document.body.classList.toggle('gate',need);
-    $('rotT').textContent=p?'Turn your phone sideways':'Tap to go full screen';
-    $('goFull').textContent='Explore'}
-  ['change'].forEach(function(ev){dev.addEventListener&&dev.addEventListener(ev,upd);por.addEventListener&&por.addEventListener(ev,upd)});
-  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);window.addEventListener('resize',upd);
-  /* if the browser refuses full screen, offer a way in after the first try */
-  $('goFull').addEventListener('click',function(){setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
-  $('goOn').onclick=function(){skip=true;upd()};
+  var TXT={turn:['Turn your phone sideways','The galleries are made for landscape.'],
+    full:['Go full screen','Edge to edge, the way the photos are meant to be seen.'],
+    ios:['Go full screen','Edge to edge, the way the photos are meant to be seen.']};
+  $('goSafari').textContent='Continue in '+app;
+  $('step2').textContent='Full screen';
+  $('hsP1').textContent=app==='Safari'?'It’s in Safari’s bar at the top of the screen, or under •••.':'It’s in '+app+'’s address bar at the top of the screen.';
+  /* iPhone sheet: Enter full screen opens 3 steps (Share > Add to Home Screen > open from the Home Screen) */
+  var HS=$('hs'),hp=0,pages=$('hsPages').children,dots=HS.querySelectorAll('.hs-dots i');
+  function hsShow(i){hp=Math.max(0,Math.min(pages.length-1,i));HS.dataset.p=hp;
+    [].forEach.call(pages,function(p,k){p.classList.toggle('on',k===hp)});[].forEach.call(dots,function(d,k){d.classList.toggle('on',k===hp)});
+    $('hsBack').hidden=hp===0;$('hsNext').textContent=hp===pages.length-1?'Got it':'Next'}
+  function hsOpen(){hsShow(0);HS.hidden=false;$('hsNext').focus({preventScroll:true})}
+  function hsClose(){HS.hidden=true;$('goIos').focus({preventScroll:true})}
+  $('goIos').onclick=hsOpen;$('hsX').onclick=hsClose;$('hsBack').onclick=function(){hsShow(hp-1)};
+  $('hsNext').onclick=function(){if(hp<pages.length-1)hsShow(hp+1);else hsClose()};
+  HS.addEventListener('click',function(e){if(e.target===HS)hsClose()});
+  document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!HS.hidden)hsClose()});
+  $('rotHint').textContent=ios?'Not turning? Swipe down from the top-right corner and switch off Portrait Orientation Lock.'
+    :'Not turning? Switch on Auto-rotate in your quick settings.';
+  function upd(){var p=por.matches,step=p?'turn':(!isFs()&&!skip)?(canFs?'full':'ios'):'',need=(dev.matches||force)&&!!step;
+    document.body.classList.add('gated');
+    if(step){R.dataset.step=step;$('rotT').textContent=TXT[step][0];$('rotP').textContent=TXT[step][1]}
+    if(step!=='ios'||!need)HS.hidden=true;   /* the sheet only belongs to the iPhone sideways step */
+    if(need!==was){document.body.classList.toggle('gate',need);
+      if(was&&!need){R.classList.add('leaving');setTimeout(function(){R.classList.remove('leaving')},650)}   /* fade the gate away */
+      if(need)R.classList.remove('leaving');was=need}
+    var hs=need&&step;if(hs!==lastStep){lastStep=hs;clearTimeout(hintT);R.classList.remove('hint-on');
+      if(hs==='turn')hintT=setTimeout(function(){R.classList.add('hint-on')},7000)}}   /* rotation-lock hint if they're still upright */
+  function goOn(){skip=true;try{sessionStorage.setItem('cmm-fs-skip','1')}catch(e){}upd()}
+  dev.addEventListener&&dev.addEventListener('change',upd);por.addEventListener&&por.addEventListener('change',upd);
+  document.addEventListener('fullscreenchange',upd);document.addEventListener('webkitfullscreenchange',upd);
+  window.addEventListener('resize',upd);window.addEventListener('orientationchange',function(){setTimeout(upd,250)});
+  /* full screen + landscape lock where the browser allows; if it refuses, offer a way in after the first try */
+  $('goFull').addEventListener('click',function(){var f=d.requestFullscreen||d.webkitRequestFullscreen;
+    var lock=function(){try{var p=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(p&&p.catch)p.catch(function(){})}catch(e){}};
+    try{var r=f&&f.call(d,{navigationUI:'hide'});if(r&&r.then)r.then(lock,lock);else lock()}catch(e){lock()}
+    setTimeout(function(){if(!isFs()&&!por.matches)$('goOn').hidden=false;upd()},900)});
+  $('goOn').onclick=goOn;$('goSafari').onclick=goOn;
   /* welcome lines, one at a time, held long enough to read (about 16 characters a second, never under 3.5s) */
   var WL=['Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.',
     'This is a place to explore looks: natural, glam, bridal, editorial, FX and parties.',

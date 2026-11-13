@@ -74,7 +74,7 @@ for folder in ('data', 'settings'):
 shutil.copytree(os.path.join(SRC, 'images', 'icons'), os.path.join(OUT, 'images', 'icons'), ignore=shutil.ignore_patterns('*.ttf'))
 for d in ('brands', 'about'):
     if os.path.isdir(os.path.join(SRC, 'images', d)): shutil.copytree(os.path.join(SRC, 'images', d), os.path.join(OUT, 'images', d))
-for f in ('robots.txt',):
+for f in ('robots.txt', 'site.webmanifest'):
     if os.path.exists(os.path.join(SRC, f)): shutil.copy(os.path.join(SRC, f), OUT)
 open(os.path.join(OUT, '.nojekyll'), 'w').close()
 size = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)

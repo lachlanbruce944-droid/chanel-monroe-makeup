@@ -8,6 +8,12 @@
 <link rel="icon" type="image/png" sizes="32x32" href="images/icons/favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192.png">
 <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
+<!-- Home Screen launch opens the site full screen (iPhone can't go full screen in the browser) -->
+<link rel="manifest" href="site.webmanifest">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Chanel Monroe">
 <title>Mobile Makeup Artist Gold Coast | Bridal, Glam &amp; SFX | Chanel Monroe Makeup</title>
 <meta name="description" content="Chanel Monroe is a mobile makeup artist on the Gold Coast: bridal, formal and event glam, editorial shoots, SFX, Halloween and party face paint. Huxley-trained. I come to you.">
 <meta name="robots" content="index,follow,max-image-preview:large">
@@ -32,16 +38,52 @@
 <link rel="preconnect" href="https://qxiugfatpybldluipcyy.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Pinyon+Script&family=DM+Serif+Display:ital@0;1&family=Syne:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="css/site.css?v=dff693e8"></head>
+<link rel="stylesheet" href="css/site.css?v=b4031e90"></head>
 <body data-g="natural">
 <noscript><h1>Chanel Monroe Makeup: mobile makeup artist on the Gold Coast</h1><p>Bridal and wedding makeup, formal and event glam, editorial and photoshoot makeup, SFX and Halloween characters, and party face paint across the Gold Coast, from Coolangatta to Coomera. Trained at the Huxley School of Makeup. Mobile: I come to you. <a href="https://www.instagram.com/chanelmonroemakeup/">Instagram @chanelmonroemakeup</a></p></noscript>
-<div id="rotate" role="dialog" aria-modal="true" aria-labelledby="rotT">
-  <p class="rb">Chanel Monroe</p>
-  <svg role="img" aria-label="Turn your phone sideways" width="120" height="120" viewBox="0 0 120 120"><g class="ph"><rect x="42" y="28" width="36" height="64" rx="7" fill="none" stroke="#ffd23f" stroke-width="3.5"></rect><circle cx="60" cy="84" r="2.5" fill="#ffd23f"></circle></g></svg>
-  <h2 id="rotT">Turn your phone sideways</h2>
-  <p class="wl" id="wl" aria-live="polite">Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.</p>
-  <button type="button" id="goFull">Go full screen</button>
-  <button type="button" class="alt" id="goOn" hidden>Continue without full screen</button>
+<div id="rotate" role="dialog" aria-modal="true" aria-labelledby="rotT" aria-describedby="rotP" data-step="turn">
+  <div class="glow" aria-hidden="true"></div>
+  <div class="in">
+    <div class="lead">
+      <p class="rb">Chanel Monroe</p>
+      <p class="tag">Mobile makeup artist · Gold Coast</p>
+      <p class="wl" id="wl" aria-live="polite">Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.</p>
+    </div>
+    <div class="act">
+      <svg class="dev s-turn" viewBox="0 0 120 120" aria-hidden="true"><path d="M30 40a36 36 0 0 1 30-20" fill="none" stroke="#e9c49a" stroke-width="2.5" stroke-linecap="round" stroke-dasharray="2 6"/><path d="M55 14l6 6-7 4" fill="none" stroke="#e9c49a" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><g class="ph"><rect x="44" y="30" width="32" height="60" rx="7" fill="none" stroke="#f6efe9" stroke-width="3"/><rect x="54" y="35" width="12" height="3" rx="1.5" fill="#f6efe9"/></g></svg>
+      <h2 id="rotT">Turn your phone sideways</h2>
+      <p class="sub" id="rotP">The galleries are made for landscape.</p>
+      <button type="button" class="go s-full" id="goFull">Enter full screen</button>
+      <button type="button" class="go s-ios" id="goIos" aria-haspopup="dialog">Enter full screen</button>
+      <button type="button" class="alt s-ios" id="goSafari">Continue in Safari</button>
+      <button type="button" class="alt s-full" id="goOn" hidden>Continue without full screen</button>
+      <p class="hint s-turn" id="rotHint">Not turning? Your rotation lock may be on.</p>
+      <div class="steps" aria-hidden="true"><b class="s1">Turn</b><i></i><b class="s2" id="step2">Full screen</b></div>
+    </div>
+  </div>
+  <!-- iPhone: "Enter full screen" opens these steps (iPhone browsers can't go full screen; the Home Screen icon opens it full screen) -->
+  <div class="hs" id="hs" role="dialog" aria-modal="true" aria-labelledby="hsT" hidden>
+    <div class="hs-arrow" aria-hidden="true"><svg width="34" height="44" viewBox="0 0 34 44"><path d="M17 42V6M5 17 17 4l12 13" fill="none" stroke="#e9c49a" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg><span id="hsArrowT">Share is up here</span></div>
+    <div class="hs-card">
+      <button type="button" class="hs-x" id="hsX" aria-label="Close"></button>
+      <div class="hs-pages" id="hsPages">
+        <div class="hs-p on">
+          <div class="hs-ill"><svg width="54" height="54" viewBox="0 0 24 24" fill="none" stroke="#1c1218" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12M7.5 7.5 12 3l4.5 4.5M6 11H5v10h14V11h-1"/></svg></div>
+          <div class="hs-tx"><p class="hs-k">Step 1 of 3</p><h3 id="hsT">Tap Share</h3><p id="hsP1">It’s in Safari’s bar at the top of the screen, or under •••.</p></div>
+        </div>
+        <div class="hs-p">
+          <div class="hs-ill hs-menu" aria-hidden="true"><span class="r dim">Copy</span><span class="r dim">Add Bookmark</span><span class="r hi"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M12 8.5v7M8.5 12h7"/></svg>Add to Home Screen</span></div>
+          <div class="hs-tx"><p class="hs-k">Step 2 of 3</p><h3>Choose Add to Home Screen</h3><p>Scroll the menu if you can’t see it, then tap Add.</p></div>
+        </div>
+        <div class="hs-p">
+          <div class="hs-ill hs-home" aria-hidden="true"><img src="images/icons/icon-192.png" alt="" width="60" height="60"><span>Chanel Monroe</span></div>
+          <div class="hs-tx"><p class="hs-k">Step 3 of 3</p><h3>Open it from your Home Screen</h3><p>It opens full screen, with no browser bars.</p></div>
+        </div>
+      </div>
+      <div class="hs-nav"><span class="hs-dots" aria-hidden="true"><i class="on"></i><i></i><i></i></span>
+        <button type="button" class="alt" id="hsBack" hidden>Back</button><button type="button" class="go" id="hsNext">Next</button></div>
+    </div>
+  </div>
 </div>
 <div id="tint"></div><div id="bgfx"></div>
 
@@ -103,6 +145,6 @@
 <script src="data/product-cutouts.js"></script>
 <script src="data/brands-info.js"></script>
 <script src="data/lessons.js"></script>
-<script src="js/config.js?v=dff693e8"></script>
-<script src="js/app.js?v=dff693e8"></script></body>
+<script src="js/config.js?v=b4031e90"></script>
+<script src="js/app.js?v=b4031e90"></script></body>
 </html>

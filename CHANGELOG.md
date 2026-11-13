@@ -2,6 +2,13 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (intro redesign: turn sideways, then full screen; iPhone Home Screen sheet)
+- Entry screen on phones and tablets redesigned (dark plum, drifting light, gold-shimmer name, frosted step card) and given the legacy mock-up's two-step logic: 1. turn sideways (stays until the phone is landscape, returns if it turns upright; rotation-lock tip after 7 s); 2. go full screen. Leaving full screen brings step 2 back unless the visitor chose to continue without it (remembered for the visit).
+- Android and iPad: Enter full screen also locks landscape; "Continue without full screen" appears if the browser refuses.
+- iPhone (no full-screen support in any iPhone browser): the same short screen with Enter full screen, which opens a 3-step sheet (Share, with an arrow to the browser bar > Add to Home Screen > open from the Home Screen), plus Continue in Safari/Chrome/Edge. Opened from the Home Screen the site runs full screen.
+- New `site.webmanifest` (full screen, landscape, icons) and Apple web-app meta tags; `tools/build_site.py` and `tools/publish.py` now ship the manifest.
+- Test on a computer with `?gate` (or `?gate=ios` for the iPhone version). Previous index.html kept at `M:\CMM-Site\_archive\index-before-intro-redesign-2026-11-14.html`.
+
 ### 2026-11-12 (settings, pricing layouts, product cut-outs, clips)
 - Settings button (gear) at the end of the nav: Affiliate tile size (standard, medium 55%, large 80%) and Pricing layout (fit to window, photo stays in view). Choices are remembered per device.
 - Pricing: no position dots on the photo gallery; 'fit' scales the price list so the whole page fits; slimmer style menu.
