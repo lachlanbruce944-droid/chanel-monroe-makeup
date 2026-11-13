@@ -1779,6 +1779,8 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function size(){ if(!ov) return; var z=window.UIZ||1; ov.style.zoom=z===1?'':(1/z); ov.style.width=innerWidth+'px'; ov.style.height=innerHeight+'px' }
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
+    var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
+    if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
     fr=ov.firstChild; ov.classList.remove('away'); ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.style.opacity='1' });
   }
