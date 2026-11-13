@@ -512,6 +512,41 @@ body.details-side .tiles{grid-template-columns:1fr}
   .idx{grid-template-columns:1fr 1.25fr}
   .idx-c,.idx-s{padding:5px 8px;font-size:12.5px;gap:6px}
 }
+
+/* ===== final prompt: schedule the phone call ===== */
+.bookcard{align-self:stretch;max-width:520px;display:flex;flex-direction:column;gap:10px;padding:14px;border-radius:18px;margin:4px 0 6px 38px;
+  background:color-mix(in srgb,var(--card) 84%,transparent);border:1px solid color-mix(in srgb,var(--acc) 45%,transparent);box-shadow:0 12px 32px rgba(30,15,15,.14);animation:pop .4s var(--ease) both}
+.bc-h{display:flex;align-items:center;gap:12px}
+.bc-ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;font-size:20px;background:color-mix(in srgb,var(--acc) 18%,transparent)}
+.bc-h b{display:block;font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:19px;line-height:1.15}
+.bc-h small{font-size:12px;color:var(--soft)}
+.bookcard .book{align-self:stretch}
+.bc-f{font-size:11px;color:var(--soft);text-align:center}
+@media (max-height:480px) and (orientation:landscape){ .bookcard{padding:10px;gap:7px;margin-left:30px}.bc-ic{width:32px;height:32px;font-size:16px}.bc-h b{font-size:16px} }
+
+/* ===== cal.com booking panel (embedded) ===== */
+#calPanel{position:fixed;inset:var(--hdr) 0 0 0;z-index:9;display:flex;flex-direction:column;background:color-mix(in srgb,var(--bg) 70%,transparent);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);opacity:0;pointer-events:none;transform:translateY(12px);transition:opacity .35s var(--ease),transform .35s var(--ease)}
+#calPanel.on{opacity:1;pointer-events:auto;transform:none}
+.cp-h{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px max(12px,calc((100% - 1000px) / 2))}
+.cp-h b{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:18px}
+#calPanel iframe{flex:1;width:min(1000px,calc(100% - 16px));margin:0 auto 8px;border:0;border-radius:16px;background:#fff;box-shadow:0 14px 40px rgba(30,15,15,.18)}
+.bc-f a{color:inherit}
+@media (max-height:480px) and (orientation:landscape){ .cp-h{padding:4px 8px}.cp-h b{font-size:15px}#calPanel iframe{margin-bottom:4px;border-radius:12px} }
+
+/* ===== gallery sorted into style categories ===== */
+.jump{position:sticky;top:-14px;z-index:3;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px -14px 10px;padding:8px 14px;
+  background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.jump::-webkit-scrollbar{display:none}
+.jump button{flex:none;padding:6px 13px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--soft)}
+.jump button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.cat{margin:0 0 26px}
+.cat h2{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:24px;margin:6px 2px 10px}
+.cat h2 small,.subcat h3 small{font-family:var(--ff);font-size:11px;letter-spacing:0;text-transform:none;color:var(--soft);font-weight:400;margin-left:4px}
+.subcat{margin:0 0 16px}
+.subcat h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--acc);margin:0 2px 7px}
+.subcat.mine h3::after{content:" · your style ✨";letter-spacing:0;text-transform:none;font-weight:500}
+@media (max-height:480px) and (orientation:landscape){ .cat h2{font-size:19px}.jump{top:-14px;padding:6px 10px}.jump button{padding:4px 10px;font-size:12px} }
 </style>
 </head>
 <body data-g="glam">
@@ -577,7 +612,7 @@ const CONFIG = {
 };
 
 const GROUPS = [
-  { g:'all',       name:'All photos',    blurb:'Every photo on the site', simple:true },
+  { g:'all',       name:'All photos',    blurb:'Every look, sorted by style', simple:true },
   { g:'glam',      name:'Glam',          blurb:'Soft to full glam for events and formals' },
   { g:'bridal',    name:'Bridal',        blurb:'Timeless bridal looks' },
   { g:'natural',   name:'Natural',       blurb:'Fresh skin, soft definition' },
@@ -654,10 +689,7 @@ const faceWork = a => !['mini-paint','body-paint'].includes(a.look);
    other:true adds an "Other…" chip that opens a small text box. */
 const QUESTIONS = [
   { id:'name', label:'Name', type:'text', placeholder:'First and last name',
-    ask:() => "Hi there ✨ I'm Chanel's booking assistant.\n" +
-      "Every great look starts with a conversation: your day, your style, and the feeling you want when you see yourself in the mirror.\n\n" +
-      "Just tap your way through. It takes about a minute, and then you can grab a free phone consult with Chanel.\n\n" +
-      "So, what should I call you?",
+    ask:() => "Hi there ✨ I'm Chanel's booking assistant.\nA few quick taps, then a free phone consult.\n\nWhat's your name?",
     validate:v => v.trim().length >= 2 || 'Please type your name' },
   { id:'category', label:'Booking', type:'index',
     ask:a => { const g = suggestion('category');
@@ -1100,18 +1132,41 @@ async function submit(){
     const res = await saveToSupabase(row);
     S.sent = true; S.enquiryId = res.id; btn.remove();
     updateDev();
-    await say(res.simulated
-      ? (SHOW_TEST_PANEL ? "All sent ✨ (test mode: saved to the local test database)\n" : "All set ✨\n") + "Last step: book a free 15-minute phone consult so Chanel can confirm your quote and lock in the date."
-      : "All sent ✨ Chanel has your details.\nLast step: book a free 15-minute phone consult so Chanel can confirm your quote and lock in the date.");
-    const a = document.createElement('a'); a.className = 'book'; a.href = calUrl(); a.target = '_blank'; a.rel = 'noopener';
-    a.innerHTML = '📞 Choose a time for your phone consult <span aria-hidden="true">→</span>';
-    msgs.appendChild(a); scroll();
+    await say((res.simulated
+      ? "All sent ✨ (test mode: saved to the local test database)\n"
+      : `All sent ✨ Thanks, ${first(S.answers.name)}!\n`) +
+      "Last step: pick a time for your free phone call with Chanel. Your details are already filled in.");
+    bookCard();
   }catch(e){
     btn.disabled = false; btn.textContent = 'Try again';
-    await say("Hmm, that didn't send. Check your connection and try again, or book directly below.");
-    const a = document.createElement('a'); a.className = 'book'; a.href = calUrl(); a.target = '_blank'; a.textContent = '📞 Choose a time for your phone consult →'; msgs.appendChild(a); scroll();
+    await say("Hmm, that didn't send. Check your connection and try again, or schedule your phone call directly below and tell Chanel your details then.");
+    bookCard();
     console.error(e);
   }
+}
+
+/* ---------- the final prompt: schedule the phone call on Chanel's cal.com Enquiry form ---------- */
+function bookCard(){
+  if(document.querySelector('.bookcard')) return;
+  const ph = val('phone'), c = document.createElement('div'); c.className = 'bookcard';
+  c.innerHTML = `<div class="bc-h"><span class="bc-ic">📞</span><div><b>Schedule your phone call</b>
+      <small>Free · 15 minutes · Chanel calls you${ph ? ' on ' + esc(ph) : ''}</small></div></div>
+    <a class="book" href="${esc(calUrl())}" id="bookBtn">Choose a time <span aria-hidden="true">→</span></a>
+    <small class="bc-f">Chanel's booking form opens right here · <a href="${esc(calUrl())}" target="_blank" rel="noopener">open in a new tab</a></small>`;
+  msgs.appendChild(c); scroll();
+  c.querySelector('#bookBtn').onclick = e => { e.preventDefault(); openCal() };
+}
+/* cal.com's Enquiry form, embedded over the chat so the client never leaves the page */
+function openCal(){
+  let p = $('#calPanel');
+  if(!p){
+    p = document.createElement('div'); p.id = 'calPanel';
+    p.innerHTML = `<div class="cp-h"><b>Choose a time for your phone call</b><button class="hbtn" id="cpClose">← Back to chat</button></div>
+      <iframe title="Chanel Monroe booking form" src="${esc(calUrl() + '&embed=true&theme=light')}" allow="payment"></iframe>`;
+    document.body.appendChild(p);
+    p.querySelector('#cpClose').onclick = () => p.classList.remove('on');
+  }
+  requestAnimationFrame(() => p.classList.add('on'));
 }
 
 /* ---------- data shapes ---------- */
@@ -1274,12 +1329,26 @@ function renderGallery(){
     h += `<div class="cats"><button data-c="all" class="${S.teamCat==='all'?'on':''}">Everyone</button>${cats.map(c => `<button data-c="${c}" class="${S.teamCat===c?'on':''}">${esc(TEAM_CATS[c])}</button>`).join('')}</div>`;
     h += list.length ? `<div class="team">${list.map(affTile).join('')}</div>` : `<div class="empty">${S.affFailed ? "Couldn't load the beauty team." : 'Loading…'}</div>`;
   } else if(S.tab === 'all'){
-    // once the client has picked a booking type and style, matching photos move to the front
+    // every photo, sorted into style categories (site section > sub-style); the client's own pick comes first
     const G2 = { lesson:'natural' }[S.answers.category] || S.answers.category, sub = S.answers.sub_style;
-    const rank = m => (sub && m.s === sub ? 0 : G2 && m.g === G2 ? 1 : 2);
-    const list = G2 ? S.media.slice().sort((x,y) => rank(x) - rank(y)) : S.media;
-    if(G2) h = h.replace('</p></div>', ` · showing ${esc(sub && sub !== 'Not sure yet' ? sub : cat(S.answers).name)} first</p></div>`);
-    h += S.media.length ? `<div class="sgrid">${list.map(tile).join('')}</div>` : `<div class="empty">${S.mediaFailed ? "Couldn't load the photos. Check the media source in CONFIG." : 'Loading…'}</div>`;
+    const order = ['bridal','glam','natural','editorial','fx','parties'];
+    if(G2 && order.includes(G2)) order.unshift(...order.splice(order.indexOf(G2),1));
+    const by = {}; S.media.forEach(m => ((by[m.g] ||= {})[m.s || 'More looks'] ||= []).push(m));
+    if(!S.media.length) h += `<div class="empty">${S.mediaFailed ? "Couldn't load the photos. Check the media source in CONFIG." : 'Loading…'}</div>`;
+    else {
+      const groups = order.filter(g => by[g]);
+      h += `<div class="jump">${groups.map(g => `<button data-j="${g}"${g === G2 ? ' class="on"' : ''}>${esc(GROUPS.find(x => x.g === g)?.name || g)}</button>`).join('')}</div>`;
+      groups.forEach(g => {
+        const C = CATS.find(c => c.id === g), subs = Object.keys(by[g]);
+        const known = (C?.subs || []).filter(x => subs.includes(x)), rest = subs.filter(x => !known.includes(x)).sort();
+        let list = known.concat(rest);
+        if(g === G2 && sub && list.includes(sub)) list.unshift(...list.splice(list.indexOf(sub),1));
+        const n = subs.reduce((t,x) => t + by[g][x].length, 0);
+        h += `<section class="cat" id="cat-${g}"><h2>${esc(GROUPS.find(x => x.g === g)?.name || g)} <small>${n}</small></h2>` +
+          list.map(x => `<div class="subcat${g === G2 && x === sub ? ' mine' : ''}"><h3>${esc(x)} <small>${by[g][x].length}</small></h3><div class="sgrid">${by[g][x].map(tile).join('')}</div></div>`).join('') +
+          `</section>`;
+      });
+    }
   } else if(S.tab === 'mine'){
     h += S.refs.length ? `<div class="sec">Looks</div><div class="grid">${S.refs.map(tile).join('')}</div>` : '';
     h += S.affs.length ? `<div class="sec">Beauty team</div><div class="team">${S.affs.map(affTile).join('')}</div>` : '';
@@ -1293,6 +1362,10 @@ function renderGallery(){
   Attention.watch(g);
   g.querySelectorAll('.plus').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); b.dataset.h ? toggleAff(b) : togglePlus(b) });
   g.querySelectorAll('.cats button').forEach(b => b.onclick = () => { S.teamCat = b.dataset.c; renderGallery() });
+  g.querySelectorAll('.jump button').forEach(b => b.onclick = () => {
+    const t = g.querySelector('#cat-' + b.dataset.j); if(t) g.scrollTo({ top: t.offsetTop - 50, behavior:'smooth' });
+    g.querySelectorAll('.jump button').forEach(x => x.classList.toggle('on', x === b));
+  });
   $('#more') && ($('#more').onclick = () => { S.shown[S.tab] += CONFIG.perPage; const top = g.scrollTop; renderGallery(); g.scrollTop = top });
 }
 function affTile(x, i){
@@ -1411,6 +1484,14 @@ function updateFab(){
   $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
 }
 $('#browseBtn').onclick = () => minimise(true);
+const FRAMED = window.self !== window.top;
+if(FRAMED){
+  document.body.classList.add('framed');
+  document.querySelectorAll('a.back, a.brand').forEach(a => {
+    if(a.classList.contains('back')) a.textContent = '✕ Close';
+    a.onclick = e => { e.preventDefault(); parent.postMessage({ cmm:'close-enquiry' }, '*') };
+  });
+}
 $('#fab').onclick = () => minimise(false);
 
 let tt; function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 2200) }

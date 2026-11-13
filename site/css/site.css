@@ -885,3 +885,7 @@ body.vidbg #gallery .capbar .sub,body.vidbg #gallery .capbar .src{color:rgba(255
 body.vidbg .fbrand{background:rgba(6,5,14,.62)!important;color:#fff!important}
 body.vidbg .fbrand i{color:#fff!important}
 body.vidbg .fab .pill,body.vidbg .fab .pill.solid{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* 2026-11-14: breathing room in the title and caption tiles; title tile sits just below the nav; no white edge on Pricing / Enquire */
+html body .ghead{margin-top:8px!important;padding-top:9px!important;padding-bottom:10px!important;border-radius:12px!important}
+html body #gallery .capbar{height:auto!important;min-height:0!important;padding:9px 22px 10px!important}
+html body .fab .pill,html body .fab .pill.solid,html body.vidbg .fab .pill,html body.vidbg .fab .pill.solid{border-color:transparent!important}

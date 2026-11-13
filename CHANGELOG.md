@@ -2,6 +2,13 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (chat opens over the site, booking inside the chat, tidier tiles)
+- Enquire and Book now open the chat over the site in the same window (an overlay; full screen is kept). "✕ Close" or Esc returns to the site.
+- End of the chat: a short prompt and a "Schedule your phone call" card; "Choose a time" opens Chanel's cal.com Enquiry form embedded right in the page, with name, email, phone, Style and notes filled in ("open in a new tab" as a fallback).
+- Shorter opening and closing messages.
+- The chat's photo gallery is sorted into style categories (section, then sub-style, with counts and jump buttons); the client's own style is shown first.
+- Main site: more padding in the section title tile and the photo caption bar, the title tile now sits just below the nav instead of joined to it, and Pricing / Enquire lose their white edge.
+
 ### 2026-11-14 (chat enquiry saves to Supabase)
 - New table `public.enquiries` in the Supabase project: row-level security on, the public key can only insert (consent required, size limits on every field), nobody can read rows without the service role. `enquire.html` now has the publishable key, so every sent enquiry is saved. Add `?localdb` to the address to practise without saving.
 

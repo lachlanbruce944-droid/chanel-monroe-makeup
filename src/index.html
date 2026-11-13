@@ -930,6 +930,10 @@ body.vidbg #gallery .capbar .sub,body.vidbg #gallery .capbar .src{color:rgba(255
 body.vidbg .fbrand{background:rgba(6,5,14,.62)!important;color:#fff!important}
 body.vidbg .fbrand i{color:#fff!important}
 body.vidbg .fab .pill,body.vidbg .fab .pill.solid{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+/* 2026-11-14: breathing room in the title and caption tiles; title tile sits just below the nav; no white edge on Pricing / Enquire */
+html body .ghead{margin-top:8px!important;padding-top:9px!important;padding-bottom:10px!important;border-radius:12px!important}
+html body #gallery .capbar{height:auto!important;min-height:0!important;padding:9px 22px 10px!important}
+html body .fab .pill,html body .fab .pill.solid,html body.vidbg .fab .pill,html body.vidbg .fab .pill.solid{border-color:transparent!important}
 </style>
 </head>
 <body data-g="natural">
@@ -1749,6 +1753,30 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   new MutationObserver(check).observe(body, { attributes: true, attributeFilter: ['data-g', 'class'] });
   document.addEventListener('visibilitychange', check);
   check();
+})();
+</script>
+<script>
+/* 2026-11-14: Enquire / Book links open the chat enquiry over the site in the same window, so full screen is kept.
+   The overlay cancels the page zoom (js/config.js scales the landscape design) so the chat renders at its own size. */
+(function(){
+  var ov=null;
+  function size(){ if(!ov) return; var z=window.UIZ||1; ov.style.zoom=z===1?'':(1/z); ov.style.width=innerWidth+'px'; ov.style.height=innerHeight+'px' }
+  function open(href){
+    if(!ov){
+      ov=document.createElement('div'); ov.id='enqOverlay';
+      ov.style.cssText='position:fixed;left:0;top:0;z-index:2147483000;background:#f5e9e1;opacity:0;transition:opacity .35s';
+      document.body.appendChild(ov); addEventListener('resize',size);
+    }
+    ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" style="width:100%;height:100%;border:0;display:block"></iframe>';
+    ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.style.opacity='1' });
+  }
+  function close(){ if(!ov) return; ov.style.opacity='0'; setTimeout(function(){ ov.style.display='none'; ov.innerHTML='' },350) }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href^="enquire.html"]'); if(!a) return;
+    e.preventDefault(); e.stopPropagation(); open(a.getAttribute('href'));
+  },true);
+  addEventListener('message',function(e){ if(e.data&&e.data.cmm==='close-enquiry') close() });
+  addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov&&ov.style.display==='block') close() });
 })();
 </script>
 </body>

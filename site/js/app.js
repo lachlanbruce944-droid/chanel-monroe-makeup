@@ -700,4 +700,26 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   new MutationObserver(check).observe(body, { attributes: true, attributeFilter: ['data-g', 'class'] });
   document.addEventListener('visibilitychange', check);
   check();
+})();;
+/* 2026-11-14: Enquire / Book links open the chat enquiry over the site in the same window, so full screen is kept.
+   The overlay cancels the page zoom (js/config.js scales the landscape design) so the chat renders at its own size. */
+(function(){
+  var ov=null;
+  function size(){ if(!ov) return; var z=window.UIZ||1; ov.style.zoom=z===1?'':(1/z); ov.style.width=innerWidth+'px'; ov.style.height=innerHeight+'px' }
+  function open(href){
+    if(!ov){
+      ov=document.createElement('div'); ov.id='enqOverlay';
+      ov.style.cssText='position:fixed;left:0;top:0;z-index:2147483000;background:#f5e9e1;opacity:0;transition:opacity .35s';
+      document.body.appendChild(ov); addEventListener('resize',size);
+    }
+    ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" style="width:100%;height:100%;border:0;display:block"></iframe>';
+    ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.style.opacity='1' });
+  }
+  function close(){ if(!ov) return; ov.style.opacity='0'; setTimeout(function(){ ov.style.display='none'; ov.innerHTML='' },350) }
+  document.addEventListener('click',function(e){
+    var a=e.target.closest&&e.target.closest('a[href^="enquire.html"]'); if(!a) return;
+    e.preventDefault(); e.stopPropagation(); open(a.getAttribute('href'));
+  },true);
+  addEventListener('message',function(e){ if(e.data&&e.data.cmm==='close-enquiry') close() });
+  addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov&&ov.style.display==='block') close() });
 })();
