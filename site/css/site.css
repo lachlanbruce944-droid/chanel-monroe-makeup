@@ -864,3 +864,24 @@ body[data-g="editorial"] .fbrand{background:rgba(6,5,14,.62)!important;color:#ff
 body[data-g="editorial"] .fbrand i{color:#fff!important}
 body[data-g="editorial"] .fab .pill{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.4)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
 body[data-g="editorial"] .fab .pill,body[data-g="editorial"] .fab .pill.solid{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important}
+
+/* Natural + Parties & Seasons: background video loop (8 s per clip, crossfaded). Same frosted panels as Editorial. */
+#bgVid{position:fixed;inset:0;z-index:-1;pointer-events:none;display:none;background:#05060a center/cover no-repeat}
+#bgVid video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .9s ease}
+#bgVid video.on{opacity:1}
+#bgVid::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,.24)}
+body.vidbg #bgVid{display:block}
+body.vidbg #bgfx{display:none!important}
+body.vidbg{background:#05060a!important}
+body.vidbg #nav{background:rgba(6,5,14,.58);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body.vidbg #nav .gbtn{color:rgba(255,255,255,.74)!important}
+body.vidbg #nav .gbtn[aria-current="true"]{color:#fff!important;border-color:#fff!important}
+body.vidbg #nav svg{color:#fff}
+body.vidbg .ghead{align-self:flex-start;margin-left:clamp(8px,calc(2 * var(--uvw)),18px)!important;padding-left:clamp(8px,calc(1.6 * var(--uvw)),14px)!important;padding-right:clamp(10px,calc(2 * var(--uvw)),18px)!important;border-radius:0 0 12px 12px;background:rgba(6,5,14,.58);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+body.vidbg .ghead,body.vidbg .ghead *{color:#fff!important}
+body.vidbg #gallery .capbar{background:rgba(6,5,14,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:14px}
+body.vidbg #gallery .capbar,body.vidbg #gallery .capbar *{color:#fff!important}
+body.vidbg #gallery .capbar .sub,body.vidbg #gallery .capbar .src{color:rgba(255,255,255,.82)!important}
+body.vidbg .fbrand{background:rgba(6,5,14,.62)!important;color:#fff!important}
+body.vidbg .fbrand i{color:#fff!important}
+body.vidbg .fab .pill,body.vidbg .fab .pill.solid{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}

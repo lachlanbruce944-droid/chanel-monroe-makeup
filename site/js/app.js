@@ -641,4 +641,63 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   document.addEventListener('visibilitychange', check);
   addEventListener('resize', check);
   check();
+})();;
+/* Background video loops: Natural (scenery) and Parties & Seasons (celebrations). Pexels footage, 8 s clips,
+   1080p on large/sharp screens and 720p on slow connections; posters only for reduced motion.
+   If a clip can't load, the section keeps its normal background. */
+(function(){
+  var BASE = 'https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/backgrounds/';
+  var SETS = {
+    natural: ['natural-01-waves','natural-02-beach-above','natural-03-forest','natural-04-mountains','natural-05-horizon','natural-06-city'],
+    parties: ['parties-01-concert','parties-02-fireworks','parties-03-stage','parties-04-brass-band','parties-05-nightclub','parties-06-wedding','parties-07-birthday','parties-08-christmas','parties-09-new-year','parties-10-toast']
+  };
+  var body = document.body, wrap = document.createElement('div');
+  wrap.id = 'bgVid'; wrap.setAttribute('aria-hidden', 'true');
+  function mk(){ var v = document.createElement('video'); v.muted = true; v.defaultMuted = true; v.playsInline = true;
+    v.setAttribute('muted', ''); v.setAttribute('playsinline', ''); v.preload = 'auto'; v.disablePictureInPicture = true; wrap.appendChild(v); return v; }
+  var front = mk(), back = mk();
+  body.insertBefore(wrap, body.firstChild);
+  var c = navigator.connection || {}, slowNet = c.saveData || /2g|3g/.test(c.effectiveType || '');
+  var big = Math.max(innerWidth, innerHeight) * (window.devicePixelRatio || 1) * (window.UIZ || 1) >= 1100;
+  var Q = (big && !slowNet) ? '-1080.mp4' : '-720.mp4';
+  var still = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var set = null, list = [], idx = 0, swapping = false, posterTimer = 0, swapTimer = 0, gen = 0, failed = {};
+  function url(n, ext){ return BASE + set + '/' + n + ext; }
+  function load(v, i){ var n = list[i % list.length]; v.dataset.i = i % list.length; v.poster = url(n, '.jpg'); v.src = url(n, Q); v.load(); }
+  function play(v){ var p = v.play(); if (p && p.catch) p.catch(function(){ wrap.style.backgroundImage = 'url("' + v.poster + '")'; }); }
+  function start(g){
+    stop(); gen++; set = g; list = SETS[g]; idx = 0; swapping = false;
+    if (failed[g]) return;
+    body.classList.add('vidbg');
+    if (still) { showPoster(); return; }
+    load(front, 0); front.classList.add('on'); play(front);
+    load(back, 1);
+  }
+  function showPoster(){ wrap.style.backgroundImage = 'url("' + url(list[idx % list.length], '.jpg') + '")'; idx++; posterTimer = setTimeout(showPoster, 8000); }
+  function stop(){
+    clearTimeout(posterTimer); clearTimeout(swapTimer); gen++; swapping = false; body.classList.remove('vidbg'); set = null;
+    [front, back].forEach(function(v){ v.pause(); v.classList.remove('on'); v.removeAttribute('src'); v.load(); });
+    wrap.style.backgroundImage = '';
+  }
+  function swap(){
+    if (swapping || !set) return; swapping = true;
+    var g = gen, nxt = back; play(nxt); nxt.classList.add('on'); front.classList.remove('on');
+    swapTimer = setTimeout(function(){ if (g !== gen) return; var old = front; front = nxt; back = old; old.pause(); load(back, (+front.dataset.i) + 1); swapping = false; }, 950);
+  }
+  [front, back].forEach(function(v){
+    v.addEventListener('timeupdate', function(){ if (v === front && v.duration && v.currentTime > v.duration - 0.9) swap(); });
+    v.addEventListener('ended', function(){ if (v === front) swap(); });
+    v.addEventListener('error', function(){ if (set && v.getAttribute('src')) { failed[set] = true; stop(); } });
+  });
+  function want(){ var g = body.dataset.g; return SETS[g] ? g : null; }
+  function check(){
+    var g = want();
+    if (g !== set) { g ? start(g) : stop(); return; }
+    if (!set || still) return;
+    var pause = document.hidden || body.classList.contains('pop-open');
+    if (pause) front.pause(); else if (front.paused) play(front);
+  }
+  new MutationObserver(check).observe(body, { attributes: true, attributeFilter: ['data-g', 'class'] });
+  document.addEventListener('visibilitychange', check);
+  check();
 })();
