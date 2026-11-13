@@ -547,6 +547,24 @@ body.details-side .tiles{grid-template-columns:1fr}
 .subcat h3{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:600;color:var(--acc);margin:0 2px 7px}
 .subcat.mine h3::after{content:" · your style ✨";letter-spacing:0;text-transform:none;font-weight:500}
 @media (max-height:480px) and (orientation:landscape){ .cat h2{font-size:19px}.jump{top:-14px;padding:6px 10px}.jump button{padding:4px 10px;font-size:12px} }
+
+/* ===== inside the site: the glass shows the real site behind ===== */
+html:has(body.framed),body.framed{background:transparent!important}
+body.framed #gallery{display:none}
+body.framed.min #gallery{display:block;background:var(--bg);filter:none;transform:none;pointer-events:auto}
+body.framed #tabs button[data-g="all"]{display:none}
+body.framed #chat::before{background:color-mix(in srgb,var(--bg) 22%,transparent)}
+body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
+/* ===== beauty team: one window per category ===== */
+.twrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start}
+.tw{padding:14px 14px 18px;border-radius:20px;background:color-mix(in srgb,var(--card) 80%,transparent);border:1px solid var(--line);box-shadow:0 8px 26px rgba(30,15,15,.08)}
+.tw h3{margin:0 0 12px;font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:20px}
+.tw h3 small{font-family:var(--ff);font-size:11px;color:var(--soft);margin-left:4px;letter-spacing:0;text-transform:none}
+.tw .team{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:16px 8px}
+@media (max-height:480px) and (orientation:landscape){
+  .twrap{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.tw{padding:10px 10px 12px;border-radius:14px}.tw h3{font-size:16px;margin-bottom:8px}
+  .tw .team{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px}
+}
 </style>
 </head>
 <body data-g="glam">
@@ -1040,7 +1058,10 @@ function _renderComposer(q){
   if(q.type === 'pick'){
     const refs = q.kind === 'refs', n = () => (refs ? S.refs : S.affs).length;
     const w = document.createElement('div'); w.className = 'chips';
-    w.append(chip(refs ? 'Browse looks ↗' : 'Browse team ↗','pri', () => { if(!refs){ S.tab = 'team'; renderTabs(); renderGallery() } else if(S.tab === 'team'){ S.tab = CONFIG.simpleGallery ? 'all' : 'glam'; renderTabs(); renderGallery() } minimise(true) }));
+    w.append(chip(refs ? 'Browse looks ↗' : 'Browse team ↗','pri', () => {
+      if(refs && FRAMED) return goSite(true);    // inside the site: pick from the site's own carousel
+      if(!refs){ S.tab = 'team'; renderTabs(); renderGallery() } else if(S.tab === 'team'){ S.tab = CONFIG.simpleGallery ? 'all' : 'glam'; renderTabs(); renderGallery() }
+      minimise(true) }));
     const d = chip('', '', () => { if(!n()){ toast(refs ? 'Tap + on a photo first, or choose Skip' : 'Tap + on an artist first, or choose Skip'); return } answer(q, n()) });
     d.dataset.done = 1; w.append(d);
     w.append(chip('Skip','ghost', () => answer(q, '__skip', 'Skip for now')));
@@ -1315,7 +1336,7 @@ function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.rand
 
 function renderTabs(){
   $('#tabs').innerHTML = GROUPS.filter(G => CONFIG.simpleGallery ? ['all','team','mine'].includes(G.g) : G.g !== 'all').map(G => `<button data-g="${G.g}" class="${S.tab===G.g?'on':''}">${esc(G.name)}${G.g==='all' && S.media.length ? ` <span style="opacity:.6">${S.media.length}</span>` : ''}${G.g==='mine' && (S.refs.length+S.affs.length) ? `<span class="cnt">${S.refs.length+S.affs.length}</span>`:''}</button>`).join('');
-  $('#tabs').querySelectorAll('button').forEach(b => b.onclick = () => { S.tab = b.dataset.g; renderTabs(); renderGallery(); $('#gallery').scrollTop = 0 });
+  $('#tabs').querySelectorAll('button').forEach(b => b.onclick = () => { S.tab = b.dataset.g; renderTabs(); renderGallery(); $('#gallery').scrollTop = 0; if(window.self !== window.top) minimise(true) });
 }
 function renderGallery(){
   const G = GROUPS.find(x => x.g === S.tab);
@@ -1324,10 +1345,12 @@ function renderGallery(){
   const hint = S.started ? ' · tap + to add to your enquiry' : ' · start your enquiry to unlock +';
   let h = `<div class="ghead"><h1>${esc(G.name)}</h1><p>${esc(G.blurb)}${hint}</p></div>`;
   if(S.tab === 'team'){
+    // one window per category (Hair, Nails, Lashes brows & tan, Photographers, Tattoo)
     const cats = Object.keys(TEAM_CATS).filter(c => S.affList.some(x => x.cat === c));
-    const list = S.affList.filter(x => S.teamCat === 'all' || x.cat === S.teamCat);
-    h += `<div class="cats"><button data-c="all" class="${S.teamCat==='all'?'on':''}">Everyone</button>${cats.map(c => `<button data-c="${c}" class="${S.teamCat===c?'on':''}">${esc(TEAM_CATS[c])}</button>`).join('')}</div>`;
-    h += list.length ? `<div class="team">${list.map(affTile).join('')}</div>` : `<div class="empty">${S.affFailed ? "Couldn't load the beauty team." : 'Loading…'}</div>`;
+    h += S.affList.length ? `<div class="twrap">` + cats.map(c => {
+        const list = S.affList.filter(x => x.cat === c);
+        return `<section class="tw"><h3>${esc(TEAM_CATS[c])} <small>${list.length}</small></h3><div class="team">${list.map(affTile).join('')}</div></section>`;
+      }).join('') + `</div>` : `<div class="empty">${S.affFailed ? "Couldn't load the beauty team." : 'Loading…'}</div>`;
   } else if(S.tab === 'all'){
     // every photo, sorted into style categories (site section > sub-style); the client's own pick comes first
     const G2 = { lesson:'natural' }[S.answers.category] || S.answers.category, sub = S.answers.sub_style;
@@ -1483,8 +1506,32 @@ function updateFab(){
   const n = S.refs.length + S.affs.length;
   $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
 }
-$('#browseBtn').onclick = () => minimise(true);
 const FRAMED = window.self !== window.top;
+$('#browseBtn').onclick = () => FRAMED ? goSite(!!(S.pickComposer && S.pickComposer.refs && S.pickComposer.w.isConnected)) : minimise(true);
+/* ---------- inside the site (framed): the site's carousel is the gallery ---------- */
+function goSite(plus){
+  lastRefCount = S.refs.length;
+  parent.postMessage({ cmm:'browse', plus: plus && S.started && !S.sent, picked: S.refs.map(r => r.src) }, '*');
+}
+function toggleRefFromSite(d){
+  if(!S.started){ return }
+  if(S.sent) return;
+  const i = S.refs.findIndex(r => r.src === d.src);
+  if(i >= 0) S.refs.splice(i,1);
+  else {
+    if(S.refs.length >= CONFIG.maxRefs) return;
+    const m = S.media.find(x => x.src === d.src) || { src:d.src, s:d.s, d:d.d, g:d.g, type:'img' };
+    S.refs.push(m); Attention.bonus(m, 12);
+  }
+  renderSide(); renderTabs(); updateFab(); updateDev(); refreshPick();
+  parent.postMessage({ cmm:'refs', picked: S.refs.map(r => r.src) }, '*');
+}
+addEventListener('message', e => {
+  if(!FRAMED || e.source !== parent) return;
+  const d = e.data || {};
+  if(d.cmm === 'toggle-ref') toggleRefFromSite(d);
+  if(d.cmm === 'browse-done'){ const n = S.refs.length - lastRefCount; if(n > 0) toast(`${n} new look${n>1?'s':''} added`); refreshPick() }
+});
 if(FRAMED){
   document.body.classList.add('framed');
   document.querySelectorAll('a.back, a.brand').forEach(a => {
