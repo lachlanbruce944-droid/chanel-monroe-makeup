@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (beauty team names, team matches the extra services, no scroll bars)
+- Beauty team tiles show only the artist's Instagram name (no @handle), sized to fit under the circle (two lines at most, no overlap).
+- Picking Hair, Nails, Lashes & brows, Spray tan or Photographer as an extra service shows just those artists; "Show the whole beauty team" shows everyone.
+- The chat, gallery and detail tiles scroll without visible scroll bars.
+
 ### 2026-11-14 (reference photos from the site's carousel; beauty team windows)
 - Inside the site, the chat's glass now blurs the real site behind it, and its separate photo gallery is gone. At the reference-photos step, "Browse looks" lifts the glass: every carousel photo gets a + button, a pill shows how many are saved, and "Back to your enquiry" returns to the chat with the picks added. The chat stays scrolled to the newest message as the detail tiles above it grow (tested in Chrome at iPhone sizes 844 × 390 and 390 × 844). While picking, tapping a photo does nothing (no description popup), so only its + button responds. Opened on its own (enquire.html), the chat keeps its own style-sorted gallery.
 - Beauty team: artists are shown in one window per category (Hair, Nails, Lashes brows & tan, Photographers, Tattoo).

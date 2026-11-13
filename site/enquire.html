@@ -565,6 +565,15 @@ body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
   .twrap{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.tw{padding:10px 10px 12px;border-radius:14px}.tw h3{font-size:16px;margin-bottom:8px}
   .tw .team{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px}
 }
+
+/* beauty team names: Instagram name only, small enough to fit under the circle */
+.aff b{font-size:11.5px;font-weight:600;line-height:1.25;max-width:100%;padding:0 2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
+.aff{min-width:0}
+@media (max-height:480px) and (orientation:landscape){ .aff b{font-size:10.5px} }
+/* softer scrolling: scroll anywhere, no visible scroll bars */
+#msgs,#gallery,#side,#comp,.tiles,.chips,.idx-l,.idx-r{scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#msgs::-webkit-scrollbar,#gallery::-webkit-scrollbar,#side::-webkit-scrollbar,#comp::-webkit-scrollbar,.tiles::-webkit-scrollbar{display:none;width:0;height:0}
+#msgs{overscroll-behavior-y:contain;scroll-behavior:smooth}
 </style>
 </head>
 <body data-g="glam">
@@ -686,6 +695,9 @@ function travel(){
   return { km, included:false, fee, text:`about ${km} km, ${fee ? 'travel about ' + money(fee) : 'travel fee to be confirmed'}` };
 }
 const TEAM_CATS = { Hair:'Hair', Nail:'Nails', Cosmetics:'Lashes, brows & tan', Photography:'Photographers', Tattoo:'Tattoo' };
+/* which beauty-team windows match the extra services the client picked */
+const EXTRA_TEAM = { 'Hair':['Hair'], 'Nails':['Nail'], 'Lashes & brows':['Cosmetics'], 'Spray tan':['Cosmetics'], 'Photographer':['Photography'] };
+const teamFor = () => { const e = S.answers.extras; return Array.isArray(e) ? [...new Set(e.flatMap(x => EXTRA_TEAM[x] || []))] : [] };
 const cat = a => CATS.find(c => c.id === a.category) || {};
 /* The site's Book buttons link here as enquire.html?for=<pricing section>.
    One matching booking type: it's filled in for the client. Two (Special events): the style list shows just those. */
@@ -757,8 +769,9 @@ const QUESTIONS = [
     ask:() => 'Need anything else for the day? Chanel works with a trusted Gold Coast beauty team.' },
   { id:'team', label:'Beauty team', type:'pick', kind:'affs', optional:true,
     when:a => Array.isArray(a.extras) && !a.extras.includes('No thanks'),
-    ask:() => S.affs.length ? `You've picked ${S.affs.length} artist${S.affs.length>1?'s':''}. Add anyone else?`
-      : 'Want to choose someone? Tap Browse team, then + on any artist, and Chanel can coordinate with them.' },
+    ask:() => { const c = teamFor().map(k => TEAM_CATS[k].toLowerCase()).join(' and ');
+      return S.affs.length ? `You've picked ${S.affs.length} artist${S.affs.length>1?'s':''}. Add anyone else?`
+        : `Want to choose your ${c || 'artist'}? Tap Browse team, then + on anyone you like, and Chanel can coordinate with them.` } },
   { id:'email', label:'Email', type:'email', placeholder:'you@email.com',
     ask:a => `Nearly done, ${first(a.name)}. What's your email?`,
     validate:v => {
@@ -1351,7 +1364,13 @@ function renderGallery(){
   let h = `<div class="ghead"><h1>${esc(G.name)}</h1><p>${esc(G.blurb)}${hint}</p></div>`;
   if(S.tab === 'team'){
     // one window per category (Hair, Nails, Lashes brows & tan, Photographers, Tattoo)
-    const cats = Object.keys(TEAM_CATS).filter(c => S.affList.some(x => x.cat === c));
+    let cats = Object.keys(TEAM_CATS).filter(c => S.affList.some(x => x.cat === c));
+    const only = teamFor();
+    if(only.length && !S.teamAll){
+      cats = cats.filter(c => only.includes(c));
+      h = h.replace('</p></div>', ` · showing the ${esc(cats.map(c => TEAM_CATS[c].toLowerCase()).join(' and '))} you asked about</p></div>`);
+      h += `<button class="more" id="teamAll" style="margin:0 0 12px">Show the whole beauty team</button>`;
+    } else if(only.length) h += `<button class="more" id="teamOnly" style="margin:0 0 12px">Just show what I asked for</button>`;
     h += S.affList.length ? `<div class="twrap">` + cats.map(c => {
         const list = S.affList.filter(x => x.cat === c);
         return `<section class="tw"><h3>${esc(TEAM_CATS[c])} <small>${list.length}</small></h3><div class="team">${list.map(affTile).join('')}</div></section>`;
@@ -1390,6 +1409,8 @@ function renderGallery(){
   Attention.watch(g);
   g.querySelectorAll('.plus').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); b.dataset.h ? toggleAff(b) : togglePlus(b) });
   g.querySelectorAll('.cats button').forEach(b => b.onclick = () => { S.teamCat = b.dataset.c; renderGallery() });
+  $('#teamAll') && ($('#teamAll').onclick = () => { S.teamAll = true; renderGallery() });
+  $('#teamOnly') && ($('#teamOnly').onclick = () => { S.teamAll = false; renderGallery() });
   g.querySelectorAll('.jump button').forEach(b => b.onclick = () => {
     const t = g.querySelector('#cat-' + b.dataset.j); if(t) g.scrollTo({ top: t.offsetTop - 50, behavior:'smooth' });
     g.querySelectorAll('.jump button').forEach(x => x.classList.toggle('on', x === b));
@@ -1400,12 +1421,12 @@ function affTile(x, i){
   const added = S.affs.some(a => a.h === x.h);
   const cls = !S.started ? 'locked' : added ? 'added' : '';
   const icon = !S.started ? '🔒' : added ? '✓' : '+';
-  let role = (x.role || x.name || '').replace(/\s*[|•].*$/,'').trim();
-  if(role === role.toUpperCase()) role = role.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());   // tame ALL CAPS bios
+  let role = (x.name || x.role || x.h).replace(/\s*[|\/].*$/,'').replace(/\s*•\s*/g,' · ').trim() || x.h;   // their Instagram name, first part only
+  if(role === role.toUpperCase()) role = role.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());   // tame ALL CAPS names
   return `<div class="aff${added?' added':''}" style="animation-delay:${Math.min(i,16)*25}ms">
     <div class="ring"><a href="https://www.instagram.com/${esc(x.h)}/" target="_blank" rel="noopener" title="See @${esc(x.h)} on Instagram"><img loading="lazy" src="${esc(x.avatar)}" alt="" onerror="this.style.visibility='hidden'"></a>
     <button class="plus ${cls}" data-h="${esc(x.h)}" aria-label="${added?'Remove':'Add'} @${esc(x.h)}" title="${S.started?(added?'Remove from enquiry':'Add to your enquiry'):'Start your enquiry to add artists'}">${icon}</button></div>
-    <b>${esc(role)}</b><small>@${esc(x.h)} · ${esc(TEAM_CATS[x.cat]||x.cat)}</small></div>`;
+    <b title="${esc(role)}">${esc(role)}</b></div>`;
 }
 function toggleAff(btn){
   if(!S.started){ toast('Start your enquiry first: just tell me your name 💬'); minimise(false); return }
@@ -1582,7 +1603,7 @@ $('#devbtn').hidden = !SHOW_TEST_PANEL;
 $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
 function restart(){
   sideSeen = new Set();
-  Object.assign(S, { forUsed:false, forFilled:false, history:[], earlyNoted:false, answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
+  Object.assign(S, { teamAll:false, forUsed:false, forFilled:false, history:[], earlyNoted:false, answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
   msgs.innerHTML = ''; comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
 }
 function autofill(){
