@@ -2,6 +2,13 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (chat enquiry page)
+- New `enquire.html`: a chat-style enquiry over frosted glass, with an animated orb for the assistant. It asks for the booking type and style (from a list, with styles from the site's sections), date, time, suburb (distance and travel check), how many, skin, allergies and patch test, lashes, extra services, reference photos (+ on any gallery photo) and beauty-team artists. Detail tiles (style, date, time, suburb, estimate) build up above the chat. It ends with a summary, a price estimate from `settings/pricing-settings.js`, and "Choose a time for your phone consult", which opens cal.com/chanelmonroe/enquiry with name, email, phone, Style and notes filled in.
+- Every Enquire and Book button now opens the chat (`data/site-content.js` BOOKING_LINKS). Section buttons pass `?for=<section>`: Natural, Editorial and Parties fill in the booking type; Special events offers Bridal or Glam.
+- Travel is now included within 20 km (was 50) in `settings/pricing-settings.js`; the pricing page footer follows.
+- `tools/publish.py` keeps `enquire.html` in `src/`; `tools/build_site.py` copies it into `site/`.
+- Enquiries are not saved to Supabase yet: until `CONFIG.supabaseAnonKey` is set in `enquire.html` they stay in the visitor's browser only, and the cal.com booking notes carry the details. Add `?test` to the address for the Test panel.
+
 ### 2026-11-14 (intro redesign: turn sideways, then full screen; iPhone Home Screen sheet)
 - Entry screen on phones and tablets redesigned (dark plum, drifting light, gold-shimmer name, frosted step card) and given the legacy mock-up's two-step logic: 1. turn sideways (stays until the phone is landscape, returns if it turns upright; rotation-lock tip after 7 s); 2. go full screen. Leaving full screen brings step 2 back unless the visitor chose to continue without it (remembered for the visit).
 - Android and iPad: Enter full screen also locks landscape; "Continue without full screen" appears if the browser refuses.

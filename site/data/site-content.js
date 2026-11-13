@@ -140,11 +140,11 @@
   /* ---------- BOOKING LINKS: where Enquire > Proceed and each Book button go. Paste your real links over the [brackets].
      Styles use their own link; every other section uses "general". Until a link is set, the button opens an email to you. ---------- */
   window.BOOKING_LINKS = {
-    general:   'https://cal.com/chanelmonroe/enquiry',
-    natural:   'https://cal.com/chanelmonroe/enquiry',
-    special:   'https://cal.com/chanelmonroe/enquiry',
-    editorial: 'https://cal.com/chanelmonroe/enquiry',
-    parties:   'https://cal.com/chanelmonroe/enquiry'
+    general:   'enquire.html',                  /* the chat enquiry; it ends with the cal.com phone consult */
+    natural:   'enquire.html?for=natural',      /* ?for= fills in the booking type for that section */
+    special:   'enquire.html?for=special',
+    editorial: 'enquire.html?for=editorial',
+    parties:   'enquire.html?for=parties'
   };
 
   /* ---------- BIO VIDEO: plays in the opening intro, before Explore. Put the file in gallery-site/video/ and set src,

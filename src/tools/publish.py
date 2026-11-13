@@ -20,7 +20,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # Source files kept in the repo (paths relative to the working copy, '/' separated)
 KEEP = [
-    'index.html', 'robots.txt', 'site.webmanifest',
+    'index.html', 'enquire.html', 'robots.txt', 'site.webmanifest',
     'settings/*.js',
     'data/*.js', 'data/*.json', 'data/*.csv',
     'images/icons/*.png', 'images/icons/*.ico',

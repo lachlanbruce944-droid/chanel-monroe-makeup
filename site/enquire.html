@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Enquire | Chanel Monroe Makeup</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Enquire with Chanel Monroe Makeup, Gold Coast: tell us about your booking and choose a time for a free phone consult.">
+<link rel="icon" href="https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/images/icons/favicon.ico">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Pinyon+Script&family=DM+Serif+Display:ital@0;1&family=Syne:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  =====================================================================
+  CHANEL MONROE MAKEUP: CHAT-STYLE ENQUIRY (prototype)
+  ---------------------------------------------------------------------
+  Everything you are likely to tweak is in CONFIG and QUESTIONS (in the
+  <script> near the bottom). Open the "Test panel" (bottom left) to see
+  the live answers, the Supabase row, the Google Calendar event and the
+  cal.com link while you click through.
+
+  SUPABASE: run this once in Supabase > SQL editor, then paste the
+  project's anon (public) key into CONFIG.supabaseAnonKey.
+  The anon key is safe in the browser: the policy below only lets the
+  public INSERT, never read.
+
+    create table if not exists public.enquiries (
+      id uuid primary key default gen_random_uuid(),
+      created_at timestamptz not null default now(),
+      status text not null default 'new',
+      name text, email text, phone text,
+      category text, category_name text, look text, look_name text, sub_style text,
+      lesson_focus jsonb default '[]', event_date date, time time, time_type text,
+      location text, travel_km_estimate int, travel_included boolean, travel_fee_estimate numeric, quantity text, bridal_trial text, skin_type text,
+      allergies text, patch_test boolean default false, lashes text,
+      extra_services jsonb default '[]', notes text,
+      refs jsonb default '[]', affiliates jsonb default '[]',
+      estimate_total numeric, estimate_is_from boolean, deposit_estimate numeric,
+      viewing jsonb, consent boolean default false, calendar_event jsonb, source text default 'web-chat'
+    );
+    alter table public.enquiries enable row level security;
+    create policy "public can submit enquiries" on public.enquiries
+      for insert to anon with check (consent = true);
+
+  GOOGLE CALENDAR: browsers can't safely write to Google Calendar
+  (it would expose your Google credentials). The plan: a Supabase
+  Database Webhook on INSERT into enquiries calls an Edge Function,
+  and the function creates the event from the row's calendar_event field.
+  This page already builds that event (see Test panel), so the function
+  only has to forward it to Google.
+  =====================================================================
+-->
+<style>
+:root{--ff:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--fh:"Cormorant Garamond",Georgia,serif;--ease:cubic-bezier(.2,.7,.2,1);--chatW:min(400px,44vw);--hdr:54px}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:var(--ff);-webkit-font-smoothing:antialiased;font-size:15px;background:var(--bg);color:var(--fg);overflow:hidden;transition:background .6s var(--ease),color .6s var(--ease)}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
+a{color:inherit}
+
+/* Themes copied from the live site: one per gallery group */
+[data-g="natural"]{--bg:#eef0e6;--bg2:#e3e8d6;--fg:#2f3a2b;--soft:#5d6a57;--acc:#7d8f6a;--line:#c4cfb7;--card:#f7f8f1;--fh:"Cormorant Garamond",Georgia,serif;--tt:none;--ls:0;--onacc:#fff}
+[data-g="glam"]{--bg:#f5e9e1;--bg2:#ead2c4;--fg:#3a2622;--soft:#7a5a50;--acc:#b8846b;--line:#e2c3b2;--card:#fbf3ee;--fh:"Bodoni Moda",Didot,serif;--tt:none;--ls:.01em;--onacc:#fff}
+[data-g="bridal"]{--bg:#fbf8f2;--bg2:#f3ead9;--fg:#3d3833;--soft:#6e665d;--acc:#c2a878;--line:#e6d9c0;--card:#fffdf9;--fh:"Cormorant Garamond",Georgia,serif;--tt:none;--ls:0;--onacc:#fff}
+[data-g="editorial"]{--bg:#0b0b0c;--bg2:#1a1a1d;--fg:#ededed;--soft:#a9a9ae;--acc:#ffffff;--line:#2e2e33;--card:#141416;--fh:"Bodoni Moda",Didot,serif;--tt:uppercase;--ls:.16em;--onacc:#0b0b0c}
+[data-g="fx"]{--bg:#141118;--bg2:#2a1020;--fg:#f3ece6;--soft:#b9a9a6;--acc:#c4142f;--line:#3a2a33;--card:#1d1820;--fh:"Syne",system-ui,sans-serif;--tt:uppercase;--ls:.06em;--onacc:#fff}
+[data-g="parties"]{--bg:#fbf3f1;--bg2:#f4e4e1;--fg:#2e2326;--soft:#6e5b60;--acc:#c76d7e;--line:#ecd8d4;--card:#fffaf9;--fh:"DM Serif Display",Georgia,serif;--tt:none;--ls:0;--onacc:#fff}
+[data-g="mine"],[data-g="team"],[data-g="all"]{--bg:#f5e9e1;--bg2:#ead2c4;--fg:#3a2622;--soft:#7a5a50;--acc:#b8846b;--line:#e2c3b2;--card:#fbf3ee;--fh:"Bodoni Moda",Didot,serif;--tt:none;--ls:.01em;--onacc:#fff}
+
+/* ===== Header + tabs ===== */
+header{position:fixed;top:0;left:0;right:0;height:var(--hdr);display:flex;align-items:center;gap:14px;padding:0 16px;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.brand{font-family:"Cormorant Garamond",serif;font-size:22px;font-weight:500;text-decoration:none;white-space:nowrap;letter-spacing:.02em}
+.brand small{font-family:var(--ff);font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--soft);margin-left:6px}
+nav.tabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;flex:1}nav.tabs::-webkit-scrollbar{display:none}
+nav.tabs button{padding:7px 12px;border-radius:999px;font-size:13px;color:var(--soft);white-space:nowrap;transition:.25s}
+nav.tabs button:hover{color:var(--fg)}
+nav.tabs button.on{background:var(--fg);color:var(--bg)}
+nav.tabs .cnt{display:inline-block;min-width:18px;padding:0 5px;margin-left:4px;border-radius:9px;background:var(--acc);color:var(--onacc);font-size:11px;line-height:18px}
+.back{font-size:12px;color:var(--soft);text-decoration:none;white-space:nowrap}.back:hover{color:var(--fg)}
+
+/* ===== Gallery ===== */
+#gallery{position:fixed;top:var(--hdr);left:0;bottom:0;right:calc(var(--chatW) + 24px);overflow-y:auto;padding:14px 14px 80px;transition:right .45s var(--ease)}
+body.min #gallery{right:0}
+.ghead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:2px 2px 12px}
+.ghead h1{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:26px;margin:0}
+.ghead p{margin:0;font-size:12px;color:var(--soft)}
+.grid{columns:4 200px;column-gap:10px}
+.tile{position:relative;break-inside:avoid;margin:0 0 10px;border-radius:12px;overflow:hidden;background:var(--bg2);animation:rise .5s var(--ease) both}
+.tile img{display:block;width:100%;height:auto;transition:transform .6s var(--ease)}
+.tile:hover img{transform:scale(1.03)}
+.tile figcaption{pointer-events:none;z-index:1;position:absolute;left:0;right:0;bottom:0;padding:22px 10px 8px;font-size:11px;color:#fff;background:linear-gradient(transparent,rgba(0,0,0,.55));opacity:0;transition:.3s}
+.tile:hover figcaption,.tile:focus-within figcaption{opacity:1}
+.plus{z-index:2;position:absolute;top:8px;right:8px;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-size:22px;line-height:1;background:rgba(255,255,255,.92);color:#2a2020;box-shadow:0 2px 10px rgba(0,0,0,.18);transition:transform .25s var(--ease),background .25s,opacity .25s}
+.plus:hover{transform:scale(1.1)}
+.plus.locked{opacity:.55;font-size:14px}
+.plus.added{background:var(--acc);color:var(--onacc)}
+.tile.added{outline:3px solid var(--acc);outline-offset:-3px}
+.more{display:block;margin:10px auto 0;padding:10px 22px;border:1px solid var(--line);border-radius:999px;font-size:13px}
+.empty{padding:40px 10px;color:var(--soft);font-size:14px;text-align:center}
+
+/* ===== Chat window ===== */
+#chat{position:fixed;top:calc(var(--hdr) + 10px);right:12px;bottom:12px;width:var(--chatW);display:flex;flex-direction:column;background:var(--card);border:1px solid var(--line);border-radius:20px;box-shadow:0 18px 50px rgba(40,20,20,.16);z-index:6;overflow:hidden;transition:transform .45s var(--ease),opacity .35s}
+body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:none}
+.chd{display:flex;align-items:center;gap:10px;padding:10px 12px;border-bottom:1px solid var(--line)}
+.av{width:34px;height:34px;border-radius:50%;flex:none;background:var(--acc);color:var(--onacc);display:grid;place-items:center;font-family:"Cormorant Garamond",serif;font-size:16px;font-weight:600}
+.who{flex:1;min-width:0;line-height:1.15}.who b{font-weight:500;font-size:14px;display:block}.who small{font-size:11px;color:var(--soft)}
+.hbtn{padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;white-space:nowrap}
+.hbtn:hover{border-color:var(--acc)}
+.tray{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);overflow-x:auto;align-items:center}
+.tray:empty{display:none}
+.tray .t{position:relative;flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:var(--bg2)}
+.tray .t img{width:100%;height:100%;object-fit:cover}
+.tray .t button{position:absolute;inset:0;background:rgba(0,0,0,.45);color:#fff;opacity:0;font-size:16px;transition:.2s}
+.tray .t:hover button,.tray .t button:focus{opacity:1}
+.tray .lbl{font-size:11px;color:var(--soft);white-space:nowrap;margin-right:2px}
+#msgs{flex:1;overflow-y:auto;padding:14px 12px 8px;display:flex;flex-direction:column;gap:8px;scroll-behavior:smooth}
+.b{max-width:88%;padding:10px 14px;border-radius:16px;font-size:15px;line-height:1.5;font-weight:400;letter-spacing:.005em;white-space:pre-wrap;animation:pop .3s var(--ease) both;word-wrap:break-word}
+.b.bot{align-self:flex-start;background:var(--bg2);border-bottom-left-radius:5px}
+.b.me{align-self:flex-end;background:var(--fg);color:var(--bg);border-bottom-right-radius:5px}
+.b.me.edit{cursor:default}
+.b .caret{display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:-2px;margin-left:1px;animation:blink .8s steps(1) infinite}
+.dots{align-self:flex-start;background:var(--bg2);padding:11px 14px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--soft);animation:bob 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
+.refrow{align-self:flex-end;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end;max-width:86%}
+.refrow img{width:46px;height:46px;object-fit:cover;border-radius:8px}
+/* composer */
+#comp{border-top:1px solid var(--line);padding:10px 12px;min-height:58px}
+#comp:empty{display:none}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);font-size:14px;font-weight:500;transition:.2s;animation:pop .3s var(--ease) both}
+.chip:hover{border-color:var(--acc);background:var(--bg2)}
+.chip.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
+.chip.ghost{color:var(--soft)}
+.row{display:flex;gap:8px}
+.row input,.row textarea{flex:1;min-width:0;padding:10px 13px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:14px;outline:none;resize:none}
+.row input:focus,.row textarea:focus{border-color:var(--acc)}
+.send{flex:none;width:42px;border-radius:14px;background:var(--acc);color:var(--onacc);font-size:18px}
+.err{color:#c0392b;font-size:12px;margin-top:6px}
+.subrow{display:flex;gap:6px;margin-top:7px}
+/* summary + booking */
+.card{align-self:stretch;border:1px solid var(--line);border-radius:16px;padding:12px;background:var(--bg);animation:pop .35s var(--ease) both;font-size:13px}
+.card h3{margin:0 0 8px;font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:18px}
+.card dl{display:grid;grid-template-columns:auto 1fr auto;gap:5px 10px;margin:0}
+.card dt{color:var(--soft)}.card dd{margin:0}
+.card .ed{font-size:11px;color:var(--acc);text-decoration:underline;padding:0}
+.card .refs{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px}.card .refs img{width:40px;height:40px;object-fit:cover;border-radius:7px}
+.card .acts{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+.book{display:flex;align-items:center;justify-content:center;gap:8px;align-self:stretch;padding:13px 16px;border-radius:14px;background:var(--acc);color:var(--onacc);text-decoration:none;font-weight:500;letter-spacing:.02em;animation:pop .4s var(--ease) both,glow 2.4s 1s ease-in-out infinite}
+.chip.sel{background:var(--fg);border-color:var(--fg);color:var(--bg)}
+.chip.sel::before{content:"✓ "}
+.chips+.row,.chips+.subrow{margin-top:8px}
+/* simple gallery: every photo, square tiles */
+.sgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:6px}
+.sgrid .tile{margin:0;border-radius:8px;aspect-ratio:1;animation:none}
+.sgrid .tile img{width:100%;height:100%;object-fit:cover}
+.sgrid figcaption{font-size:10px;padding:16px 6px 5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sgrid .plus{top:5px;right:5px;width:28px;height:28px;font-size:18px}
+@media (max-height:480px){.sgrid{grid-template-columns:repeat(auto-fill,minmax(88px,1fr));gap:4px}}
+/* beauty team (affiliates) */
+.cats{display:flex;gap:6px;flex-wrap:wrap;margin:0 2px 14px}
+.cats button{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--soft)}
+.cats button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.team{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:18px 12px}
+.aff{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;animation:rise .5s var(--ease) both}
+.ring{position:relative;width:96px;height:96px}
+.ring a{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg2);border:2px solid var(--line);transition:border-color .25s,transform .3s var(--ease)}
+.ring a:hover{transform:scale(1.04)}
+.ring img{width:100%;height:100%;object-fit:cover}
+.aff.added .ring a{border-color:var(--acc);border-width:3px}
+.ring .plus{top:-6px;right:-10px;width:32px;height:32px;font-size:20px}   /* sits top-right, just outside the circle */
+.ring .plus.locked{font-size:13px}
+.aff b{font-size:12.5px;font-weight:600;line-height:1.25;max-width:130px}
+.aff small{font-size:11.5px;color:var(--soft)}
+.tray .t.c{border-radius:50%}
+.sec{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:19px;margin:18px 2px 10px}
+@media (max-height:480px){.ring{width:74px;height:74px}.team{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px 8px}.ring .plus{width:28px;height:28px;font-size:17px}}
+.chip.pc{display:inline-flex;flex-direction:column;align-items:flex-start;border-radius:14px;line-height:1.2;text-align:left}
+.chip.pc small{font-size:11.5px;font-weight:400;color:var(--soft);margin-top:2px}
+.chip.pc:hover small{color:var(--fg)}
+.est{margin-top:10px;padding:10px;border-radius:12px;background:var(--bg2);display:flex;flex-direction:column;gap:3px}
+.est b{font-weight:600;font-size:14px}.est span{font-size:12px;color:var(--soft)}
+/* floating "continue" button */
+#fab{position:fixed;right:16px;bottom:16px;z-index:7;display:flex;align-items:center;gap:9px;padding:9px 16px 9px 9px;border-radius:999px;background:var(--fg);color:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.25);transform:translateY(140%);transition:transform .45s var(--ease)}
+body.min #fab{transform:none}
+#fab .av{width:30px;height:30px;font-size:14px}
+#fab .n{background:var(--acc);color:var(--onacc);border-radius:9px;padding:0 6px;font-size:11px;line-height:18px}
+#toast{pointer-events:none;position:fixed;left:50%;bottom:18px;transform:translate(-50%,160%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:13px;z-index:9;transition:transform .4s var(--ease);max-width:90vw;text-align:center}
+#toast.on{transform:translate(-50%,0)}
+body.min #toast{bottom:76px}
+/* test panel */
+#devbtn{position:fixed;left:12px;bottom:12px;z-index:8;padding:6px 11px;border-radius:999px;background:#222;color:#fff;font-size:11px;opacity:.7}
+#devbtn:hover{opacity:1}
+#dev{position:fixed;left:12px;bottom:46px;width:min(520px,calc(100vw - 24px));max-height:70vh;overflow:auto;z-index:8;background:#16161a;color:#e8e8ea;border-radius:14px;padding:12px;font:12px/1.45 ui-monospace,Menlo,Consolas,monospace;box-shadow:0 20px 50px rgba(0,0,0,.4);display:none}
+#dev.on{display:block}
+#dev h4{margin:10px 0 4px;font:600 11px var(--ff);letter-spacing:.12em;text-transform:uppercase;color:#9a9aa3}
+#dev pre{margin:0;white-space:pre-wrap;word-break:break-all;background:#0d0d10;padding:8px;border-radius:8px;max-height:200px;overflow:auto}
+#dev .db{display:flex;gap:6px;flex-wrap:wrap}
+#dev .db button{background:#2a2a31;color:#fff;padding:6px 10px;border-radius:8px;font:12px var(--ff)}
+#dev .db button:hover{background:#3a3a44}
+#dev a{color:#9fc6ff}
+#dev .mode{display:inline-block;padding:2px 8px;border-radius:6px;background:#3a2f12;color:#ffd27a}
+#dev .mode.live{background:#123a1f;color:#7dffa6}
+
+@keyframes rise{from{opacity:0;transform:translateY(10px)}}
+@keyframes pop{from{opacity:0;transform:translateY(6px) scale(.98)}}
+@keyframes blink{50%{opacity:0}}
+@keyframes bob{0%,60%,100%{transform:none;opacity:.5}30%{transform:translateY(-4px);opacity:1}}
+@keyframes glow{50%{box-shadow:0 0 0 6px color-mix(in srgb,var(--acc) 25%,transparent)}}
+
+/* Phone landscape (site design size 874 x 402) */
+@media (max-height:480px){
+  :root{--hdr:44px;--chatW:min(380px,46vw)}
+  .brand{font-size:18px}.brand small{display:none}
+  nav.tabs button{padding:5px 10px;font-size:12px}
+  .grid{columns:3 150px}
+  .ghead h1{font-size:20px}.ghead p{display:none}
+  #chat{top:calc(var(--hdr) + 6px);bottom:6px;right:6px;border-radius:16px}
+  .chd{padding:6px 10px}.av{width:28px;height:28px;font-size:14px}
+  #msgs{padding:10px 10px 6px}.b{font-size:13px;padding:7px 11px}
+  #comp{padding:7px 10px;min-height:0}
+  .chip{padding:6px 11px;font-size:12px}
+  .row input{padding:8px 11px}
+  .tray{padding:5px 10px}.tray .t{width:32px;height:32px}
+}
+/* Portrait phones: chat takes the screen, gallery behind it */
+@media (max-width:640px) and (orientation:portrait){
+  :root{--chatW:calc(100vw - 16px)}
+  #chat{right:8px;left:8px;bottom:8px}
+  #gallery{right:0}
+  .back{display:none}
+}
+.chip.sug{border-color:var(--acc);box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 30%,transparent);position:relative}
+.chip.sug::after{content:"✨ For you";position:absolute;top:-8px;right:8px;font-size:9.5px;font-weight:600;letter-spacing:.04em;padding:1px 6px;border-radius:8px;background:var(--acc);color:var(--onacc)}
+.chips{padding-top:6px}
+/* keep the answer area from swallowing the chat on short screens */
+#comp{max-height:46%;overflow-y:auto;overscroll-behavior:contain}
+.err .chip{margin:6px 6px 0 0}
+/* PHONES SIDEWAYS (the site's main phone layout, e.g. 874 x 402 and 667 x 375):
+   chat takes the right half, answers sit in a two-row strip you swipe sideways,
+   so the conversation keeps most of the height. */
+@media (max-height:480px) and (orientation:landscape){
+  :root{--chatW:min(440px,52vw)}
+  #chat{top:calc(var(--hdr) + 4px);bottom:max(4px,env(safe-area-inset-bottom));right:max(4px,env(safe-area-inset-right));border-radius:14px}
+  .chd{padding:5px 8px;gap:8px}.who small{display:none}.hbtn{padding:4px 9px;font-size:11.5px}
+  .tray{padding:4px 8px}.tray .lbl{display:none}
+  #msgs{padding:8px 8px 4px;gap:6px}.b{font-size:13px;padding:6px 10px;line-height:1.4}
+  #comp{padding:6px 8px;max-height:none;overflow:visible}
+  .chips{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none;padding:8px 2px 2px;
+    -webkit-mask-image:linear-gradient(90deg,#000 88%,transparent);mask-image:linear-gradient(90deg,#000 88%,transparent)}
+  .chips::-webkit-scrollbar{display:none}
+  .chips > .chip{flex:none;white-space:nowrap}
+  .chip.pc{flex-direction:row;align-items:baseline;gap:6px}.chip.pc small{margin-top:0}
+  .chip{padding:5px 11px;font-size:12.5px}.chip.pc{padding:4px 10px}.chip.pc small{font-size:10.5px}
+  .chip.sug::after{top:-7px;font-size:8.5px}
+  .row input{padding:7px 10px;font-size:14px}.send{width:38px}
+  .card{padding:9px;font-size:12px}.card dl{gap:3px 8px}
+  .book{padding:10px 12px;font-size:14px}
+  #fab{bottom:max(8px,env(safe-area-inset-bottom));right:max(8px,env(safe-area-inset-right))}
+  #gallery{padding-left:max(10px,env(safe-area-inset-left))}
+}
+@media (max-width:640px) and (orientation:portrait){
+  #devbtn{left:auto;right:8px;bottom:auto;top:10px;padding:4px 8px}
+  #dev{bottom:auto;top:44px}
+  .brand small{display:none}.brand{font-size:18px}
+  header{gap:8px;padding:0 10px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===================================================================
+   GLASS OVERLAY: no chat window. The conversation floats over the page
+   on frosted "privacy glass": the gallery stays visible behind it, blurred.
+   "Browse looks" lifts the glass; the floating button brings it back.
+   =================================================================== */
+:root{--col:640px}
+body #gallery{right:0}
+body #chat{isolation:isolate;top:var(--hdr);left:0;right:0;bottom:0;width:auto;border:0;border-radius:0;box-shadow:none;overflow:hidden;background:transparent;
+  transition:opacity .45s var(--ease);
+  --padx:max(14px,calc((100% - var(--col)) / 2))}
+body.min #chat{transform:none;opacity:0;pointer-events:none}
+/* the glass itself: oversized so the blur stays even right up to the screen edges */
+body #chat::before{content:"";position:absolute;inset:-80px;z-index:-1;pointer-events:none;
+  background:color-mix(in srgb,var(--bg) 40%,transparent)}
+/* the blur is applied to the gallery itself (more reliable than backdrop-filter on phones):
+   frosted while chatting, sharp when the glass is lifted */
+body #gallery{transition:filter .45s var(--ease),transform .45s var(--ease)}
+body:not(.min) #gallery{filter:blur(18px) saturate(1.25);transform:scale(1.03);pointer-events:none}
+body #chat .chd,body #chat .tray,body #chat #comp{background:transparent;border:0;padding-left:var(--padx);padding-right:var(--padx)}
+body #chat .chd{padding-top:12px;padding-bottom:6px}
+body #chat #msgs{padding:18px var(--padx) 10px;-webkit-mask-image:linear-gradient(transparent,#000 22px,#000 calc(100% - 8px),transparent);mask-image:linear-gradient(transparent,#000 22px,#000 calc(100% - 8px),transparent)}
+body #chat #comp{padding-top:8px;padding-bottom:max(14px,env(safe-area-inset-bottom))}
+/* floating bubbles */
+.b.bot,.dots{background:color-mix(in srgb,var(--card) 72%,transparent);border:1px solid color-mix(in srgb,#fff 45%,transparent);
+  box-shadow:0 6px 22px rgba(30,15,15,.10);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+.b.me{box-shadow:0 6px 18px rgba(30,15,15,.18)}
+.chip{background:color-mix(in srgb,var(--card) 78%,transparent);box-shadow:0 3px 12px rgba(30,15,15,.08)}
+.chip.sel{background:var(--fg)}.chip.pri{background:var(--acc)}
+.row input{background:color-mix(in srgb,var(--card) 85%,transparent)}
+.card{background:color-mix(in srgb,var(--card) 82%,transparent);box-shadow:0 10px 30px rgba(30,15,15,.12)}
+.hbtn{background:color-mix(in srgb,var(--card) 70%,transparent)}
+[data-g="editorial"] .b.bot,[data-g="fx"] .b.bot,[data-g="editorial"] .dots,[data-g="fx"] .dots{border-color:color-mix(in srgb,#fff 12%,transparent)}
+@media (max-height:480px) and (orientation:landscape){
+  :root{--col:620px}
+  body #chat{top:var(--hdr)}
+  body #chat .chd{padding-top:6px;padding-bottom:2px}
+  body #chat #msgs{padding-top:12px}
+  body #chat #comp{padding-bottom:max(6px,env(safe-area-inset-bottom))}
+}
+@media (max-width:640px) and (orientation:portrait){ body #chat{left:0;right:0;bottom:0} }
+/* browsers without backdrop blur: a softer solid tint instead */
+
+
+/* ===================================================================
+   MESSAGE ROWS + ORB AVATAR (original design, inspired by "thinking orb" indicators)
+   States: idle = slow breathing swirl · think = fast swirl + pulse · talk = shimmer + glow
+   Colours come from the current theme's accent, so the orb matches each gallery section.
+   =================================================================== */
+@property --orb-a{syntax:'<angle>';inherits:false;initial-value:0deg}
+.mrow{display:flex;align-items:flex-end;gap:8px;max-width:92%;align-self:flex-start;animation:pop .3s var(--ease) both}
+.mrow .b.bot{max-width:none}
+.mrow.cont > .orb{visibility:hidden}
+.mrow + .b.me,.b.me + .mrow{margin-top:4px}
+.orb{--s:30px;--o1:var(--acc);--o2:color-mix(in srgb,var(--acc) 35%,#ffd9cf);--o3:color-mix(in srgb,var(--acc) 45%,#b9a2ff);--o4:color-mix(in srgb,var(--acc) 30%,#fff3d6);
+  position:relative;flex:none;width:var(--s);height:var(--s);border-radius:50%;overflow:hidden;isolation:isolate;
+  background:conic-gradient(from var(--orb-a),var(--o1),var(--o2),var(--o3),var(--o4),var(--o1));
+  box-shadow:0 0 0 1px color-mix(in srgb,#fff 55%,transparent) inset,0 4px 14px color-mix(in srgb,var(--acc) 40%,transparent);
+  animation:orbSpin 9s linear infinite,orbBreathe 5s ease-in-out infinite}
+.orb::before{content:"";position:absolute;inset:-30%;border-radius:50%;z-index:-1;
+  background:radial-gradient(circle at 35% 40%,var(--o2) 0 22%,transparent 46%),radial-gradient(circle at 70% 65%,var(--o3) 0 20%,transparent 48%);
+  filter:blur(5px);animation:orbDrift 7s ease-in-out infinite alternate}
+.orb::after{content:"";position:absolute;inset:0;border-radius:50%;
+  background:radial-gradient(circle at 32% 26%,rgba(255,255,255,.85) 0 9%,rgba(255,255,255,.25) 22%,transparent 42%),radial-gradient(circle at 50% 120%,rgba(0,0,0,.18),transparent 55%)}
+.orb.lg{--s:36px}
+.orb.think{animation:orbSpin 1.4s linear infinite,orbPulse 1.1s ease-in-out infinite}
+.orb.think::before{animation-duration:1.6s}
+.orb.talk{animation:orbSpin 3.2s linear infinite,orbGlow 1.6s ease-in-out infinite}
+.orb.talk::before{animation-duration:2.6s}
+.mrow.cont .orb,.mrow:not(:last-child) .orb{animation-play-state:paused}
+@keyframes orbSpin{to{--orb-a:360deg}}
+@keyframes orbBreathe{50%{transform:scale(1.05)}}
+@keyframes orbPulse{50%{transform:scale(.88);filter:brightness(1.12) saturate(1.2)}}
+@keyframes orbGlow{50%{box-shadow:0 0 0 1px rgba(255,255,255,.6) inset,0 0 18px color-mix(in srgb,var(--acc) 70%,transparent)}}
+@keyframes orbDrift{to{transform:translate(12%,-10%) rotate(40deg)}}
+.dots{align-self:auto}
+.chd .orb{margin-right:2px}
+#fab .orb{--s:30px}
+#devbtn{position:static;opacity:.55;background:transparent;color:var(--soft);padding:5px 8px;font-size:11px;border:1px solid var(--line);border-radius:999px;flex:none}
+#devbtn:hover{opacity:1}
+#dev{bottom:auto;top:calc(var(--hdr) + 8px);left:auto;right:12px}
+@media (max-height:480px) and (orientation:landscape){ .orb{--s:24px}.orb.lg{--s:28px}.mrow{gap:6px} }
+@media (max-width:640px) and (orientation:portrait){ #devbtn{position:static;top:auto;right:auto} .back{display:none} }
+@media (prefers-reduced-motion:reduce){ .orb,.orb::before{animation:none!important} }
+
+/* ===================================================================
+   TWO-PART LAYOUT
+   Wide (landscape / desktop): booking panel left 40% · chat right 60%
+   Tall (portrait):            booking panel top 30%  · chat below 70%
+   =================================================================== */
+body #chat{display:grid;grid-template-columns:40% 60%;grid-template-rows:minmax(0,1fr);
+  padding:0 max(10px,calc((100% - 1180px) / 2));--padx:14px}
+body #chat .tray{display:none}
+#conv{display:flex;flex-direction:column;min-width:0;min-height:0}
+#side{min-height:0;overflow-y:auto;overscroll-behavior:contain;margin:12px 4px 12px 0;padding:14px;border-radius:20px;
+  background:color-mix(in srgb,var(--card) 58%,transparent);border:1px solid color-mix(in srgb,#fff 50%,transparent);
+  box-shadow:0 10px 34px rgba(30,15,15,.10);display:flex;flex-direction:column;gap:12px;scrollbar-width:thin}
+.sd-h{display:flex;flex-direction:column;gap:1px}
+.sd-h b{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:21px;line-height:1.1}
+.sd-h small{font-size:11.5px;color:var(--soft)}
+.sd-f{margin:0;display:grid;grid-template-columns:1fr;gap:7px}
+.sd-f > div{display:grid;grid-template-columns:96px 1fr;gap:8px;align-items:baseline;padding-bottom:7px;border-bottom:1px solid color-mix(in srgb,var(--line) 70%,transparent)}
+.sd-f dt{font-size:12px;color:var(--soft);white-space:nowrap}.sd-f dt i{font-style:normal;margin-right:5px}
+.sd-f dd{margin:0;font-size:13.5px;font-weight:500;animation:pop .35s var(--ease) both}
+.sd-f dd.ph,.sd-m .ph{color:color-mix(in srgb,var(--soft) 55%,transparent);font-weight:400;animation:none}
+.sd-est dd{font-weight:600;color:var(--acc)}
+.sd-m{display:flex;flex-direction:column;gap:8px}
+.sd-mh{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--soft)}
+.sd-add{font-size:12px;padding:4px 10px;border-radius:999px;border:1px solid var(--acc);color:var(--fg);background:color-mix(in srgb,var(--card) 70%,transparent)}
+.sd-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(54px,1fr));gap:6px}
+.sd-g .t{position:relative;aspect-ratio:1;border-radius:10px;overflow:hidden;background:var(--bg2);animation:pop .3s var(--ease) both}
+.sd-g .t.c{border-radius:50%}
+.sd-g img{width:100%;height:100%;object-fit:cover}
+.sd-g button{position:absolute;inset:0;background:rgba(0,0,0,.45);color:#fff;opacity:0;font-size:18px;transition:.2s}
+.sd-g .t:hover button,.sd-g button:focus{opacity:1}
+.sd-m .ph{margin:0;font-size:12px}
+
+/* short landscape phones */
+@media (max-height:480px) and (orientation:landscape){
+  body #chat{padding:0 max(4px,env(safe-area-inset-right)) 0 max(4px,env(safe-area-inset-left));--padx:8px}
+  #side{margin:6px 2px 6px 0;padding:9px 10px;gap:8px;border-radius:14px}
+  .sd-h b{font-size:16px}.sd-h small{display:none}
+  .sd-f{gap:4px}.sd-f > div{grid-template-columns:78px 1fr;padding-bottom:4px;gap:6px}
+  .sd-f dt{font-size:11px}.sd-f dd{font-size:12px}
+  .sd-g{grid-template-columns:repeat(auto-fill,minmax(40px,1fr));gap:4px}
+}
+/* tall screens: panel on top (30%), chat below (70%) */
+@media (orientation:portrait){
+  body #chat{grid-template-columns:minmax(0,1fr);grid-template-rows:30% 70%;padding:0 8px}
+  #side{margin:8px 0 2px;padding:10px 12px;gap:8px;border-radius:16px}
+  .sd-h{flex-direction:row;align-items:baseline;justify-content:space-between}
+  .sd-h b{font-size:17px}
+  .sd-h{display:none}
+  #side{gap:6px}
+  .sd-f{grid-template-columns:1fr 1fr;gap:3px 10px}
+  .sd-f > div{grid-template-columns:auto 1fr;gap:6px;padding-bottom:3px;align-items:center}
+  .sd-f dt span{display:none}.sd-f dt i{margin:0;font-size:13px}
+  .sd-f dd{font-size:12.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sd-m{gap:5px}
+  .sd-g{display:flex;overflow-x:auto;scrollbar-width:none}.sd-g .t{flex:none;width:40px}
+  .sd-add{padding:2px 9px}
+  body #chat .chd{padding-top:6px}
+}
+
+/* ===================================================================
+   DETAIL TILES: each answer becomes a tile with a symbol, building up as the chat goes
+   =================================================================== */
+#side.empty{display:none}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.tile2{position:relative;display:flex;align-items:center;gap:10px;min-width:0;padding:10px 12px;border-radius:16px;
+  background:color-mix(in srgb,var(--card) 74%,transparent);border:1px solid color-mix(in srgb,#fff 55%,transparent);
+  box-shadow:0 6px 18px rgba(30,15,15,.08)}
+.tile2 .ic{flex:none;width:34px;height:34px;border-radius:11px;display:grid;place-items:center;color:var(--acc);
+  background:color-mix(in srgb,var(--acc) 14%,transparent)}
+.tile2 .ic svg{width:19px;height:19px}
+.tile2 .tx{display:flex;flex-direction:column;min-width:0;line-height:1.2}
+.tile2 .lb{font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--soft)}
+.tile2 b{font-weight:600;font-size:13.5px;line-height:1.25;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tile2 .lb{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile2 .tx small:not(.lb){font-size:11px;color:var(--soft);white-space:nowrap}
+.tile2.price .ic{background:var(--acc);color:var(--onacc)}
+.tile2.price b{color:var(--acc)}
+.tile2.media{cursor:pointer}
+.tile2.media:hover{border-color:var(--acc)}
+.tile2 .mini{display:flex;flex:none;margin-left:auto;padding-left:12px}
+.tile2 .mini img{width:26px;height:26px;object-fit:cover;border-radius:7px;border:2px solid var(--card);margin-left:-9px;background:var(--bg2)}
+.tile2 .mini img.c{border-radius:50%}
+.tile2.fresh{animation:tileIn .55s var(--ease) both}
+.tile2.fresh .ic{animation:icPop .7s .15s var(--ease) both}
+@keyframes tileIn{from{opacity:0;transform:translateY(10px) scale(.94);filter:blur(4px)}}
+@keyframes icPop{0%{transform:scale(.4) rotate(-20deg)}60%{transform:scale(1.12)}100%{transform:none}}
+
+/* --- TOP layout (default): tiles above the chat, growing as answers come in --- */
+body.details-top #chat{grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);padding:0 max(10px,calc((100% - 860px) / 2))}
+body.details-top #side{margin:10px 0 0;padding:0;background:none;border:0;box-shadow:none;border-radius:0;max-height:none;overflow:visible;gap:0}
+body.details-top .tiles{display:flex;gap:8px}
+body.details-top .tile2{flex:1 1 0;min-width:0}
+body.details-top .tile2[data-k="style"],body.details-top .tile2[data-k="place"]{flex-grow:1.5}
+body.details-top .tile2 b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+body.details-top .tile2.media{grid-column:span 2}
+body.details-top #side{grid-row:1}
+body.details-top #conv{grid-row:2}   /* keeps the chat full height while the tiles row is still empty */
+/* sideways phones: one swipeable row of tiles so the chat keeps its height */
+@media (max-height:480px) and (orientation:landscape){
+  body.details-top #chat{padding:0 max(6px,env(safe-area-inset-right)) 0 max(6px,env(safe-area-inset-left))}
+  body.details-top #side{margin-top:6px}
+  body.details-top .tiles{gap:5px;padding:1px}
+  body.details-top .tile2{padding:5px 8px 5px 6px;gap:6px;border-radius:12px}
+  body.details-top .tile2 .ic{width:26px;height:26px;border-radius:8px}.tile2 .ic svg{width:15px;height:15px}
+  body.details-top .tile2 b{font-size:12px;display:block;white-space:nowrap;text-overflow:ellipsis}.tile2 .lb{font-size:9.5px}
+  body.details-top .tile2 .mini img{width:22px;height:22px}
+  body.details-top .tile2 .tx small:not(.lb){display:none}
+}
+/* tall phones: compact tiles, two per row */
+@media (orientation:portrait){
+  body.details-top #chat{padding:0 8px}
+  body.details-top #side{margin-top:8px}
+  /* two rows: style + suburb on top, date · time · estimate below */
+  body.details-top .tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px}
+  body.details-top .tile2{grid-column:span 2}
+  body.details-top .tile2[data-k="style"],body.details-top .tile2[data-k="place"]{grid-column:span 3}
+  body.details-top .tile2[data-k="style"]{order:1}body.details-top .tile2[data-k="place"]{order:2}
+  body.details-top .tile2[data-k="date"]{order:3}body.details-top .tile2[data-k="time"]{order:4}body.details-top .tile2[data-k="price"]{order:5}
+  body.details-top .tile2{padding:7px 8px;gap:7px;border-radius:13px}
+  body.details-top .tile2 .ic{width:26px;height:26px;border-radius:8px}.tile2 .ic svg{width:15px;height:15px}
+  body.details-top .tile2[data-k="date"] .ic,body.details-top .tile2[data-k="time"] .ic,body.details-top .tile2[data-k="price"] .ic{display:none}
+  body.details-top .tile2 b{font-size:12.5px}
+  body.details-top .tile2 .mini img{width:22px;height:22px}
+}
+/* --- SIDE layout: same tiles, stacked in the 40% / 30% panel --- */
+body.details-side #side.empty{display:flex}
+body.details-side #side.empty::before{content:"Your booking builds here as we chat ✨";margin:auto;color:var(--soft);font-size:13px;text-align:center}
+body.details-side .tiles{grid-template-columns:1fr}
+@media (orientation:portrait){ body.details-side .tiles{grid-template-columns:1fr 1fr} }
+
+/* ===== indexed style list ===== */
+.idx{display:grid;grid-template-columns:minmax(150px,.9fr) 1.3fr;gap:8px;animation:pop .3s var(--ease) both}
+.idx-l,.idx-r{display:flex;flex-direction:column;gap:3px;min-width:0}
+.idx-r{border-left:1px solid color-mix(in srgb,var(--line) 80%,transparent);padding-left:8px}
+.idx-h{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-size:15px;margin:2px 0 3px 6px;color:var(--soft)}
+.idx-c,.idx-s{display:flex;align-items:center;gap:9px;text-align:left;padding:6px 10px;border-radius:10px;font-size:13.5px;
+  background:color-mix(in srgb,var(--card) 62%,transparent);border:1px solid transparent;transition:background .2s,border-color .2s}
+.idx-c:hover,.idx-s:hover{border-color:var(--acc);background:color-mix(in srgb,var(--card) 85%,transparent)}
+.idx-c.on{background:var(--fg);color:var(--bg)}
+.idx-c.on .n,.idx-c.on .k{color:color-mix(in srgb,var(--bg) 70%,transparent)}
+.idx .n{font-variant-numeric:tabular-nums;font-size:11.5px;font-weight:600;color:var(--acc);min-width:22px}
+.idx .t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500}
+.idx .k{font-size:15px;line-height:1;color:var(--soft)}
+.idx-s.ghost .t{color:var(--soft);font-weight:400}
+.idx .sug{box-shadow:0 0 0 2px color-mix(in srgb,var(--acc) 40%,transparent)}
+.idx .sug .t::after{content:" ✨";font-size:11px}
+.idx-foot:empty{display:none}.idx-foot{margin-top:6px}
+.chip.back{order:99;margin-left:auto;font-size:12.5px}
+/* sideways phones: two inline rows (booking types, then styles) to save height */
+@media (max-height:480px) and (orientation:landscape){
+  .idx{display:flex;flex-direction:column;gap:5px}
+  .idx-l,.idx-r{flex-direction:row;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;gap:5px;padding:1px;
+    -webkit-mask-image:linear-gradient(90deg,#000 92%,transparent);mask-image:linear-gradient(90deg,#000 92%,transparent)}
+  .idx-l::-webkit-scrollbar,.idx-r::-webkit-scrollbar{display:none}
+  .idx-r{border-left:0;padding-left:1px}
+  .idx-h,.idx .k{display:none}
+  .idx-c,.idx-s{flex:none;padding:5px 11px;font-size:12.5px;border-radius:999px;border-color:var(--line)}
+  .idx .t{overflow:visible}
+}
+@media (orientation:portrait){
+  .idx{grid-template-columns:1fr 1.25fr}
+  .idx-c,.idx-s{padding:5px 8px;font-size:12.5px;gap:6px}
+}
+</style>
+</head>
+<body data-g="glam">
+
+<header>
+  <a class="brand" href="./">Chanel Monroe<small>Makeup</small></a>
+  <nav class="tabs" id="tabs" aria-label="Gallery sections"></nav>
+  <a class="back" href="./">← Back to site</a>
+  <button id="devbtn" title="Test panel">⚙ Test</button>
+</header>
+
+<main id="gallery" aria-label="Gallery"></main>
+
+<aside id="chat" aria-label="Enquiry chat">
+  <section id="side" aria-label="Your booking so far"></section>
+  <div id="conv">
+  <div class="chd">
+    <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
+    <div class="who"><b>Chanel Monroe Makeup</b><small id="status">Booking assistant</small></div>
+    <button class="hbtn" id="browseBtn" title="Lift the glass and look through the gallery">Browse looks ↗</button>
+  </div>
+  <div class="tray" id="tray"></div>
+  <div id="msgs" aria-live="polite"></div>
+  <div id="comp"></div>
+  </div>
+</aside>
+
+<button id="fab" aria-label="Continue your enquiry"><span class="orb idle" aria-hidden="true"></span><span id="fabTxt">Continue enquiry</span><span class="n" id="fabN" hidden>0</span></button>
+<div id="toast" role="status"></div>
+
+<div id="dev"></div>
+
+<script>
+/* =====================================================================
+   CONFIG: the things you'll want to change
+   ===================================================================== */
+const CONFIG = {
+  // Where the gallery list comes from. The first one that loads wins:
+  // inside the site folder it uses the local copy, opened on its own it uses the live site.
+  mediaSources: ['data/media.js', 'https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/data/media.js'],
+  pricingSources: ['settings/pricing-settings.js', 'https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/settings/pricing-settings.js'],
+  affiliateSources: ['data/affiliates.js', 'https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/data/affiliates.js'],
+  mediaBase: 'https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/',
+
+  supabaseUrl: 'https://qxiugfatpybldluipcyy.supabase.co',
+  supabaseAnonKey: 'PASTE_ANON_KEY_HERE',   // leave as-is to run in SIMULATED mode (nothing is saved)
+  supabaseTable: 'enquiries',
+
+  calLink: 'https://cal.com/chanelmonroe/enquiry',
+  base: { name:'Robina', lat:-28.0780, lng:153.3850 },   // where Chanel travels from: change to her real base suburb
+  travelPerKm: null,      // e.g. 0.95 to quote $/km for every km past the included distance (return trip). null = "confirmed on your call"
+
+  timezone: 'Australia/Brisbane',
+
+  typeSpeed: 16,          // ms per letter (lower = faster)
+  thinkTime: [450, 850],  // "typing…" dots before each message (min, max ms)
+  simpleGallery: true,
+  detailsLayout: 'top',   // 'top' = detail tiles build up above the chat · 'side' = panel left 40% (landscape) / top 30% (portrait)    // true = one big grid of every photo (quick logic testing). false = the site's sections
+  perPage: 36,            // photos per gallery section before "Show more"
+  maxRefs: 12,            // max reference photos per enquiry
+  minsPerFace: 60,        // used to estimate the start time for the calendar event
+  minsPerBride: 90
+};
+
+const GROUPS = [
+  { g:'all',       name:'All photos',    blurb:'Every photo on the site', simple:true },
+  { g:'glam',      name:'Glam',          blurb:'Soft to full glam for events and formals' },
+  { g:'bridal',    name:'Bridal',        blurb:'Timeless bridal looks' },
+  { g:'natural',   name:'Natural',       blurb:'Fresh skin, soft definition' },
+  { g:'editorial', name:'Editorial',     blurb:'Shoots, colour and graphic looks' },
+  { g:'fx',        name:'SFX & Character', blurb:'Special effects, Halloween and character' },
+  { g:'parties',   name:'Parties',       blurb:'Face paint, glitter and party looks' },
+  { g:'team',      name:'Beauty team',   blurb:'Trusted Gold Coast artists for hair, nails, lashes, tan and photos' },
+  { g:'mine',      name:'My picks',      blurb:'Looks and artists you have added to your enquiry' }
+];
+
+/* =====================================================================
+   QUESTIONS: edit the order, wording and options here.
+   type: text | chips | date | time | email | tel | refs
+   when(a): only ask if this returns true (a = answers so far)
+   optional: shows a skip chip (skip: label for it)
+   ===================================================================== */
+/* ---------- SITE CONTENT (matches the live site's sections, sub-styles and pricing) ----------
+   Prices load from the site's settings/pricing-settings.js so they stay in sync;
+   PRICE_FALLBACK is a snapshot from 13 Nov 2026, used only if that file can't load. */
+const PRICE_FALLBACK = {"meta":{"currency":"$","minimumBooking":150,"depositPct":30,"includedKm":20},"looks":{"bridal-look":{"name":"Bridal look","unit":"per bride","price":375,"from":false},"bridal-party":{"name":"Bridal party and family","unit":"per person","price":170,"from":false},"formal":{"name":"Formal and graduation","unit":"per person","price":195,"from":false},"gala":{"name":"Gala, awards and race day","unit":"per person","price":220,"from":false},"milestone":{"name":"Milestone celebration","unit":"per person","price":195,"from":false},"trial":{"name":"Wedding trial","unit":"per trial","price":250,"from":false},"shoot-look":{"name":"Photoshoot look","unit":"per look","price":240,"from":false},"close-up":{"name":"Beauty close-up","unit":"per look","price":275,"from":false},"statement":{"name":"High fashion and statement","unit":"per look","price":300,"from":false},"sfx":{"name":"SFX and prosthetics","unit":"per character","price":520,"from":true},"body-paint":{"name":"Body paint","unit":"per person","price":600,"from":true},"half-day":{"name":"Half day on set","unit":"per booking","price":720,"from":false},"full-day":{"name":"Full day on set","unit":"per booking","price":1350,"from":false},"halloween":{"name":"Halloween","unit":"per person","price":150,"from":false},"easter":{"name":"Easter","unit":"per person","price":110,"from":false},"christmas":{"name":"Christmas and New Year","unit":"per person","price":145,"from":false},"birthday":{"name":"Birthdays and celebrations","unit":"per person","price":145,"from":false},"festival":{"name":"Festivals and day parties","unit":"per person","price":100,"from":false},"hens":{"name":"Hens and themed nights","unit":"per person","price":150,"from":false},"character":{"name":"Full character","unit":"per person","price":280,"from":false},"mini-paint":{"name":"Mini face paint (10 people or more)","unit":"per person","price":20,"from":false},"natural":{"name":"Everyday natural","unit":"per person","price":145,"from":false},"headshot":{"name":"Headshots and work","unit":"per person","price":165,"from":false},"portrait":{"name":"Outdoor and family portraits","unit":"per person","price":140,"from":false},"sensitive":{"name":"Sensitive skin","unit":"per person","price":190,"from":false},"lesson":{"name":"Makeup lesson","unit":"per person","price":280,"from":false}}};
+let PRICES = PRICE_FALLBACK;
+const CATS = [
+  { id:'bridal',    name:'Bridal',              looks:['bridal-look','bridal-party'],                       subs:['Classic bridal','Natural radiant bride','Groom grooming'] },
+  { id:'glam',      name:'Glam & events',       looks:['formal','gala','milestone'],                        subs:['Soft glam','Full glam','Bronzed coastal glam','Old Hollywood','Race day glam','Mature skin glam'] },
+  { id:'natural',   name:'Natural & everyday',  looks:['natural','headshot','portrait','sensitive'],        subs:['No-makeup makeup','Clean polished','Fresh lift','Dewy glass skin','Sun-kissed bronze','Mature natural','Sensitive skin','Maternity glow'] },
+  { id:'editorial', name:'Editorial & shoots',  looks:['shoot-look','close-up','statement','half-day','full-day'], subs:['Beauty close-up','Graphic liner','Editorial graphic liner','Colour block and gloss','Lip art','Avant-garde','Music video and album art','Stage and theatre'] },
+  { id:'fx',        name:'Character & FX',      looks:['sfx','body-paint','character','halloween'],         subs:['SFX and prosthetics','Body paint','Cosplay recreation','Halloween character','Fancy dress','UV neon'] },
+  { id:'parties',   name:'Parties & seasonal',  looks:['birthday','hens','festival','christmas','easter','mini-paint'], subs:['Glitter bar and gems','Kids face paint','Express designs','Easter','Christmas and New Year','Holiday specials'] },
+  { id:'lesson',    name:'Makeup lesson',       looks:['lesson'],                                           subs:[] }
+];
+/* Suburbs with rough coordinates, used to estimate the travel distance from CONFIG.base.
+   Road distance is estimated as straight-line × 1.15. Add suburbs here as you like. */
+const SUBURB_GEO = {
+  'Surfers Paradise':[-28.0023,153.4145], 'Broadbeach':[-28.0333,153.4333], 'Burleigh Heads':[-28.0886,153.4500], 'Southport':[-27.9670,153.4000],
+  'Robina':[-28.0780,153.3850], 'Varsity Lakes':[-28.0870,153.4120], 'Mudgeeraba':[-28.0820,153.3640], 'Palm Beach':[-28.1170,153.4660],
+  'Coolangatta':[-28.1675,153.5361], 'Tweed Heads':[-28.1760,153.5410], 'Nerang':[-27.9950,153.3360], 'Helensvale':[-27.9150,153.3330],
+  'Coomera':[-27.8610,153.3390], 'Hope Island':[-27.8700,153.3500], 'Tamborine Mountain':[-27.9650,153.1950], 'Kingscliff':[-28.2580,153.5770],
+  'Logan':[-27.6390,153.1090], 'Brisbane':[-27.4698,153.0251], 'Byron Bay':[-28.6474,153.6020]
+};
+const SUBURBS = Object.keys(SUBURB_GEO);
+function travelKm(suburb){
+  const g = SUBURB_GEO[suburb], b = CONFIG.base; if(!g || !b) return null;
+  const R = 6371, rad = x => x*Math.PI/180, dLat = rad(g[0]-b.lat), dLng = rad(g[1]-b.lng);
+  const h = Math.sin(dLat/2)**2 + Math.cos(rad(b.lat))*Math.cos(rad(g[0]))*Math.sin(dLng/2)**2;
+  return Math.max(1, Math.round(2*R*Math.asin(Math.sqrt(h)) * 1.15));
+}
+function travel(){
+  const a = S.answers, km = travelKm(a.location), inc = PRICES.meta.includedKm;
+  if(!a.location) return null;
+  if(km === null) return { km:null, included:null, fee:null, text:'distance to be confirmed' };
+  if(km <= inc) return { km, included:true, fee:0, text:`about ${km} km, travel included` };
+  const extra = km - inc, fee = CONFIG.travelPerKm ? Math.round(extra * 2 * CONFIG.travelPerKm) : null;   // return trip on the km past the included distance
+  return { km, included:false, fee, text:`about ${km} km, ${fee ? 'travel about ' + money(fee) : 'travel fee to be confirmed'}` };
+}
+const TEAM_CATS = { Hair:'Hair', Nail:'Nails', Cosmetics:'Lashes, brows & tan', Photography:'Photographers', Tattoo:'Tattoo' };
+const cat = a => CATS.find(c => c.id === a.category) || {};
+/* The site's Book buttons link here as enquire.html?for=<pricing section>.
+   One matching booking type: it's filled in for the client. Two (Special events): the style list shows just those. */
+const FOR = ({ special:['bridal','glam'], natural:['natural'], editorial:['editorial'], parties:['parties'],
+               bridal:['bridal'], glam:['glam'], fx:['fx'], lesson:['lesson'] })[new URLSearchParams(location.search).get('for')] || null;
+const FOR_CAT = FOR ? FOR[0] : null;
+const look = a => PRICES.looks[a.category === 'lesson' ? 'lesson' : a.look === 'unsure' ? cat(a).looks?.[0] : a.look] || null;
+const money = n => '$' + Number(n).toLocaleString('en-AU');
+const priceTag = k => { const L = PRICES.looks[k]; return L ? `${L.from ? 'from ' : ''}${money(L.price)} ${L.unit}` : '' };
+const startMode = a => ['editorial','lesson'].includes(a.category);              // shoots and lessons have a start time, not a ready-by time
+const qtyKind = a => { if(a.category === 'lesson') return 'none'; const L = look(a); if(!L) return 'people';
+  if(a.look === 'mini-paint') return 'group'; if(L.unit === 'per booking') return 'none';
+  if(L.unit === 'per look') return 'looks'; if(L.unit === 'per character') return 'characters'; if(a.category === 'lesson') return 'none'; return 'people' };
+const faceWork = a => !['mini-paint','body-paint'].includes(a.look);
+
+/* ---------- QUESTIONS ----------
+   Only name, email and mobile need typing; everything else is a tap.
+   options can be a list or a function of the answers; an option can be 'text' or { v, l, n } (value, label, small note).
+   other:true adds an "Other…" chip that opens a small text box. */
+const QUESTIONS = [
+  { id:'name', label:'Name', type:'text', placeholder:'First and last name',
+    ask:() => "Hi there ✨ I'm Chanel's booking assistant.\n" +
+      "Every great look starts with a conversation: your day, your style, and the feeling you want when you see yourself in the mirror.\n\n" +
+      "Just tap your way through. It takes about a minute, and then you can grab a free phone consult with Chanel.\n\n" +
+      "So, what should I call you?",
+    validate:v => v.trim().length >= 2 || 'Please type your name' },
+  { id:'category', label:'Booking', type:'index',
+    ask:a => { const g = suggestion('category');
+      return `Lovely to meet you, ${first(a.name)}!\nThe + buttons on the photos are on now, so save any looks you love.\n\n` +
+        (g ? `You've been browsing ${CATS.find(c => c.id === g).name.toLowerCase()}, so I've opened that section.\n` : '') +
+        'Pick a booking type, then the style you love.' } },
+  { id:'look', label:'Service', type:'chips', when:a => a.category !== 'lesson',
+    options:a => cat(a).looks.map(k => ({ v:k, l:PRICES.looks[k]?.name || k, n:priceTag(k) })).concat([{ v:'unsure', l:'Not sure yet' }]),
+    ask:a => ({ bridal:'Is this for the bride, or the bridal party and family?', glam:'Which event is it for?', natural:'Which suits you best?',
+                editorial:'What kind of shoot?', fx:'Which sort of character work?', parties:"What's the celebration?" })[a.category] || 'Which service?' },
+  { id:'lesson_focus', label:'Lesson focus', type:'multi', when:a => a.category === 'lesson',
+    options:['Everyday makeup','Soft glam','Event glam','Skin prep & base','Brows & eyes','Using my own kit'],
+    ask:() => `A one-to-one lesson is ${priceTag('lesson')}, and you keep a face chart and product list.\nWhat would you like to learn? Tap all that apply.` },
+  { id:'sub_style', label:'Style', type:'chips', when:a => a.category !== 'lesson',   // normally answered by the index list
+    options:a => cat(a).subs.map(x => ({ v:x, l:x })).concat([{ v:'Not sure yet', l:'Not sure yet' }]),
+    ask:() => { const st = suggestion('sub_style');
+      return st ? `You spent the most time on ${st} photos, so it's first. Which style do you love most?` : 'Which style do you love most?' } },
+  { id:'refs', label:'Reference looks', type:'pick', kind:'refs', optional:true,
+    ask:a => S.refs.length ? `You've saved ${S.refs.length} look${S.refs.length>1?'s':''}. Add any more?`
+      : 'Want to show Chanel some looks you love? Tap Browse looks, then + on any photo.' },
+  { id:'event_date', label:'Date', type:'date',
+    ask:a => ({ bridal:"When's the wedding?", editorial:"When's the shoot?", lesson:'Pick a date for your lesson.' })[a.category] || "When's the event?" },
+  { id:'ready_by', label:'Time', type:'time',
+    ask:a => startMode(a) ? 'What time should Chanel start?' : 'What time do you need to be ready by? Chanel works backwards from this.' },
+  { id:'location', label:'Suburb', type:'chips', options:SUBURBS, other:true, otherLabel:'Another suburb…', placeholder:'Suburb, e.g. Currumbin',
+    ask:() => `Which suburb will the makeup be in?\nChanel uses this to check the distance and confirm any travel costs (travel is included within ${PRICES.meta.includedKm} km).` },
+  { id:'quantity', label:'How many', type:'chips', when:a => qtyKind(a) !== 'none',
+    options:a => ({ group:['10–15','16–25','26–40','40 or more'], looks:['1 look','2 looks','3 looks','4 or more looks'], characters:['1','2','3','4 or more'] })[qtyKind(a)]
+      || (a.look === 'bridal-look' ? ['Just the bride','2','3','4','5','6','7 or more'] : a.look === 'bridal-party' ? ['1','2','3','4','5','6','7','8 or more'] : ['Just me','2','3','4','5','6 or more']),
+    ask:a => ({ group:'Mini face paint is for groups of 10 or more. Roughly how many people?', looks:'How many different makeup looks will the shoot need?\n(Each change, e.g. day to night, counts as one.)', characters:'How many characters?' })[qtyKind(a)]
+      || (a.look === 'bridal-look' ? 'How many people need makeup, including the bride?' : a.look === 'bridal-party' ? 'How many in the bridal party and family need makeup?' : 'How many people need makeup, including you?') },
+  { id:'bridal_trial', label:'Trial', type:'chips', options:["Yes, I'd like a trial",'No trial needed','Not sure yet'],
+    when:a => a.look === 'bridal-look',
+    ask:() => `Would you like a wedding trial (${priceTag('trial')})? It's a full test of your look in daylight, with photos and a written plan.` },
+  { id:'skin_type', label:'Skin type', type:'chips', options:['Dry','Oily','Combination','Normal','Sensitive','Mature','Not sure'],
+    when:a => faceWork(a), ask:() => 'How would you describe your skin?' },
+  { id:'allergies', label:'Allergies', type:'multi', options:['None','Lash glue','Fragrance','Latex','Nut oils','Eczema or rosacea'], none:'None', other:true, otherLabel:'Something else…',
+    ask:() => 'Any allergies or sensitivities? Tap all that apply.' },
+  { id:'patch_test', label:'Patch test', type:'chips', options:['Yes please','No thanks'],
+    when:a => a.look === 'sensitive' || a.skin_type === 'Sensitive' || (Array.isArray(a.allergies) && !a.allergies.includes('None')),
+    ask:() => 'Chanel recommends a patch test 48 hours before for sensitive skin or allergies. Would you like one?' },
+  { id:'lashes', label:'Lashes', type:'chips', options:['Natural','Wispy / fluffy','Dramatic','No lashes','Chanel can decide'],
+    when:a => (['bridal','glam'].includes(a.category) || ['natural','birthday','hens','christmas'].includes(a.look)) && a.sub_style !== 'Groom grooming',
+    ask:() => 'Lashes?' },
+  { id:'extras', label:'Other services', type:'multi', options:['Hair','Nails','Lashes & brows','Spray tan','Photographer','No thanks'], none:'No thanks',
+    when:a => a.category !== 'lesson',
+    ask:() => 'Need anything else for the day? Chanel works with a trusted Gold Coast beauty team.' },
+  { id:'team', label:'Beauty team', type:'pick', kind:'affs', optional:true,
+    when:a => Array.isArray(a.extras) && !a.extras.includes('No thanks'),
+    ask:() => S.affs.length ? `You've picked ${S.affs.length} artist${S.affs.length>1?'s':''}. Add anyone else?`
+      : 'Want to choose someone? Tap Browse team, then + on any artist, and Chanel can coordinate with them.' },
+  { id:'email', label:'Email', type:'email', placeholder:'you@email.com',
+    ask:a => `Nearly done, ${first(a.name)}. What's your email?`,
+    validate:v => {
+      v = v.trim(); const fix = emailFix(v);
+      if(fix && fix !== v) return { msg:`Did you mean ${fix}?`, fix };
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) || "That email doesn't look quite right" } },
+  { id:'phone', label:'Mobile', type:'tel', placeholder:'04xx xxx xxx',
+    ask:() => "And your mobile? Chanel will call you on this for the consult.",
+    validate:v => /^(\+?61|0)4\d{8}$/.test(v.replace(/[\s()-]/g,'')) || /^\+?\d{8,12}$/.test(v.replace(/[\s()-]/g,'')) || 'Please enter a valid phone number' },
+  { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
+    ask:() => 'Anything else Chanel should know?' },
+  { id:'consent', label:'Terms', type:'chips', options:['I agree'],
+    ask:() => `Last thing: a ${PRICES.meta.depositPct}% deposit secures your date and the minimum booking is ${money(PRICES.meta.minimumBooking)}. Happy to go ahead?` }
+];
+
+/* ---------- ATTENTION: which styles the client spends the most time looking at ----------
+   Every half second, each photo that is at least half on screen shares the time (so a
+   screen full of Old Hollywood counts more than one photo of it). Hovering a photo counts
+   triple, and saving it with + adds a big bonus. Used to suggest the booking type and style. */
+const Attention = (() => {
+  const vis = new Set(), A = { g:{}, s:{} };
+  let hover = null;
+  const io = new IntersectionObserver(es => es.forEach(e => e.isIntersecting ? vis.add(e.target) : vis.delete(e.target)), { threshold:.5 });
+  const add = (el, w) => { const g = el.dataset.g, st = el.dataset.s; if(g) A.g[g] = (A.g[g]||0) + w; if(st) A.s[st] = (A.s[st]||0) + w };
+  setInterval(() => {
+    if(document.hidden) return;
+    const galleryOnScreen = document.body.classList.contains('min');   // photos are only clearly visible when the glass is lifted
+    if(!galleryOnScreen || !vis.size) return;
+    const share = .5 / vis.size; vis.forEach(el => add(el, share));
+    if(hover && vis.has(hover)) add(hover, 1);
+  }, 500);
+  document.addEventListener('pointerover', e => { hover = e.target.closest?.('.tile[data-g]') || null });
+  return {
+    watch(root){ vis.clear(); root.querySelectorAll('.tile[data-g]').forEach(t => io.observe(t)) },
+    bonus(m, w){ if(m.g) A.g[m.g] = (A.g[m.g]||0) + w; if(m.s) A.s[m.s] = (A.s[m.s]||0) + w },
+    top(kind, allowed, min = 3){ const o = A[kind]; let best = null;
+      for(const k in o) if((!allowed || allowed.includes(k)) && o[k] >= min && (!best || o[k] > o[best])) best = k; return best },
+    data: () => ({ groups: sortObj(A.g), styles: sortObj(A.s) })
+  };
+})();
+function sortObj(o){ return Object.fromEntries(Object.entries(o).sort((a,b) => b[1]-a[1]).slice(0,6).map(([k,v]) => [k, Math.round(v*10)/10])) }
+const GROUP_TO_CAT = { natural:'natural', glam:'glam', bridal:'bridal', editorial:'editorial', fx:'fx', parties:'parties' };
+function suggestion(qid){
+  if(qid === 'category'){ const g = Attention.top('g'); return g && GROUP_TO_CAT[g] }
+  if(qid === 'sub_style'){ return Attention.top('s', cat(S.answers).subs) }
+  return null;
+}
+async function travelNote(){
+  const t = travel(), sub = S.answers.location; if(!t) return;
+  if(t.km === null) return say(`Thanks. Chanel will check the distance to ${sub} and confirm any travel cost on your call.`);
+  if(t.included) return say(`${sub} is about ${t.km} km away, so travel is included 👍`);
+  return say(`${sub} is about ${t.km} km away, which is outside the ${PRICES.meta.includedKm} km included.` +
+    (t.fee ? ` Travel would be about ${money(t.fee)}, added to your quote.` : ` Chanel will confirm the travel cost on your call.`));
+}
+/* ---------- EARLY START CHECK: big groups with an early ready-by time ---------- */
+async function earlyCheck(){
+  const ev = calendarEvent(); if(!ev || startMode(S.answers) || S.earlyNoted) return;
+  const h = parseInt(ev.start.dateTime.slice(11,13)), day = ev.start.dateTime.slice(0,10) !== S.answers.event_date;
+  if(h >= 5 && !day) return;
+  S.earlyNoted = true;
+  await say(`Heads up: to have everyone ready by ${fmtTime(S.answers.ready_by)}, Chanel would need to start around ${fmtTime(ev.start.dateTime.slice(11,16))}${day ? ' the night before' : ''}. She may bring a second artist, and she'll talk it through on your call.`);
+}
+function emailFix(v){
+  const m = v.toLowerCase().match(/^([^\s@]+)@([^\s@]+)$/); if(!m) return null;
+  const known = { gmail:'gmail.com', gmial:'gmail.com', gmai:'gmail.com', gamil:'gmail.com', hotmail:'hotmail.com', hotmial:'hotmail.com',
+    outlook:'outlook.com', icloud:'icloud.com', yahoo:'yahoo.com', bigpond:'bigpond.com', live:'live.com.au' };
+  const host = m[2].replace(/\.(con|cm|co|om)$/,'').replace(/\.com$/,'').replace(/\.com\.au$/,'');
+  if(known[host] && !/\.(com|com\.au|net|net\.au)$/.test(m[2])) return m[1] + '@' + known[host];
+  if(known[host] && m[2] !== known[host] && /^(gmial|gmai|gamil|hotmial)/.test(m[2])) return m[1] + '@' + known[host];
+  return null;
+}
+/* answers that only make sense for a particular earlier answer: changing the earlier one clears them */
+const DEPENDS = {
+  category:['look','sub_style','lesson_focus','quantity','bridal_trial','lashes','skin_type','patch_test'],
+  look:['quantity','bridal_trial','lashes'],
+  extras:['team'], allergies:['patch_test'], skin_type:['patch_test']
+};
+function clearAnswer(id){
+  delete S.answers[id];
+  (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
+  if(id === 'ready_by' || id === 'quantity') S.earlyNoted = false;
+}
+async function goBack(){
+  if(S.busy){ S.skip = true; await S.typing }
+  const id = S.history.pop(); if(!id) return;
+  const q = QUESTIONS.find(x => x.id === id);
+  S.prevAnswer = { [id]: S.answers[id] };
+  clearAnswer(id);
+  comp.innerHTML = '';
+  me('↩ Back');
+  updateDev(); if(S.tab === 'all') renderGallery();
+  askNext();
+}
+/* ---------- QUOTE ESTIMATE (shown on the summary; Chanel confirms on the call) ---------- */
+function estimate(){
+  const a = S.answers, L = look(a); if(!L) return null;
+  let qty = 1, open = L.from || a.look === 'unsure';
+  const q = String(a.quantity || '');
+  if(qtyKind(a) === 'group'){ qty = parseInt(q) || 10; open = true }
+  else if(q && !/^Just/.test(q)){ qty = parseInt(q) || 1; if(/more/.test(q)) open = true }
+  let total = L.price * qty;
+  const lines = [`${L.name}: ${money(L.price)} × ${qty}`];
+  if(a.bridal_trial === "Yes, I'd like a trial" && PRICES.looks.trial){ total += PRICES.looks.trial.price; lines.push(`Wedding trial: ${money(PRICES.looks.trial.price)}`) }
+  const tr = travel();
+  if(tr && tr.fee){ total += tr.fee; lines.push(`Travel (${tr.km} km): ${money(tr.fee)}`) }
+  else if(tr && tr.included === false){ lines.push('Travel fee to be confirmed'); open = true }
+  total = Math.max(total, PRICES.meta.minimumBooking);
+  return { total, open, deposit: Math.round(total * PRICES.meta.depositPct / 100), lines };
+}
+
+/* =====================================================================
+   STATE
+   ===================================================================== */
+const S = { byGroup:{}, answers:{}, refs:[], affs:[], affList:[], teamCat:'all', started:false, sent:false, enquiryId:null, busy:false, skip:false, media:[], tab: CONFIG.simpleGallery ? 'all' : 'glam', shown:{} };
+const $ = s => document.querySelector(s);
+const msgs = $('#msgs'), comp = $('#comp');
+const first = n => (n||'').trim().split(/\s+/)[0] || '';
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const wait = ms => new Promise(r => setTimeout(r, ms));
+const rand = (a,b) => a + Math.random()*(b-a);
+const fast = () => S.skip || matchMedia('(prefers-reduced-motion:reduce)').matches;
+
+/* ---------- formatting ---------- */
+function fmtDate(iso){ if(!iso) return ''; const d = new Date(iso+'T00:00'); return d.toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short',year:'numeric'}) }
+function fmtTime(t){ if(!t) return ''; const [h,m] = t.split(':').map(Number); return `${(h%12)||12}:${String(m).padStart(2,'0')} ${h<12?'am':'pm'}` }
+const opts = q => (typeof q.options === 'function' ? q.options(S.answers) : q.options || []).map(o => typeof o === 'string' ? { v:o, l:o } : o);
+const labelOf = (q, v) => (opts(q).find(o => o.v === v) || {}).l || (q.id === 'look' && PRICES.looks[v]?.name) || (q.id === 'category' && CATS.find(c => c.id === v)?.name) || v;
+function display(q, v){
+  if(v === undefined || v === null || v === '') return '';
+  if(q.type === 'chips' && q.options) return labelOf(q, v);
+  if(q.type === 'index') return CATS.find(c => c.id === v)?.name || v;
+  if(q.type === 'date') return fmtDate(v);
+  if(q.type === 'time') return fmtTime(v);
+  if(q.type === 'pick' && q.kind === 'refs') return S.refs.length ? `${S.refs.length} look${S.refs.length>1?'s':''} added` : 'None added';
+  if(q.type === 'pick' && q.kind === 'affs') return S.affs.length ? S.affs.map(x => '@'+x.h).join(', ') : 'None picked';
+  if(Array.isArray(v)) return v.map(x => q.options ? labelOf(q, x) : x).join(', ');
+  if(v === '__skip') return q.skip || 'Skipped';
+  return v;
+}
+const activeQs = () => QUESTIONS.filter(q => !q.when || q.when(S.answers));
+const nextQ = () => activeQs().find(q => S.answers[q.id] === undefined);
+
+/* =====================================================================
+   CHAT ENGINE
+   ===================================================================== */
+function scroll(){ msgs.scrollTop = msgs.scrollHeight }
+function setStatus(t){ $('#status').textContent = t }
+
+async function say(text, onStart){
+  S.busy = true; S.skip = false;
+  const row = botRow(), orb = row.firstChild;
+  const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = '<i></i><i></i><i></i>';
+  row.appendChild(dots); orbState(orb, 'think'); scroll(); setStatus('thinking…');
+  if(!fast()) await wait(rand(...CONFIG.thinkTime));
+  dots.remove();
+  const b = document.createElement('div'); b.className = 'b bot'; row.appendChild(b);
+  orbState(orb, 'talk'); setStatus('typing…');
+  if(onStart) onStart();   // answer buttons / text box appear as soon as the message starts
+  const caret = '<span class="caret"></span>';
+  if(fast()){ b.textContent = text }
+  else {
+    for(let i = 1; i <= text.length; i++){
+      if(S.skip){ break }
+      b.innerHTML = esc(text.slice(0,i)) + caret;
+      if(i % 3 === 0) scroll();
+      const ch = text[i-1];
+      await wait(ch === '\n' ? CONFIG.typeSpeed*8 : /[.!?]/.test(ch) ? CONFIG.typeSpeed*5 : CONFIG.typeSpeed);
+    }
+    b.textContent = text;
+  }
+  orbState(orb, 'idle'); scroll(); setStatus('Booking assistant'); S.busy = false;
+  return b;
+}
+/* one row per bot message: [orb][bubble]. Like a messaging app, only the last
+   message in a run of bot messages shows the orb. */
+function botRow(){
+  const last = msgs.lastElementChild;
+  if(last && last.classList.contains('mrow')) last.classList.add('cont');
+  const row = document.createElement('div'); row.className = 'mrow';
+  row.innerHTML = '<span class="orb" aria-hidden="true"></span>';
+  msgs.appendChild(row); return row;
+}
+function orbState(orb, st){
+  orb.classList.remove('idle','think','talk'); orb.classList.add(st);
+  const h = $('#hdrOrb'); h.classList.remove('idle','think','talk'); h.classList.add(st);
+}
+function me(text){ const b = document.createElement('div'); b.className = 'b me'; b.textContent = text; msgs.appendChild(b); scroll(); return b }
+// tap the chat while it's typing to finish the line instantly
+msgs.addEventListener('click', () => { if(S.busy) S.skip = true });
+
+async function askNext(){
+  const q = nextQ();
+  if(!q) return showSummary();
+  if(q.id === 'category' && FOR && FOR.length === 1 && !S.forUsed){   // came from a section's Book button
+    S.forUsed = true; S.forFilled = true;
+    S.answers.category = FOR[0]; S.history = (S.history || []).concat('category');
+    updateDev(); if(S.tab === 'all') renderGallery();
+    return askNext();
+  }
+  comp.innerHTML = '';
+  let text = q.ask(S.answers);
+  if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
+    text = `Lovely to meet you, ${first(S.answers.name)}! You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
+  S.typing = say(text, () => renderComposer(q));
+  await S.typing;
+}
+
+async function answer(q, value, shown){
+  if(S.busy){ S.skip = true; await S.typing }   // answered while it was still typing: finish the line first
+  S.answers[q.id] = value;
+  S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
+  comp.innerHTML = '';
+  me(shown ?? display(q, value));
+  if(q.type === 'pick') pickRow(q.kind);
+  if(q.id === 'name' && !S.started){ S.started = true; unlockPlus() }
+  if(['category','sub_style'].includes(q.id) && S.tab === 'all') renderGallery();
+  if(q.id === 'location') await travelNote();
+  if(['quantity','ready_by'].includes(q.id)) await earlyCheck();
+  updateDev();
+  if(S.returnToSummary){ S.returnToSummary = false; }
+  askNext();
+}
+
+/* ---------- composer (answer area) ---------- */
+function renderComposer(q){
+  comp.innerHTML = ''; S.pickComposer = null;
+  _renderComposer(q);
+  if(S.history?.length && q.id !== 'name'){
+    const b = chip('↩ Back','ghost back', goBack); b.title = 'Change your last answer';
+    const host = comp.querySelector('.chips') || comp.querySelector('.idx-foot') || comp;
+    host.prepend ? host.prepend(b) : host.appendChild(b);
+  }
+}
+/* STYLE LIST: booking types on the left, their styles on the right.
+   One tap on a style answers both "what are you booking" and "which style". */
+function renderIndex(q){
+  const sug = suggestion('category'), sugSub = Attention.top('s');
+  const only = FOR && FOR.length > 1 && !S.forUsed ? FOR : null;   // Special events button: just Bridal and Glam
+  let open = S.prevAnswer?.category || (FOR && !S.forUsed ? FOR_CAT : null) || sug || CATS[0].id;
+  const box = document.createElement('div'); box.className = 'idx';
+  const left = document.createElement('div'); left.className = 'idx-l';
+  const right = document.createElement('div'); right.className = 'idx-r';
+  const pick = (c, sub) => {
+    if(sub) S.answers.sub_style = sub;
+    const C = CATS.find(x => x.id === c);
+    answer(q, c, C.subs.length ? `${C.name} › ${sub}` : C.name);
+  };
+  const draw = () => {
+    left.innerHTML = ''; right.innerHTML = '';
+    CATS.filter(c => !only || only.includes(c.id)).forEach((c, i) => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = 'idx-c' + (c.id === open ? ' on' : '') + (c.id === sug ? ' sug' : '');
+      b.innerHTML = `<span class="t">${esc(c.name)}</span><span class="k">›</span>`;
+      b.onclick = () => { if(!c.subs.length) return pick(c.id); open = c.id; draw() };
+      left.appendChild(b);
+    });
+    const C = CATS.find(x => x.id === open), ci = CATS.indexOf(C) + 1;
+    const head = document.createElement('div'); head.className = 'idx-h'; head.textContent = C.name; right.appendChild(head);
+    const subs = C.subs.slice(); const k = subs.indexOf(sugSub); if(k > 0) subs.unshift(subs.splice(k,1)[0]);
+    subs.concat(['Not sure yet']).forEach((sub, j) => {
+      const b = document.createElement('button'); b.type = 'button';
+      b.className = 'idx-s' + (sub === sugSub ? ' sug' : '') + (sub === 'Not sure yet' ? ' ghost' : '');
+      b.innerHTML = `<span class="t">${esc(sub)}</span>`;
+      b.onclick = () => pick(C.id, sub);
+      right.appendChild(b);
+    });
+  };
+  draw();
+  if(FOR && FOR.length > 1) S.forUsed = true;   // a second visit (after Back) shows every booking type
+  box.append(left, right);
+  const foot = document.createElement('div'); foot.className = 'idx-foot chips';
+  comp.append(box, foot);
+}
+function _renderComposer(q){
+  if(q.type === 'index') return renderIndex(q);
+  if(q.type === 'chips' || q.type === 'multi'){
+    const multi = q.type === 'multi', picked = new Set(Array.isArray(S.prevAnswer?.[q.id]) ? S.prevAnswer[q.id] : []);
+    const w = document.createElement('div'); w.className = 'chips';
+    const done = chip('Done ✓','pri', () => { if(!picked.size){ toast('Tap at least one option'); return } answer(q, [...picked]) });
+    const sync = () => { w.querySelectorAll('[data-o]').forEach(c => c.classList.toggle('sel', picked.has(c.dataset.o))); done.hidden = !picked.size };
+    const sug = suggestion(q.id), list = opts(q);
+    if(sug){ const k = list.findIndex(o => o.v === sug); if(k > 0) list.unshift(list.splice(k,1)[0]) }
+    list.forEach((o,i) => {
+      const c = chip(o.l, o.n ? 'pc' : '', () => {
+        if(!multi) return answer(q, o.v);
+        if(o.v === q.none){ return answer(q, [o.v]) }          // "None" answers straight away
+        picked.has(o.v) ? picked.delete(o.v) : picked.add(o.v); sync();
+      });
+      if(o.n){ const n = document.createElement('small'); n.textContent = o.n; c.appendChild(n) }
+      if(sug && o.v === sug){ c.classList.add('sug'); c.title = 'Suggested from the photos you looked at most' }
+      c.dataset.o = o.v; c.style.animationDelay = i*30+'ms'; w.appendChild(c);
+    });
+    if(q.other) w.append(chip(q.otherLabel || 'Other…','ghost', () => openOther(q, picked, multi)));
+    if(multi){ w.append(done); sync() }
+    comp.appendChild(w); return;
+  }
+  if(q.type === 'pick'){
+    const refs = q.kind === 'refs', n = () => (refs ? S.refs : S.affs).length;
+    const w = document.createElement('div'); w.className = 'chips';
+    w.append(chip(refs ? 'Browse looks ↗' : 'Browse team ↗','pri', () => { if(!refs){ S.tab = 'team'; renderTabs(); renderGallery() } else if(S.tab === 'team'){ S.tab = CONFIG.simpleGallery ? 'all' : 'glam'; renderTabs(); renderGallery() } minimise(true) }));
+    const d = chip('', '', () => { if(!n()){ toast(refs ? 'Tap + on a photo first, or choose Skip' : 'Tap + on an artist first, or choose Skip'); return } answer(q, n()) });
+    d.dataset.done = 1; w.append(d);
+    w.append(chip('Skip','ghost', () => answer(q, '__skip', 'Skip for now')));
+    comp.appendChild(w); S.pickComposer = { w, q, n, refs }; refreshPick(); return;
+  }
+  textBox(q, v => answer(q, v));
+}
+function refreshPick(){
+  const P = S.pickComposer; if(!P || !P.w.isConnected) return;
+  const d = P.w.querySelector('[data-done]'), n = P.n();
+  d.textContent = n ? `Done (${n} added)` : (P.refs ? "I've added them" : "I've picked them");
+}
+function openOther(q, picked, multi){
+  comp.querySelector('.row')?.remove();
+  textBox(q, v => { if(multi){ picked.delete(q.none); answer(q, [...picked, v]) } else answer(q, v) }, true);
+}
+function textBox(q, done, append){
+  const row = document.createElement('div'); row.className = 'row';
+  const inp = document.createElement('input');
+  inp.type = { date:'date', time:'time', email:'email', tel:'tel' }[q.type] || 'text';
+  if(q.type === 'date') inp.min = new Date().toISOString().slice(0,10);
+  if(q.type === 'time'){ inp.step = 900; inp.value = '09:00' }
+  if(q.type === 'email') inp.autocomplete = 'email';
+  if(q.type === 'tel'){ inp.autocomplete = 'tel'; inp.inputMode = 'tel' }
+  if(q.id === 'name') inp.autocomplete = 'name';
+  inp.placeholder = q.placeholder || 'Type here…';
+  const prev = S.prevAnswer?.[q.id]; if(typeof prev === 'string' && prev !== '__skip' && !(q.options||[]).includes(prev)) inp.value = prev;
+  const btn = document.createElement('button'); btn.className = 'send'; btn.type = 'button'; btn.setAttribute('aria-label','Send'); btn.textContent = '↑';
+  row.append(inp, btn);
+  const err = document.createElement('div'); err.className = 'err'; err.hidden = true;
+  const go = () => {
+    const v = inp.value.trim();
+    if(!v){ err.textContent = q.type==='date' ? 'Please pick a date' : 'Please fill this in'; err.hidden = false; return }
+    const ok = (q.validate && !append) ? q.validate(v) : true;
+    if(ok && ok.fix){ err.innerHTML = ''; err.append(ok.msg + ' ', chip('Yes, use that','pri', () => done(ok.fix)), chip('No, keep mine','ghost', () => done(v))); err.hidden = false; return }
+    if(ok !== true){ err.textContent = ok; err.hidden = false; return }
+    done(v);
+  };
+  btn.onclick = go;
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter'){ e.preventDefault(); go() } });
+  inp.addEventListener('input', () => err.hidden = true);
+  comp.append(row, err);
+  if(q.optional && !append){ const s = document.createElement('div'); s.className = 'subrow'; s.append(chip(q.skip || 'Skip','ghost', () => answer(q,'__skip'))); comp.append(s) }
+  setTimeout(() => { inp.focus({preventScroll:true}); if(q.type === 'date' && inp.showPicker){ try{ inp.showPicker() }catch(e){} } }, 30);
+}
+function chip(label, cls, fn){ const c = document.createElement('button'); c.type = 'button'; c.className = 'chip ' + (cls||''); c.textContent = label; c.onclick = fn; return c }
+function pickRow(kind){
+  const list = kind === 'refs' ? S.refs : S.affs; if(!list.length) return;
+  const r = document.createElement('div'); r.className = 'refrow';
+  r.innerHTML = list.map(x => `<img src="${esc(kind==='refs' ? thumb(x.src) : x.avatar)}" alt="" ${kind==='affs'?'style="border-radius:50%"':''}>`).join('');
+  msgs.appendChild(r); scroll();
+}
+
+/* ---------- summary, save, book ---------- */
+async function showSummary(){
+  await say(`Thanks ${first(S.answers.name)}! Here's your enquiry. Check it over and tap Edit to change anything.`);
+  const card = document.createElement('div'); card.className = 'card'; card.id = 'summary';
+  const rows = activeQs().filter(q => q.id !== 'consent').map(q =>
+    `<dt>${esc(q.label)}</dt><dd>${esc(display(q, S.answers[q.id]))}</dd><dd><button class="ed" data-edit="${q.id}">Edit</button></dd>`).join('');
+  const est = estimate();
+  card.innerHTML = `<h3>Your enquiry</h3><dl>${rows}</dl>` +
+    (est ? `<div class="est"><b>Estimate: ${est.open ? 'from ' : ''}${money(est.total)}</b><span>${esc(est.lines.join(' · '))}</span><span>${PRICES.meta.depositPct}% deposit (about ${money(est.deposit)}) secures your date. Chanel confirms the final quote on your phone consult.</span></div>` : '') +
+    (S.refs.length ? `<div class="refs">${S.refs.map(x => `<img src="${esc(thumb(x.src))}" alt="" title="${esc(x.d||'')}">`).join('')}</div>` : '') +
+    (S.affs.length ? `<div class="refs">${S.affs.map(x => `<img src="${esc(x.avatar)}" alt="" title="@${esc(x.h)}" style="border-radius:50%">`).join('')}</div>` : '') +
+    `<div class="acts"><button class="chip pri" id="sendBtn">Looks good, send it</button><button class="chip ghost" id="addMore">+ Add looks</button></div>`;
+  msgs.appendChild(card); scroll();
+  card.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editAnswer(b.dataset.edit));
+  $('#sendBtn').onclick = submit;
+  $('#addMore').onclick = () => minimise(true);
+  $('#addMore').textContent = '+ Add looks or artists';
+  updateDev();
+}
+async function editAnswer(id){
+  if(S.sent || S.busy) return;
+  $('#summary')?.remove();
+  const q = QUESTIONS.find(x => x.id === id);
+  S.prevAnswer = { [id]: S.answers[id] };
+  clearAnswer(id);
+  me(`Change ${q.label.toLowerCase()}`);
+  S.typing = say(q.ask(S.answers), () => renderComposer(q));
+  await S.typing;
+}
+async function submit(){
+  if(S.sent) return;
+  const btn = $('#sendBtn'); btn.disabled = true; btn.textContent = 'Sending…';
+  document.querySelectorAll('#summary [data-edit], #addMore').forEach(b => b.remove());
+  const row = buildRow();
+  try{
+    const res = await saveToSupabase(row);
+    S.sent = true; S.enquiryId = res.id; btn.remove();
+    updateDev();
+    await say(res.simulated
+      ? (SHOW_TEST_PANEL ? "All sent ✨ (test mode: saved to the local test database)\n" : "All set ✨\n") + "Last step: book a free 15-minute phone consult so Chanel can confirm your quote and lock in the date."
+      : "All sent ✨ Chanel has your details.\nLast step: book a free 15-minute phone consult so Chanel can confirm your quote and lock in the date.");
+    const a = document.createElement('a'); a.className = 'book'; a.href = calUrl(); a.target = '_blank'; a.rel = 'noopener';
+    a.innerHTML = '📞 Choose a time for your phone consult <span aria-hidden="true">→</span>';
+    msgs.appendChild(a); scroll();
+  }catch(e){
+    btn.disabled = false; btn.textContent = 'Try again';
+    await say("Hmm, that didn't send. Check your connection and try again, or book directly below.");
+    const a = document.createElement('a'); a.className = 'book'; a.href = calUrl(); a.target = '_blank'; a.textContent = '📞 Choose a time for your phone consult →'; msgs.appendChild(a); scroll();
+    console.error(e);
+  }
+}
+
+/* ---------- data shapes ---------- */
+const val = id => { const v = S.answers[id]; return (v === undefined || v === '__skip') ? null : Array.isArray(v) ? v.join(', ') : v };
+function buildRow(){
+  const a = S.answers, on = id => activeQs().some(q => q.id === id), q = id => QUESTIONS.find(x => x.id === id);
+  const est = estimate(), L = look(a);
+  return {
+    name: val('name'), email: val('email'), phone: val('phone'),
+    category: a.category || null, category_name: cat(a).name || null,
+    look: on('look') ? a.look : (a.category === 'lesson' ? 'lesson' : null), look_name: L?.name || null,
+    sub_style: on('sub_style') ? val('sub_style') : null,
+    lesson_focus: on('lesson_focus') ? a.lesson_focus || [] : [],
+    event_date: val('event_date'), time: val('ready_by'), time_type: startMode(a) ? 'start' : 'ready_by',
+    location: val('location'), travel_km_estimate: travel()?.km ?? null, travel_included: travel()?.included ?? null, travel_fee_estimate: travel()?.fee ?? null,
+    quantity: on('quantity') ? display(q('quantity'), a.quantity) : null,
+    bridal_trial: on('bridal_trial') ? val('bridal_trial') : null,
+    skin_type: on('skin_type') ? val('skin_type') : null, allergies: val('allergies'),
+    patch_test: on('patch_test') ? a.patch_test === 'Yes please' : false,
+    lashes: on('lashes') ? val('lashes') : null,
+    extra_services: on('extras') && Array.isArray(a.extras) && !a.extras.includes('No thanks') ? a.extras : [],
+    notes: a.notes === "That's everything" ? null : val('notes'),
+    refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
+    affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
+    viewing: Attention.data(),
+    estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
+    consent: a.consent === 'I agree',
+    calendar_event: calendarEvent(),
+    source: 'web-chat'
+  };
+}
+function headcount(){ const a = S.answers; if(qtyKind(a) !== 'people') return 1; const q = String(a.quantity || ''); return /^Just/.test(q) || !q ? 1 : parseInt(q) || 6 }
+function calendarEvent(){
+  const a = S.answers; if(!a.event_date || !a.ready_by) return null;
+  const L = look(a), n = headcount(), bride = a.look === 'bridal-look' ? 1 : 0;
+  let mins = bride*CONFIG.minsPerBride + (n-bride)*CONFIG.minsPerFace;
+  if(a.look === 'half-day') mins = 240; if(a.look === 'full-day') mins = 480;
+  if(qtyKind(a) === 'looks' || qtyKind(a) === 'characters') mins = (parseInt(a.quantity) || 1) * (qtyKind(a) === 'characters' ? 150 : 75);
+  if(a.look === 'mini-paint') mins = Math.ceil((parseInt(a.quantity) || 10) * 7 / 15) * 15;
+  if(a.category === 'lesson') mins = 120;
+  mins = Math.max(mins, 45);
+  const t = new Date(`${a.event_date}T${a.ready_by}:00`);
+  const start = startMode(a) ? t : new Date(t.getTime() - mins*60000);
+  const end = startMode(a) ? new Date(t.getTime() + mins*60000) : t;
+  const pad = x => String(x).padStart(2,'0');
+  const local = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:00`;
+  const R = buildRowLite(), est = estimate();
+  const lines = [
+    `ENQUIRY (not yet confirmed): ${a.name}`,
+    `${cat(a).name || ''}${L ? ' · ' + L.name : ''}${R.sub_style ? ' · ' + R.sub_style : ''}`,
+    `${startMode(a) ? 'Start' : 'Ready by'}: ${fmtTime(a.ready_by)}${R.quantity ? ' · ' + R.quantity : ''}`,
+    travel() && `Suburb: ${a.location} (${travel().text})`,
+    R.lesson_focus.length && `Lesson focus: ${R.lesson_focus.join(', ')}`,
+    R.bridal_trial && `Trial: ${R.bridal_trial}`, R.skin_type && `Skin: ${R.skin_type}`,
+    `Allergies: ${R.allergies || 'None'}${R.patch_test ? ' · PATCH TEST 48h before' : ''}`, R.lashes && `Lashes: ${R.lashes}`,
+    R.extras.length && `Other services: ${R.extras.join(', ')}`,
+    S.affs.length && `Beauty team: ${S.affs.map(x => '@'+x.h+' ('+(TEAM_CATS[x.cat]||x.cat)+')').join(', ')}`,
+    est && `Estimate: ${est.open ? 'from ' : ''}${money(est.total)} (deposit ~${money(est.deposit)})`,
+    !startMode(a) && (start.getHours() < 5 || start.getDate() !== t.getDate()) && '⚠ Very early start: consider a second artist',
+    `Phone: ${a.phone || ''} · Email: ${a.email || ''}`, R.notes && `Notes: ${R.notes}`,
+    S.refs.length && `\nReference looks:\n` + S.refs.map(r => r.src).join('\n')
+  ].filter(Boolean);
+  return {
+    summary: `💄 ${first(a.name)}: ${L?.name || cat(a).name || 'Enquiry'} (enquiry)`,
+    location: a.location || '',
+    description: lines.join('\n'),
+    start: { dateTime: local(start), timeZone: CONFIG.timezone },
+    end:   { dateTime: local(end),   timeZone: CONFIG.timezone },
+    colorId: a.category === 'bridal' ? '5' : '4'
+  };
+}
+function buildRowLite(){   // the bits calendarEvent needs, without recursion
+  const a = S.answers, on = id => activeQs().some(q => q.id === id), q = id => QUESTIONS.find(x => x.id === id);
+  return { sub_style: on('sub_style') ? val('sub_style') : null, quantity: on('quantity') ? display(q('quantity'), a.quantity) : null,
+    lesson_focus: on('lesson_focus') ? a.lesson_focus || [] : [], bridal_trial: on('bridal_trial') ? val('bridal_trial') : null,
+    skin_type: on('skin_type') ? val('skin_type') : null, allergies: val('allergies'), patch_test: on('patch_test') && a.patch_test === 'Yes please',
+    lashes: on('lashes') ? val('lashes') : null, extras: on('extras') && Array.isArray(a.extras) && !a.extras.includes('No thanks') ? a.extras : [],
+    notes: a.notes === "That's everything" ? null : val('notes') };
+}
+function gcalTestLink(){
+  const ev = calendarEvent(); if(!ev) return '';
+  const f = s => s.replace(/[-:]/g,'');
+  return 'https://calendar.google.com/calendar/render?action=TEMPLATE' +
+    '&text=' + encodeURIComponent(ev.summary) + '&dates=' + f(ev.start.dateTime) + '/' + f(ev.end.dateTime) +
+    '&ctz=' + encodeURIComponent(CONFIG.timezone) + '&location=' + encodeURIComponent(ev.location) + '&details=' + encodeURIComponent(ev.description);
+}
+function calUrl(){
+  // cal.com books the PHONE CONSULT, so no event date is prefilled: the client picks a call time
+  const a = S.answers, p = new URLSearchParams(), L = look(a), est = estimate();
+  if(a.name) p.set('name', a.name);
+  if(val('email')) p.set('email', a.email);
+  if(val('phone')){ let ph = a.phone.replace(/[\s()-]/g,''); if(/^0\d{9}$/.test(ph)) ph = '+61' + ph.slice(1); p.set('attendeePhoneNumber', ph) }
+  const calStyle = { bridal:'Special events', glam:'Special events', natural:'Natural', lesson:'Natural', editorial:'Editorial', fx:'Party / Seasonal', parties:'Party / Seasonal' }[a.category];
+  if(calStyle) p.set('Style', calStyle);   // the "Style" checkbox on the Enquiry booking page
+  const notes = [L?.name || cat(a).name, val('sub_style'), a.event_date && 'event ' + fmtDate(a.event_date), a.location && (a.location + (travel()?.km ? ' ~' + travel().km + ' km' : '')),
+    est && 'est. ' + (est.open ? 'from ' : '') + money(est.total), S.refs.length && S.refs.length + ' reference looks',
+    S.affs.length && 'with ' + S.affs.map(x => '@'+x.h).join(' '), S.enquiryId && 'Ref ' + String(S.enquiryId).slice(0,8)].filter(Boolean).join(' · ');
+  p.set('notes', notes);
+  return CONFIG.calLink + '?' + p.toString();
+}
+/* ---------- LOCAL TEST DATABASE ----------
+   Used while there's no Supabase key. Same columns as the real table, kept in this
+   browser (localStorage). See / export / clear it from the Test panel. */
+const MockDB = (() => {
+  const KEY = 'cmm_enquiry_mock_db';
+  let mem = { enquiries:[], calendar_events:[] };
+  const load = () => { try{ return JSON.parse(localStorage.getItem(KEY)) || mem }catch(e){ return mem } };
+  const save = db => { mem = db; try{ localStorage.setItem(KEY, JSON.stringify(db)) }catch(e){} };
+  return {
+    all: t => load()[t] || [],
+    insert(t, row){ const db = load(); (db[t] ||= []).unshift(row); save(db); return row },
+    clear(){ save({ enquiries:[], calendar_events:[] }) },
+    dump: () => load()
+  };
+})();
+const liveMode = () => CONFIG.supabaseAnonKey && !/PASTE/.test(CONFIG.supabaseAnonKey);
+async function saveToSupabase(row){
+  if(!liveMode()){
+    await wait(600);
+    const id = (crypto.randomUUID ? crypto.randomUUID() : 'loc-' + Date.now().toString(36));
+    const now = new Date().toISOString();
+    MockDB.insert('enquiries', { id, created_at:now, status:'new', ...row });
+    if(row.calendar_event) MockDB.insert('calendar_events', { id:'ev-' + id.slice(0,8), enquiry_id:id, created_at:now, ...row.calendar_event });
+    return { id, simulated:true };
+  }
+  const id = crypto.randomUUID();
+  const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.supabaseTable}`, {
+    method:'POST',
+    headers:{ apikey:CONFIG.supabaseAnonKey, Authorization:'Bearer '+CONFIG.supabaseAnonKey, 'Content-Type':'application/json', Prefer:'return=minimal' },
+    body: JSON.stringify({ id, ...row })
+  });
+  if(!r.ok) throw new Error('Supabase ' + r.status + ': ' + await r.text());
+  return { id, simulated:false };
+}
+
+/* =====================================================================
+   GALLERY
+   ===================================================================== */
+function thumb(u){
+  if(!/^https?:/.test(u)) u = CONFIG.mediaBase + u.replace(/^\//,'');
+  return /\.webp$/.test(u) && /\/images\/(inspiration|chanel)\//.test(u) && !/\/comments\//.test(u) ? u.replace(/\.webp$/,'.m.webp') : u;
+}
+function full(u){ return /^https?:/.test(u) ? u : CONFIG.mediaBase + u.replace(/^\//,'') }
+function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]] } return a }
+
+function renderTabs(){
+  $('#tabs').innerHTML = GROUPS.filter(G => CONFIG.simpleGallery ? ['all','team','mine'].includes(G.g) : G.g !== 'all').map(G => `<button data-g="${G.g}" class="${S.tab===G.g?'on':''}">${esc(G.name)}${G.g==='all' && S.media.length ? ` <span style="opacity:.6">${S.media.length}</span>` : ''}${G.g==='mine' && (S.refs.length+S.affs.length) ? `<span class="cnt">${S.refs.length+S.affs.length}</span>`:''}</button>`).join('');
+  $('#tabs').querySelectorAll('button').forEach(b => b.onclick = () => { S.tab = b.dataset.g; renderTabs(); renderGallery(); $('#gallery').scrollTop = 0 });
+}
+function renderGallery(){
+  const G = GROUPS.find(x => x.g === S.tab);
+  document.body.dataset.g = S.tab;
+  const g = $('#gallery');
+  const hint = S.started ? ' · tap + to add to your enquiry' : ' · start your enquiry to unlock +';
+  let h = `<div class="ghead"><h1>${esc(G.name)}</h1><p>${esc(G.blurb)}${hint}</p></div>`;
+  if(S.tab === 'team'){
+    const cats = Object.keys(TEAM_CATS).filter(c => S.affList.some(x => x.cat === c));
+    const list = S.affList.filter(x => S.teamCat === 'all' || x.cat === S.teamCat);
+    h += `<div class="cats"><button data-c="all" class="${S.teamCat==='all'?'on':''}">Everyone</button>${cats.map(c => `<button data-c="${c}" class="${S.teamCat===c?'on':''}">${esc(TEAM_CATS[c])}</button>`).join('')}</div>`;
+    h += list.length ? `<div class="team">${list.map(affTile).join('')}</div>` : `<div class="empty">${S.affFailed ? "Couldn't load the beauty team." : 'Loading…'}</div>`;
+  } else if(S.tab === 'all'){
+    // once the client has picked a booking type and style, matching photos move to the front
+    const G2 = { lesson:'natural' }[S.answers.category] || S.answers.category, sub = S.answers.sub_style;
+    const rank = m => (sub && m.s === sub ? 0 : G2 && m.g === G2 ? 1 : 2);
+    const list = G2 ? S.media.slice().sort((x,y) => rank(x) - rank(y)) : S.media;
+    if(G2) h = h.replace('</p></div>', ` · showing ${esc(sub && sub !== 'Not sure yet' ? sub : cat(S.answers).name)} first</p></div>`);
+    h += S.media.length ? `<div class="sgrid">${list.map(tile).join('')}</div>` : `<div class="empty">${S.mediaFailed ? "Couldn't load the photos. Check the media source in CONFIG." : 'Loading…'}</div>`;
+  } else if(S.tab === 'mine'){
+    h += S.refs.length ? `<div class="sec">Looks</div><div class="grid">${S.refs.map(tile).join('')}</div>` : '';
+    h += S.affs.length ? `<div class="sec">Beauty team</div><div class="team">${S.affs.map(affTile).join('')}</div>` : '';
+    if(!S.refs.length && !S.affs.length) h += `<div class="empty">Nothing added yet. Tap + on any photo or artist.</div>`;
+  } else {
+    const list = S.byGroup[S.tab] || [], n = (S.shown[S.tab] ||= CONFIG.perPage);
+    h += list.length ? `<div class="grid">${list.slice(0,n).map(tile).join('')}</div>` : `<div class="empty">${S.mediaFailed ? "Couldn't load the gallery. Check the media source in CONFIG." : 'Loading…'}</div>`;
+    if(list.length > n) h += `<button class="more" id="more">Show more</button>`;
+  }
+  g.innerHTML = h;
+  Attention.watch(g);
+  g.querySelectorAll('.plus').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); b.dataset.h ? toggleAff(b) : togglePlus(b) });
+  g.querySelectorAll('.cats button').forEach(b => b.onclick = () => { S.teamCat = b.dataset.c; renderGallery() });
+  $('#more') && ($('#more').onclick = () => { S.shown[S.tab] += CONFIG.perPage; const top = g.scrollTop; renderGallery(); g.scrollTop = top });
+}
+function affTile(x, i){
+  const added = S.affs.some(a => a.h === x.h);
+  const cls = !S.started ? 'locked' : added ? 'added' : '';
+  const icon = !S.started ? '🔒' : added ? '✓' : '+';
+  let role = (x.role || x.name || '').replace(/\s*[|•].*$/,'').trim();
+  if(role === role.toUpperCase()) role = role.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());   // tame ALL CAPS bios
+  return `<div class="aff${added?' added':''}" style="animation-delay:${Math.min(i,16)*25}ms">
+    <div class="ring"><a href="https://www.instagram.com/${esc(x.h)}/" target="_blank" rel="noopener" title="See @${esc(x.h)} on Instagram"><img loading="lazy" src="${esc(x.avatar)}" alt="" onerror="this.style.visibility='hidden'"></a>
+    <button class="plus ${cls}" data-h="${esc(x.h)}" aria-label="${added?'Remove':'Add'} @${esc(x.h)}" title="${S.started?(added?'Remove from enquiry':'Add to your enquiry'):'Start your enquiry to add artists'}">${icon}</button></div>
+    <b>${esc(role)}</b><small>@${esc(x.h)} · ${esc(TEAM_CATS[x.cat]||x.cat)}</small></div>`;
+}
+function toggleAff(btn){
+  if(!S.started){ toast('Start your enquiry first: just tell me your name 💬'); minimise(false); return }
+  if(S.sent){ toast('Your enquiry is already sent. Mention them when you book.'); return }
+  const h = btn.dataset.h, i = S.affs.findIndex(a => a.h === h);
+  if(i >= 0){ S.affs.splice(i,1); toast('Removed from your enquiry') }
+  else { if(S.affs.length >= 8){ toast('You can add up to 8 artists'); return } S.affs.push(S.affList.find(a => a.h === h)); toast(`Added @${h} ✓`) }
+  const added = i < 0, box = btn.closest('.aff');
+  if(S.tab === 'mine' && !added) box.remove(); else { box.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+' }
+  renderTray(); renderTabs(); updateFab(); updateDev(); refreshPick();
+}
+function tile(m, i){
+  const added = S.refs.some(r => r.src === m.src);
+  const cls = !S.started ? 'locked' : added ? 'added' : '';
+  const icon = !S.started ? '🔒' : added ? '✓' : '+';
+  return `<figure class="tile${added?' added':''}" data-g="${esc(m.g)}" data-s="${esc(m.s||'')}" style="animation-delay:${Math.min(i,12)*30}ms">
+    <img loading="lazy" decoding="async" src="${esc(thumb(m.src))}" alt="${esc(m.d||m.s||'')}" ${m.w?`width="${m.w}" height="${m.h}"`:''} onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${esc(full(m.src))}'}else this.closest('.tile').remove()">
+    <button class="plus ${cls}" data-src="${esc(m.src)}" aria-label="${added?'Remove from':'Add to'} your enquiry" title="${S.started?(added?'Remove from enquiry':'Add as a reference'):'Start your enquiry to save looks'}">${icon}</button>
+    <figcaption>${esc(m.d || m.s || '')}${m.by ? ' · ' + esc(m.by) : ''}</figcaption></figure>`;
+}
+function togglePlus(btn){
+  if(!S.started){ toast('Start your enquiry first: just tell me your name 💬'); minimise(false); return }
+  if(S.sent){ toast('Your enquiry is already sent. Mention extra looks when you book.'); return }
+  const src = btn.dataset.src, i = S.refs.findIndex(r => r.src === src);
+  if(i >= 0){ S.refs.splice(i,1); toast('Removed from your enquiry') }
+  else {
+    if(S.refs.length >= CONFIG.maxRefs){ toast(`You can add up to ${CONFIG.maxRefs} looks`); return }
+    const m = S.media.find(x => x.src === src); S.refs.push(m); Attention.bonus(m, 12); toast(`Added ✓ ${S.refs.length} look${S.refs.length>1?'s':''} in your enquiry`);
+  }
+  // refresh just this tile + the counters
+  const fig = btn.closest('.tile'), added = i < 0;
+  if(S.tab === 'mine' && !added){ fig.remove() } else {
+    fig.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+';
+  }
+  renderTray(); renderTabs(); updateFab(); updateDev();
+  refreshPick();
+}
+function unlockPlus(){ renderGallery(); renderTabs(); toast('The + buttons are unlocked. Save any looks you love') }
+/* ---------- "YOUR BOOKING" PANEL ----------
+   Fills in live as the client answers: what, style, date, time, suburb, people, estimate,
+   plus every look and artist they've saved. Left 40% on wide screens, top 30% on tall ones. */
+function renderTray(){ renderSide() }
+const ICONS = {   // simple line symbols, coloured by the theme accent
+  booking:'<path d="M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4z"/><path d="M19 15l.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/>',
+  style:'<path d="M4 20l9.5-9.5"/><path d="M14.5 4.5l5 5-4 4-5-5z"/><path d="M6 6.5h0M9 3.5h0M3.5 9h0"/>',
+  lesson:'<path d="M3 8l9-4 9 4-9 4z"/><path d="M7 10v5c0 1.7 2.2 3 5 3s5-1.3 5-3v-5"/>',
+  date:'<rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/>',
+  time:'<circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/>',
+  place:'<path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0113 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/>',
+  people:'<circle cx="9" cy="8.5" r="3"/><path d="M3.5 19c.6-3 2.8-4.8 5.5-4.8s4.9 1.8 5.5 4.8"/><circle cx="16.5" cy="9.5" r="2.4"/><path d="M15.5 14.4c2.6-.2 4.5 1.4 5 4.1"/>',
+  trial:'<path d="M9 4h6M10 4v5.5L5.5 18a2 2 0 001.8 3h9.4a2 2 0 001.8-3L14 9.5V4"/><path d="M7.5 15h9"/>',
+  skin:'<path d="M12 3.5c3 3.6 5.5 6.6 5.5 9.8a5.5 5.5 0 01-11 0c0-3.2 2.5-6.2 5.5-9.8z"/>',
+  lashes:'<path d="M3 12c2.5-3.5 5.5-5 9-5s6.5 1.5 9 5c-2.5 3.5-5.5 5-9 5s-6.5-1.5-9-5z"/><circle cx="12" cy="12" r="2.5"/><path d="M6 7.5L4.5 5.5M12 5V2.8M18 7.5l1.5-2"/>',
+  extras:'<path d="M12 5v14M5 12h14"/><circle cx="12" cy="12" r="9"/>',
+  price:'<path d="M20.5 13.5l-7 7a2 2 0 01-2.8 0l-7.2-7.2V4.5a1 1 0 011-1h8.8l7.2 7.2a2 2 0 010 2.8z"/><circle cx="8.5" cy="8.5" r="1.4"/>',
+  looks:'<rect x="3.5" y="4.5" width="17" height="15" rx="2.5"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8 8.5"/>'
+};
+const ico = k => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k]}</svg>`;
+let sideSeen = new Set();
+function renderSide(){
+  const a = S.answers, el = $('#side'), L = look(a), t = travel(), est = estimate();
+  const q = id => QUESTIONS.find(x => x.id === id), on = id => activeQs().some(x => x.id === id), has = id => a[id] !== undefined && a[id] !== '__skip';
+  const tiles = [];
+  const add = (key, icon, label, value, extra = '') => { if(value) tiles.push({ key, icon, label, value, extra }) };
+  // Only the five key details, so the strip never needs scrolling. The booking type
+  // rides along as the style tile's label; everything else is in the summary at the end.
+  const what = a.category ? (a.category === 'lesson' ? 'Makeup lesson' : (L && a.look !== 'unsure' ? L.name : cat(a).name)) : 'Style';
+  if(a.category === 'lesson') add('style','lesson', what, (a.lesson_focus || []).join(', '));
+  else add('style','style', what, a.sub_style);
+  add('date','date','Date', a.event_date && fmtDate(a.event_date).replace(/^\w+, /,''));
+  add('time','time', startMode(a) ? 'Start' : 'Ready by', a.ready_by && fmtTime(a.ready_by));
+  add('place','place', t && t.km ? (t.included ? `~${t.km} km · travel incl.` : `~${t.km} km · travel tbc`) : 'Suburb', a.location);
+  if(est && a.category && (a.look !== undefined || a.category === 'lesson'))
+    add('price','price','Estimate', `${est.open ? 'from ' : ''}${money(est.total)}`);
+  const now = new Set(tiles.map(x => x.key + '|' + x.value));
+  el.classList.toggle('empty', !tiles.length);
+  el.innerHTML = !tiles.length ? '' : `<div class="tiles">` + tiles.map(x => {
+    const fresh = !sideSeen.has(x.key + '|' + x.value);
+    const thumbs = x.media ? `<div class="mini">` +
+      S.refs.slice(0,3).map(r => `<img src="${esc(thumb(r.src))}" alt="">`).join('') +
+      S.affs.slice(0,1).map(f => `<img class="c" src="${esc(f.avatar)}" alt="">`).join('') + `</div>` : '';
+    return `<div data-k="${x.key}" class="tile2${fresh ? ' fresh' : ''}${x.key === 'price' ? ' price' : ''}${x.media ? ' media' : ''}" ${x.media ? 'role="button" tabindex="0" title="See your saved looks and artists"' : ''}>
+      <span class="ic">${ico(x.icon)}</span>
+      <span class="tx"><small class="lb">${esc(x.label)}</small><b>${esc(x.value)}</b>${x.extra}</span>${thumbs}</div>`;
+  }).join('') + `</div>`;
+  sideSeen = now;
+  const m = el.querySelector('.tile2.media');
+  if(m) m.onclick = m.onkeydown = e => { if(e.type === 'keydown' && e.key !== 'Enter') return; S.tab = 'mine'; renderTabs(); renderGallery(); minimise(true) };
+}
+
+/* ---------- chat minimise / restore ---------- */
+let lastRefCount = 0;
+function minimise(on){
+  if(on){ lastRefCount = S.refs.length }
+  document.body.classList.toggle('min', on);
+  updateFab();
+  if(!on && S.refs.length > lastRefCount && S.pickComposer?.w.isConnected){
+    toast(`${S.refs.length - lastRefCount} new look${S.refs.length-lastRefCount>1?'s':''} added`);
+  }
+}
+function updateFab(){
+  $('#fabTxt').textContent = S.sent ? 'Back to booking' : S.started ? 'Continue enquiry' : 'Start enquiry';
+  const n = S.refs.length + S.affs.length;
+  $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
+}
+$('#browseBtn').onclick = () => minimise(true);
+$('#fab').onclick = () => minimise(false);
+
+let tt; function toast(t){ const el = $('#toast'); el.textContent = t; el.classList.add('on'); clearTimeout(tt); tt = setTimeout(() => el.classList.remove('on'), 2200) }
+
+/* =====================================================================
+   TEST PANEL (remove before going live, or set SHOW_TEST_PANEL = false)
+   ===================================================================== */
+const SHOW_TEST_PANEL = /[?&]test\b/.test(location.search);   // add ?test to the address to see the Test panel
+let clearArmed = 0;
+function confirmClear(){ if(Date.now() - clearArmed < 3000) return true; clearArmed = Date.now(); toast('Tap Clear again to empty the test database'); return false }
+function updateDev(){
+  renderSide();
+  const d = $('#dev'); if(!d.classList.contains('on')) return;
+  const row = buildRow(), gl = gcalTestLink();
+  d.innerHTML = `<div class="db">
+      <button id="dvRestart">↺ Restart</button><button id="dvFast">${S.alwaysFast?'Normal typing':'Instant typing'}</button>
+      <button id="dvFill">Autofill → summary</button><button id="dvClose">Close</button></div>
+    <h4>Mode</h4><span class="mode ${liveMode()?'live':''}">${liveMode()?'LIVE: saves to Supabase':'TEST: saving to the local test database (add anon key in CONFIG for Supabase)'}</span>
+    ${S.enquiryId ? ` · id <b>${esc(S.enquiryId)}</b>` : ''}
+    <h4>Most viewed (drives the suggestions)</h4><pre>${esc(JSON.stringify(Attention.data()))}</pre>
+    <h4>Next question</h4><pre>${esc(nextQ()?.id || '(none: summary)')}</pre>
+    <h4>Supabase row (${esc(CONFIG.supabaseTable)})</h4><pre>${esc(JSON.stringify(row,null,2))}</pre>
+    <h4>Google Calendar event</h4>${gl?`<a href="${esc(gl)}" target="_blank">Open as a test event in Google Calendar ↗</a>`:'<pre>(needs date + ready-by time)</pre>'}
+    <h4>cal.com link</h4><a href="${esc(calUrl())}" target="_blank">${esc(calUrl())}</a>
+    <h4>Local test database · enquiries (${MockDB.all('enquiries').length}) · calendar_events (${MockDB.all('calendar_events').length})</h4>
+    <pre>${esc(MockDB.all('enquiries').slice(0,8).map(e => `${e.created_at.slice(0,16).replace('T',' ')}  ${e.name}  ·  ${e.service}  ·  ${e.event_date} ${e.ready_by}  ·  ${(e.refs||[]).length} looks, ${(e.affiliates||[]).length} artists`).join('\n') || '(empty)')}</pre>
+    <div class="db" style="margin-top:6px"><button id="dvExport">⬇ Export JSON</button><button id="dvClear">🗑 Clear test database</button></div>`;
+  $('#dvExport').onclick = () => { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([JSON.stringify(MockDB.dump(),null,2)],{type:'application/json'})); a.download = 'enquiries-test-db.json'; a.click() };
+  $('#dvClear').onclick = () => { if(confirmClear()) { MockDB.clear(); updateDev() } };
+  $('#dvRestart').onclick = restart;
+  $('#dvFast').onclick = () => { S.alwaysFast = !S.alwaysFast; CONFIG.typeSpeed = S.alwaysFast ? 0 : 16; CONFIG.thinkTime = S.alwaysFast ? [0,0] : [450,850]; updateDev() };
+  $('#dvFill').onclick = autofill;
+  $('#dvClose').onclick = () => { d.classList.remove('on') };
+}
+$('#devbtn').hidden = !SHOW_TEST_PANEL;
+$('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
+function restart(){
+  sideSeen = new Set();
+  Object.assign(S, { forUsed:false, forFilled:false, history:[], earlyNoted:false, answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
+  msgs.innerHTML = ''; comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
+}
+function autofill(){
+  const d = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
+  S.answers = { name:'Jess Taylor', category:'bridal', look:'bridal-look', sub_style:'Natural radiant bride', event_date:d, ready_by:'13:30',
+    location:'Burleigh Heads', quantity:'4', bridal_trial:"Yes, I'd like a trial", skin_type:'Combination', allergies:['None'], lashes:'Wispy / fluffy',
+    extras:['Hair','Photographer'], email:'jess@example.com', phone:'0400 000 000', notes:'Photographer arrives 12:30', consent:'I agree' };
+  S.refs = shuffle((S.byGroup.bridal||[]).slice()).slice(0,3); S.answers.refs = S.refs.length;
+  S.affs = S.affList.filter(x => x.cat === 'Hair').slice(0,1).concat(S.affList.filter(x => x.cat === 'Photography').slice(0,1)); S.answers.team = S.affs.length;
+  S.started = true; S.sent = false; S.enquiryId = null; msgs.innerHTML = ''; comp.innerHTML = '';
+  renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); showSummary();
+}
+
+/* =====================================================================
+   BOOT: load the site's gallery list, then start the chat
+   ===================================================================== */
+function loadScript(src){ return new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s) }) }
+async function loadPrices(){
+  for(const src of CONFIG.pricingSources){ try{ await loadScript(src); const P = window.LOOK_PRICES; if(P && P.sections){
+    const looks = {}; P.sections.forEach(s => s.looks.forEach(l => looks[l.key] = { name:l.name, unit:l.unit, price:l.price, from:!!l.from }));
+    PRICES = { meta:{ currency:P.currency, minimumBooking:P.minimumBooking, depositPct:P.depositPct, includedKm:P.includedKm }, looks }; return } }catch(e){} }
+}
+async function loadFirst(sources, key){
+  for(const src of sources){ try{ await loadScript(src); if(Array.isArray(window[key]) && window[key].length) return window[key] }catch(e){} }
+  throw new Error('could not load ' + key);
+}
+(async function boot(){
+  document.body.classList.add('details-' + CONFIG.detailsLayout);
+  renderTabs(); renderGallery(); updateFab(); renderSide();
+  loadFirst(CONFIG.affiliateSources, 'AFFILIATES').then(list => { S.affList = list.filter(x => x.h && x.avatar); if(S.tab === 'team') renderGallery() })
+    .catch(() => { S.affFailed = true; if(S.tab === 'team') renderGallery() });
+  loadFirst(CONFIG.mediaSources, 'MEDIA').then(list => {
+    S.media = shuffle(list.filter(m => m.type === 'img' && m.src)).sort((a,b) => (b.own||0) - (a.own||0));
+    S.byGroup = {};
+    shuffle(S.media.slice()).forEach(m => (S.byGroup[m.g] ||= []).push(m));
+    // Chanel's own work first in each section
+    for(const g in S.byGroup) S.byGroup[g].sort((a,b) => (b.own||0) - (a.own||0));
+    renderTabs(); renderGallery();
+  }).catch(() => { S.mediaFailed = true; S.byGroup = {}; renderGallery() });
+  S.byGroup = {};
+  await Promise.race([loadPrices(), wait(1500)]);
+  askNext();
+})();
+</script>
+</body>
+</html>
