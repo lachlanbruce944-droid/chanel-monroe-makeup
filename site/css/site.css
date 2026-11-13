@@ -863,4 +863,4 @@ body[data-g="editorial"] #gallery .capbar .sub,body[data-g="editorial"] #gallery
 body[data-g="editorial"] .fbrand{background:rgba(6,5,14,.62)!important;color:#fff!important}
 body[data-g="editorial"] .fbrand i{color:#fff!important}
 body[data-g="editorial"] .fab .pill{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.4)!important;-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
-body[data-g="editorial"] .fab .pill.solid{background:#fff!important;color:#06050b!important;border-color:#fff!important}
+body[data-g="editorial"] .fab .pill,body[data-g="editorial"] .fab .pill.solid{background:rgba(6,5,14,.62)!important;color:#fff!important;border-color:rgba(255,255,255,.22)!important}
