@@ -715,6 +715,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     'background:rgba(255,255,255,.94);color:#2a2020;font:600 22px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.28);transition:transform .2s}'+
     '#track .tile .cmm-plus:hover{transform:scale(1.1)}#track .tile .cmm-plus.on{background:#b8846b;color:#fff}'+
     '#track .tile.cmm-on{outline:3px solid #b8846b;outline-offset:-3px}'+
+    'body.cmm-picking #track .tile{cursor:default}body.cmm-picking #track .tile figcaption a{pointer-events:none}'+
     '#cmmPill{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147482999;display:none;align-items:center;gap:10px;'+
     'padding:9px 10px 9px 16px;border-radius:999px;background:rgba(6,5,14,.78);color:#fff;font:500 13px/1.2 Jost,system-ui,sans-serif;'+
     '-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:0 10px 30px rgba(0,0,0,.3)}'+
@@ -749,16 +750,21 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     pickMode=!!plus;
     if(!pill){ pill=document.createElement('div'); pill.id='cmmPill'; pill.innerHTML='<span></span><button type="button">Back to your enquiry</button>';
       pill.lastChild.onclick=function(){ endPick(true) }; document.body.appendChild(pill) }
-    pill.style.display='flex'; if(ov) ov.classList.add('away');
+    pill.style.display='flex'; if(ov) ov.classList.add('away'); document.body.classList.toggle('cmm-picking',pickMode);
     setPicked(list);
     if(!mo){ var tr=document.getElementById('track'); if(tr){ mo=new MutationObserver(decorate); mo.observe(tr,{childList:true}) } }
   }
   function endPick(back){
-    pickMode=false; if(pill) pill.style.display='none';
+    pickMode=false; if(pill) pill.style.display='none'; document.body.classList.remove('cmm-picking');
     [].forEach.call(document.querySelectorAll('#track .cmm-plus'),function(b){ b.remove() });
     [].forEach.call(document.querySelectorAll('#track .cmm-on'),function(t){ t.classList.remove('cmm-on') });
     if(back&&ov){ ov.classList.remove('away'); send({cmm:'browse-done'}) }
   }
+  /* while picking for the enquiry, a photo itself does nothing (no description popup); only its + button works */
+  document.addEventListener('click',function(e){
+    if(!pickMode||!e.target.closest) return;
+    if(e.target.closest('#track .tile')&&!e.target.closest('.cmm-plus')){ e.preventDefault(); e.stopPropagation() }
+  },true);
   document.addEventListener('click',function(e){
     var a=e.target.closest&&e.target.closest('a[href^="enquire.html"]'); if(!a) return;
     e.preventDefault(); e.stopPropagation(); open(a.getAttribute('href'));
