@@ -972,18 +972,18 @@ msgs.addEventListener('scroll', () => { pinned = msgs.scrollHeight - msgs.scroll
 if('ResizeObserver' in window) new ResizeObserver(() => { if(pinned){ msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' } }).observe(msgs);
 function setStatus(t){ $('#status').textContent = t }
 
-async function say(text, onStart){
+async function say(text, onStart, instant){   // instant: no thinking dots or typing (the intro once it has been seen)
   S.busy = true; S.skip = false;
   const row = botRow(), orb = row.firstChild;
   const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = '<i></i><i></i><i></i>';
   row.appendChild(dots); orbState(orb, 'think'); scroll(); setStatus('thinking…');
-  if(!fast()) await wait(rand(...CONFIG.thinkTime));
+  if(!fast() && !instant) await wait(rand(...CONFIG.thinkTime));
   dots.remove();
   const b = document.createElement('div'); b.className = 'b bot'; row.appendChild(b);
   orbState(orb, 'talk'); setStatus('typing…');
   if(onStart) onStart();   // answer buttons / text box appear as soon as the message starts
   const caret = '<span class="caret"></span>';
-  if(fast()){ b.textContent = text }
+  if(fast() || instant){ b.textContent = text }
   else {
     for(let i = 1; i <= text.length; i++){
       if(S.skip){ break }
@@ -1027,9 +1027,13 @@ async function askNext(){
   let text = q.ask(S.answers);
   if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
     text = `Lovely to meet you, ${first(S.answers.name)}! You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
-  S.typing = say(text, () => renderComposer(q));
+  const instant = q.id === 'name' && introSeen();
+  if(q.id === 'name') try{ sessionStorage.setItem('cmm-intro-seen', '1') }catch(e){}
+  S.typing = say(text, () => renderComposer(q), instant);
   await S.typing;
 }
+/* the intro types itself out once per visit; after that it is simply there */
+function introSeen(){ try{ return sessionStorage.getItem('cmm-intro-seen') === '1' }catch(e){ return false } }
 
 async function answer(q, value, shown){
   if(S.busy){ S.skip = true; await S.typing }   // answered while it was still typing: finish the line first

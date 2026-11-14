@@ -2,6 +2,13 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (titles clear of the nav, one caption style, no settings tab, chat stays loaded)
+- Every style's title now sits a little below the top nav instead of touching it (an older `#gallery .ghead{margin-top:0}` rule was overriding the gap).
+- Glam, Bridal and Character & FX photo description boxes now use the same frosted dark overlay as Natural, Editorial and Parties.
+- The settings (gear) tab is removed from the nav; the site uses its default settings (anything a visitor saved earlier still applies).
+- Closing the chat now hides it instead of unloading it, so reopening shows the same conversation; within a visit the intro appears straight away instead of typing out again.
+- Checked at 874 × 402, 667 × 375 and 1440 × 900. Edited in the repo (src/ and site/); copy src/index.html and src/enquire.html into the M: working copy before the next publish.
+
 ### 2026-11-14 (after the call button: chat closes to a read-only view, one enquiry per browser)
 - Once an enquiry is sent, "Choose a time" opens Chanel's cal.com booking page in a new tab and the chat closes to a read-only "Your enquiry is with Chanel" view: booking, contact, picks and estimate, a button to open the booking page again, and "reply to your confirmation email" for changes.
 - The sent enquiry is kept in the browser (localStorage `cmm-enquiry-sent`) until the event day has passed (60 days if no date). Until then, every Enquire / Book button shows that view instead of starting a new chat.
