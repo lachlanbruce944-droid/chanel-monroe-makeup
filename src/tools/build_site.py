@@ -1,9 +1,9 @@
-"""Build the lightweight site for GitHub Pages from the working copy (final-draft).
+"""Build the lightweight site for GitHub Pages from the working copy (the repo's src/).
 - index.html is split into css/site.css + js/app.js (cacheable files) and a slim page
 - every 'images/...' path in the scripts and data (except icons) is pointed at Supabase Storage,
   using media/manifest.json from optimize_media.py (new names, .webp copies)
 - icons, robots.txt and small data files ship with the site; photos and clips stay on Supabase
-Usage: python tools/build_site.py <output folder>     e.g. C:\\Users\\USER\\repos\\chanel-monroe-makeup\\site
+Usage: python tools/build_site.py <output folder>     e.g. M:\\CMM-Site\\chanel-monroe-makeup\\site
 """
 import json, os, re, shutil, sys, urllib.parse
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

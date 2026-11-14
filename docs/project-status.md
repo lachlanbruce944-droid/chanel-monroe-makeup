@@ -5,8 +5,10 @@ The current state of the site and the open items. Update it in the same commit a
 ## Current state (2026-11-12)
 
 **Live site:** https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/ (GitHub Pages, deployed from `site/` by `.github/workflows/deploy-pages.yml`)
-**Repository:** github.com/lachlanbruce944-droid/chanel-monroe-makeup (public, branch `main`), local clone `C:\Users\USER\repos\chanel-monroe-makeup`
-**Working copy:** `M:\CMM-Site\final-draft` (edit here, then `python tools\publish.py <repo>`; see CONTRIBUTING.md)
+**Repository:** github.com/lachlanbruce944-droid/chanel-monroe-makeup (public, branch `main`)
+**Working folder (since 2026-11-15):** `M:\CMM-Site\chanel-monroe-makeup`, the git clone itself. Edit `src/`, run `python src\tools\publish.py`, then commit and push from this folder (see CONTRIBUTING.md). Original photos and clips are in `src\images` locally (ignored by git).
+**Old copies (reference only, do not edit):** `M:\CMM-Site\final-draft` (previous working copy), `C:\Users\USER\repos\chanel-monroe-makeup` (previous clone)
+**CRM:** `C:\Users\USER\OneDrive\Desktop\ChanelMonroe-CRM` (local trial build, not in git); its sidebar links to the live site and this folder
 **Media:** Supabase Storage bucket `media` (project ref qxiugfatpybldluipcyy); optimised mirror `M:\CMM-Site\media`, originals in `M:\CMM-Site`
 **Archive (not in git):** `M:\CMM-Site\_archive` (first mock-up, one-off pipeline scripts), `M:\CMM-Site\_removed` (removed content, restorable)
 
@@ -36,7 +38,6 @@ Prices live only in `settings/pricing-settings.js` (LOOK_PRICES). Do not copy pr
 - Enquiry emails are live (domain verified, key saved, test delivered). Optional: run `docs/enquiry-emails.sql` to record when each email went out and add a database trigger as a backup.
 - Selfies: run `docs/enquiry-selfies.sql` in Supabase (SQL editor) once so the chat's selfies are stored and attached to Chanel's email. Consider deleting old selfies from the `selfies` bucket after each booking is done.
 - Chat enquiry (`enquire.html`): enquiries now save to Supabase (`public.enquiries`, view them in the Supabase Table Editor). Set `CONFIG.base` to Chanel's real suburb (Robina is a placeholder) and, if wanted, `travelPerKm`. Do one test booking to check cal.com ticks the "Style" box from the link. Google Calendar events for enquiries still need the Supabase Edge Function.
-- Copy `enquire.html`, `tools/publish.py`, `tools/build_site.py`, `data/site-content.js` and `settings/pricing-settings.js` from `src/` into `M:\CMM-Site\final-draft` before the next publish, or publishing will undo the chat enquiry (these were changed in the repo directly on 2026-11-14).
 - Confirm or change the design options (mock at `M:\CMM-Site\CMM-Mock\mock.html` shows all of them). Final draft uses A, B, C, B, B.
 - Clips were checked by their cover frame only: watch each once and hide any that show text later (Edit mode, ✕).
 - Bio lines (ABOUT_LINES) and business name are still placeholders in `data/site-content.js` / `settings/site-settings.js`.

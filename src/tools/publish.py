@@ -1,7 +1,9 @@
-"""Publish the working copy to the GitHub repository in one step.
+"""Publish the site from the repository in one step.
 
-Usage:
-    python tools/publish.py C:\\Users\\USER\\repos\\chanel-monroe-makeup
+Usage (from the repo folder, M:\\CMM-Site\\chanel-monroe-makeup):
+    python src/tools/publish.py
+  The repo's src/ is the working copy: edit it, run this, then commit and push.
+  (Older layout: run it from a separate working copy with the repo path as the argument.)
 
 What it does:
   1. Rebuilds the content register (REGISTER.csv) so every item on the site is logged.
@@ -56,25 +58,30 @@ def main(repo):
     subprocess.run([py, os.path.join(ROOT, 'tools', 'build_register.py')], check=True, cwd=ROOT)
     subprocess.run([py, os.path.join(ROOT, 'tools', 'build_site.py'), os.path.join(repo, 'site')], check=True, cwd=ROOT)
     src = os.path.join(repo, 'src')
+    inside = os.path.normcase(os.path.abspath(src)) == os.path.normcase(ROOT)   # editing the repo's src/ directly
     keep = wanted()
     added = changed = removed = 0
-    for rel in sorted(keep):
+    for rel in ([] if inside else sorted(keep)):
         a, b = os.path.join(ROOT, rel), os.path.join(src, rel)
         if same(a, b): continue
         existed = os.path.exists(b)
         os.makedirs(os.path.dirname(b), exist_ok=True); shutil.copy2(a, b)
         changed += existed; added += not existed
-    for dirpath, _, files in os.walk(src, topdown=False):
+    for dirpath, _, files in ([] if inside else os.walk(src, topdown=False)):
         for f in files:
             rel = os.path.relpath(os.path.join(dirpath, f), src).replace(os.sep, '/')
             if rel not in keep: os.remove(os.path.join(dirpath, f)); removed += 1
         if not os.listdir(dirpath) and dirpath != src: os.rmdir(dirpath)
     os.makedirs(os.path.join(repo, 'docs'), exist_ok=True)
     shutil.copy2(os.path.join(ROOT, 'REGISTER.csv'), os.path.join(repo, 'docs', 'content-register.csv'))
-    print('src/: %d added, %d updated, %d removed; docs/content-register.csv refreshed' % (added, changed, removed))
+    if inside: print("Built from the repo's own src/ (nothing to mirror).")
+    else: print('src/: %d added, %d updated, %d removed; docs/content-register.csv refreshed' % (added, changed, removed))
     print('Next: git -C "%s" status, add a CHANGELOG.md entry, commit, push.' % repo)
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 2: print(__doc__); sys.exit(2)
+    if len(sys.argv) < 2:
+        here = os.path.dirname(ROOT)   # run from inside the repo: src/tools/publish.py -> the repo is src's parent
+        if os.path.basename(ROOT) == 'src' and os.path.isdir(os.path.join(here, '.git')): main(here); sys.exit()
+        print(__doc__); sys.exit(2)
     main(sys.argv[1])

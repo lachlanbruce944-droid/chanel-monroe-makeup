@@ -12,7 +12,13 @@ BUCKET = 'media'
 ROOT = r'M:\CMM-Site\media'
 mimetypes.add_type('image/webp', '.webp')
 
-key = os.environ.get('SUPABASE_SECRET_KEY') or getpass.getpass('Supabase secret key (hidden): ').strip()
+print('Tip: paste with a RIGHT-CLICK in this window (Ctrl+V does not paste into a hidden prompt).')
+key = os.environ.get('SUPABASE_SECRET_KEY') or getpass.getpass('Supabase secret key (hidden): ')
+key = ''.join(ch for ch in key if ch.isprintable()).strip()          # drops a stray Ctrl+V (^V) and spaces
+kind = ('secret key' if key.startswith('sb_secret_') else 'PUBLISHABLE key - wrong one, use the secret key' if key.startswith('sb_publishable_')
+        else 'legacy JWT key' if key.count('.') == 2 else 'unrecognised text')
+print('Received %d characters: %s.' % (len(key), kind))
+if not key or kind.startswith(('PUBLISHABLE', 'unrecognised')): sys.exit('Nothing uploaded. Copy the secret key (sb_secret_...) and paste it with a right-click.')
 H = {'apikey': key}
 if key.count('.') == 2: H['Authorization'] = 'Bearer ' + key   # legacy JWT service_role key
 
@@ -46,7 +52,11 @@ for r, _, fs in os.walk(os.path.join(ROOT, 'images')):
 try:
     have = existing()
 except urllib.error.HTTPError as e:
-    sys.exit('Could not list the bucket (HTTP %s). Check the key is the SECRET key for this project.' % e.code)
+    msg = e.read().decode('utf-8', 'replace')
+    if "required property 'authorization'" in msg:
+        sys.exit('Supabase did not recognise this key (HTTP %s). It may be incomplete, mistyped or deleted - copy it again from\n'
+                 'https://supabase.com/dashboard/project/qxiugfatpybldluipcyy/settings/api-keys (Secret keys) and paste with a right-click.' % e.code)
+    sys.exit('Could not list the bucket (HTTP %s): %s' % (e.code, msg[:200]))
 todo = [(k, p) for k, p in files if k not in have]
 print(len(files), 'files,', len(have), 'already uploaded,', len(todo), 'to upload')
 

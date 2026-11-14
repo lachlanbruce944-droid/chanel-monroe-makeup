@@ -1,6 +1,6 @@
 """Make web-ready copies of every image and clip for Supabase Storage (bucket `media`).
 
-Source: final-draft/images (icons, brand logos and the About photo ship with the site on GitHub; lessons are hidden).
+Source: src/images (icons, brand logos and the About photo ship with the site on GitHub; lessons are hidden).
 Output: M:\\CMM-Site\\media\\<storage name>  plus  M:\\CMM-Site\\media\\manifest.json  {source path: storage name}
 Storage names follow tools/media_names.py (gallery/..., clips/..., chanel/..., affiliates/..., products/...).
   gallery, Chanel's work, products -> name.webp (1600 wide, q88) + name-800.webp (800 wide, q82)

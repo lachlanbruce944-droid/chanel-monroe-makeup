@@ -41,18 +41,21 @@ CLAUDE.md                            Start-here notes for AI assistants working 
 
 ## Build and publish
 
-Work happens in the working copy (`M:\CMM-Site\final-draft`, which mirrors `src/`). To publish:
+Work happens in this repository's folder, **`M:\CMM-Site\chanel-monroe-makeup`**: edit `src/`, build, then commit and push from here.
+(The old working copy `M:\CMM-Site\final-draft` and older builds in `M:\CMM-Site\_archive` are kept for reference only.)
 
 ```powershell
-cd M:\CMM-Site\final-draft
-python tools\publish.py C:\Users\USER\repos\chanel-monroe-makeup
-cd C:\Users\USER\repos\chanel-monroe-makeup
-git status            # review
+cd M:\CMM-Site\chanel-monroe-makeup
+git pull                         # start from the latest version
+# edit files in src\ ...
+python src\tools\publish.py      # rebuilds site\ and docs\content-register.csv
+git status                       # review
 # add an entry to CHANGELOG.md, then:
 git add -A; git commit -m "Short description"; git push
 ```
 
-`publish.py` rebuilds the content register, builds `site/`, mirrors only the needed source files into `src/` (removing anything else), and refreshes `docs/content-register.csv`.
+`publish.py` rebuilds the content register, builds `site/` from `src/`, and refreshes `docs/content-register.csv`.
+The original photos and clips sit in `src/images/` on this computer only (git ignores them; the site serves them from Supabase).
 New or replaced photos and clips go through `tools/optimize_media.py` and `tools/upload_media.py` first. See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Phones and tablets

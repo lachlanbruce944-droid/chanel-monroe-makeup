@@ -1,6 +1,6 @@
 """Builds data/media.js for the site from the image and video folders.
 Run from anywhere:  python tools/build_media.py
-Sources (relative to the final-draft folder):
+Sources (relative to the working copy, the repo's src/ folder):
   images/chanel/index.csv            Chanel's own photos (plus OWN below for group / style / description)
   images/inspiration/credits.csv     style-reference photos by other artists (one folder per style)
   images/inspiration/lip-credits.csv Lip art references

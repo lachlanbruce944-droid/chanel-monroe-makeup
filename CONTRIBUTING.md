@@ -1,7 +1,7 @@
 # Contributing
 
 How to add, change or remove content so that nothing is added twice and the repository stays clean.
-All commands run from the working copy, `M:\CMM-Site\final-draft`.
+All commands run from the `src` folder of the repository, `M:\CMM-Site\chanel-monroe-makeup\src` (the working copy since 2026-11-15).
 
 ## 1. Check before you add anything
 
@@ -40,14 +40,14 @@ File names: lower case, words joined with `-`, no spaces or `@` in new files.
 ## 4. Publish
 
 ```powershell
-python tools\publish.py C:\Users\USER\repos\chanel-monroe-makeup
+python tools\publish.py
 ```
 
-Then, in the repository: review `git status`, add a dated entry to `CHANGELOG.md`, commit with a short imperative message (for example `Add bridal clips from @artist`), and push. GitHub Actions deploys `site/` within a minute or two.
+Then, in the repository folder (`M:\CMM-Site\chanel-monroe-makeup`): review `git status`, add a dated entry to `CHANGELOG.md`, commit with a short imperative message (for example `Add bridal clips from @artist`), and push. GitHub Actions deploys `site/` within a minute or two.
 
 ## Rules
 
-- **One source of truth.** Edit the working copy, never `site/` or `src/` directly; `publish.py` overwrites both.
+- **One source of truth.** Edit `src/`, never `site/`: `publish.py` rebuilds `site/` from `src/`. Do not edit `M:\CMM-Site\final-draft` (old copy).
 - **Register everything.** The register is rebuilt on every publish; if something cannot be registered, it does not go on the site.
 - **Credit everything.** Every inspiration photo and clip carries its artist's handle and post link.
 - **No secrets in the repo.** The Supabase secret key is typed in when `upload_media.py` asks for it and is never saved.

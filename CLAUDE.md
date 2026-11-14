@@ -12,8 +12,9 @@ Read these before changing anything, in this order:
 
 - **Never add anything twice.** Check every candidate with `python tools/check_duplicate.py <link|code|@handle|name>`
   against `docs/content-register.csv` (live, hidden, rejected and removed items). If it is registered, skip it.
-- **Edit the working copy, not the build.** The working copy is `M:\CMM-Site\final-draft` (it mirrors `src/`).
-  Publish with `python tools/publish.py <repo>`, which rebuilds `site/`, mirrors `src/` and refreshes the register.
+- **Edit `src/`, not the build.** The working folder is this repo, `M:\CMM-Site\chanel-monroe-makeup` (since 2026-11-15).
+  Edit `src/`, then run `python src/tools/publish.py` from the repo folder: it rebuilds `site/` and refreshes the register.
+  Commit and push from the same folder. `M:\CMM-Site\final-draft` is the old working copy, kept for reference only: do not edit it.
 - **Media goes to Supabase**, named by `tools/media_names.py`: run `tools/optimize_media.py` then
   `tools/upload_media.py` (it asks the owner for the secret key; never store or print keys).
 - **Credit everything** from other artists (handle + post link). Chanel's own work appears only in About.

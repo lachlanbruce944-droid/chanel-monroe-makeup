@@ -2,6 +2,15 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (new working folder: the repo itself, M:\CMM-Site\chanel-monroe-makeup)
+- From now on the site is edited and pushed from one folder, `M:\CMM-Site\chanel-monroe-makeup`, a fresh clone of this repo. Edit `src/`, run `python src\tools\publish.py`, then commit and push from there. No more copying between a working copy and the repo.
+- `M:\CMM-Site\final-draft` (the old working copy, now marked with `_OLD-COPY-README.txt`) and `C:\Users\USER\repos\chanel-monroe-makeup` (the old clone) stay as they are for reference; `_archive` and `_removed` are unchanged.
+- Before switching, `final-draft` was compared with `src/` file by file: everything matched except `tools/upload_media.py`, whose newer version (clearer key-paste help) is now in the repo.
+- The original photos, clips and raw catalogue data (1.6 GB) were copied into `src/images` and `src/data` so the media tools work from the new folder; git ignores them as before.
+- `publish.py` builds straight from the repo's `src/` when run inside the repo (no mirroring step); `make_zip.py` and tool notes point at `src/`. README, CONTRIBUTING, CLAUDE.md and project status updated. The rebuild also applies the screen-size conversion to the 2026-11-14 title-spacing rule in `site/css/site.css`.
+- The old working copy's logs (WORKLOG.md, SEO.md, README.md) are saved in `docs/history/`.
+- CRM (`Desktop\ChanelMonroe-CRM`, local, not in git): the sidebar has a Website section linking to the live site, this folder and GitHub.
+
 ### 2026-11-14 (titles clear of the nav, one caption style, no settings tab, chat stays loaded)
 - Every style's title now sits a little below the top nav instead of touching it (an older `#gallery .ghead{margin-top:0}` rule was overriding the gap).
 - Glam, Bridal and Character & FX photo description boxes now use the same frosted dark overlay as Natural, Editorial and Parties.
