@@ -1,4 +1,4 @@
-# Heavy media is served from Supabase Storage (bucket "media"); master copies live in M:\CMM-Site.
+# Heavy media is served from Supabase Storage (bucket "media"); master copies live in M:\CMM-Site-Assets\media.
 # src/ is the working copy (edit it here). Its original photos and clips stay on this computer, not in git.
 src/REGISTER.csv
 src/images/products/

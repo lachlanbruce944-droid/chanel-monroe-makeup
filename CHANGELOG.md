@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (everything except the repo moved to M:\CMM-Site-Assets)
+- `M:\CMM-Site` now holds only the repo (`chanel-monroe-makeup`). Everything else moved, unchanged, to `M:\CMM-Site-Assets`: `media` (optimised mirror and `manifest.json`), `media-src`, `_removed`, `_archive`, `final-draft` (old working copy) and `media-rename-plan.csv`. A README.txt there lists what each folder is.
+- Every tool that reads or writes those folders now points at `M:\CMM-Site-Assets` (publish, build_site, optimize_media, upload_media, apply_removals, cutout_products, make_backgrounds, migrate_media_names, make_zip). README, CONTRIBUTING, CLAUDE.md, project status, .gitignore and the CRM readme updated. Older changelog entries keep the paths as they were at the time.
+
 ### 2026-11-15 (new working folder: the repo itself, M:\CMM-Site\chanel-monroe-makeup)
 - From now on the site is edited and pushed from one folder, `M:\CMM-Site\chanel-monroe-makeup`, a fresh clone of this repo. Edit `src/`, run `python src\tools\publish.py`, then commit and push from there. No more copying between a working copy and the repo.
 - `M:\CMM-Site\final-draft` (the old working copy, now marked with `_OLD-COPY-README.txt`) and `C:\Users\USER\repos\chanel-monroe-makeup` (the old clone) stay as they are for reference; `_archive` and `_removed` are unchanged.

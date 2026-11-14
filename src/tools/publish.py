@@ -14,7 +14,7 @@ What it does:
 Then review `git status`, add a CHANGELOG.md entry, commit and push. GitHub Actions deploys site/.
 
 Heavy media (photos, clips) is not mirrored: it lives in Supabase Storage (bucket `media`),
-with the local master copies under M:\\CMM-Site.
+with the local master copies under M:\\CMM-Site-Assets\\media.
 """
 import fnmatch, hashlib, os, shutil, subprocess, sys
 
@@ -53,7 +53,7 @@ def same(a, b):
 
 def main(repo):
     py = sys.executable
-    man = r'M:\CMM-Site\media\manifest.json'   # map of every media file to its Supabase name (written by optimize_media.py)
+    man = r'M:\CMM-Site-Assets\media\manifest.json'   # map of every media file to its Supabase name (written by optimize_media.py)
     if os.path.exists(man): shutil.copy2(man, os.path.join(ROOT, 'data', 'media-manifest.json'))
     subprocess.run([py, os.path.join(ROOT, 'tools', 'build_register.py')], check=True, cwd=ROOT)
     subprocess.run([py, os.path.join(ROOT, 'tools', 'build_site.py'), os.path.join(repo, 'site')], check=True, cwd=ROOT)

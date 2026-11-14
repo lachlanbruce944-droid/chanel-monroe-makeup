@@ -1,7 +1,7 @@
 """Background video loops for the Natural and Parties & Seasons sections.
 
-Downloads each clip once (cache: M:\\CMM-Site\\media-src\\backgrounds), cuts 8 seconds, and writes
-  M:\\CMM-Site\\media\\images\\backgrounds\\<set>\\<name>-1080.mp4   1920x1080 (desktop / big screens)
+Downloads each clip once (cache: M:\\CMM-Site-Assets\\media-src\\backgrounds), cuts 8 seconds, and writes
+  M:\\CMM-Site-Assets\\media\\images\\backgrounds\\<set>\\<name>-1080.mp4   1920x1080 (desktop / big screens)
                                                 <name>-720.mp4    1280x720  (phones)
                                                 <name>.jpg        poster frame
 then upload with tools/upload_media.py (same as the rest of the media).
@@ -12,8 +12,8 @@ Run:  python tools/make_backgrounds.py
 import os, subprocess, sys, urllib.request, json
 import imageio_ffmpeg
 FF = imageio_ffmpeg.get_ffmpeg_exe()
-CACHE = r'M:\CMM-Site\media-src\backgrounds'
-OUT = r'M:\CMM-Site\media\images\backgrounds'
+CACHE = r'M:\CMM-Site-Assets\media-src\backgrounds'
+OUT = r'M:\CMM-Site-Assets\media\images\backgrounds'
 LEN = 8
 
 # name: (pexels id, file url, start second)

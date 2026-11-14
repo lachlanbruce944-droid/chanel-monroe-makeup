@@ -1,4 +1,4 @@
-﻿# Chanel Monroe Makeup â€” website
+# Chanel Monroe Makeup â€” website
 
 The website for **Chanel Monroe Makeup**, a mobile makeup artist on the Gold Coast (Instagram [@chanelmonroemakeup](https://www.instagram.com/chanelmonroemakeup/)).
 Visitors browse looks by style (natural, glam, bridal, editorial, character & FX, parties), see pricing, local affiliate artists, and the brands and products in Chanel's kit, then enquire.
@@ -11,7 +11,7 @@ Visitors browse looks by style (natural, glam, bridal, editorial, character & FX
 |---|---|---|
 | Pages, styles, scripts, data | GitHub Pages (`site/`) | Light static files, about 2.5 MB. Deployed by GitHub Actions on every push to `main`. |
 | Photos and video clips | Supabase Storage, public bucket `media` | About 750 MB of optimised WebP and MP4, served from Supabase's CDN with long cache headers. |
-| Master media | `M:\CMM-Site` (local) | Original files and the optimised mirror that is uploaded to Supabase. Not in this repository. |
+| Master media | `M:\CMM-Site-Assets\media` (local) | Original files and the optimised mirror that is uploaded to Supabase. Not in this repository. |
 
 Pages only download what is on screen: images use lazy loading and responsive sizes (800px and 1600px copies), and clips load only while visible.
 
@@ -42,7 +42,7 @@ CLAUDE.md                            Start-here notes for AI assistants working 
 ## Build and publish
 
 Work happens in this repository's folder, **`M:\CMM-Site\chanel-monroe-makeup`**: edit `src/`, build, then commit and push from here.
-(The old working copy `M:\CMM-Site\final-draft` and older builds in `M:\CMM-Site\_archive` are kept for reference only.)
+(The old working copy `M:\CMM-Site-Assets\final-draft` and older builds in `M:\CMM-Site-Assets\_archive` are kept for reference only.)
 
 ```powershell
 cd M:\CMM-Site\chanel-monroe-makeup

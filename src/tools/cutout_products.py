@@ -2,13 +2,13 @@
 
     python tools/cutout_products.py
 
-1. Downloads each product photo once (cached in M:\\CMM-Site\\media-src\\products) - retailer photos are on Adore Beauty
+1. Downloads each product photo once (cached in M:\\CMM-Site-Assets\\media-src\\products) - retailer photos are on Adore Beauty
    and brand Shopify stores; kit photos are in images/products.
 2. Removes the plain background: near-white (or flat light) pixels connected to the photo's edge become transparent,
    with soft, de-haloed edges. Whites inside the product (a white bottle, a label) are kept because they do not touch
    the edge. Photos that are not on a plain background (lifestyle shots) are left as they are.
 3. Trims to the product, fits it in 800 x 800, and saves WebP with transparency to
-   M:\\CMM-Site\\media\\products\\cutout\\<name>.webp  (upload with tools/upload_media.py).
+   M:\\CMM-Site-Assets\\media\\products\\cutout\\<name>.webp  (upload with tools/upload_media.py).
 4. Writes data/product-cutouts.json  {original image: storage name}. The site shows the cut-out when it is there and
    falls back to the original photo if it is not uploaded yet.
 """
@@ -19,8 +19,8 @@ from PIL import Image
 from scipy import ndimage
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-CACHE = r'M:\CMM-Site\media-src\products'
-OUT = r'M:\CMM-Site\media'
+CACHE = r'M:\CMM-Site-Assets\media-src\products'
+OUT = r'M:\CMM-Site-Assets\media'
 PREFIX = 'products/cutout/'
 os.makedirs(CACHE, exist_ok=True)
 

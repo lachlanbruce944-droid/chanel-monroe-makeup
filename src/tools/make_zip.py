@@ -1,7 +1,7 @@
 """Zip the complete site (all pages, data, images and videos) ready to upload. Skips raw scrape data and build tools."""
 import os, zipfile, datetime
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))   # the repo's src/ (the working copy)
-OUT = r'M:\CMM-Site\chanel-monroe-makeup-site-%s.zip' % datetime.date.today().isoformat()
+OUT = r'M:\CMM-Site-Assets\chanel-monroe-makeup-site-%s.zip' % datetime.date.today().isoformat()
 SKIP_DIRS = {os.path.join(SRC, 'data', 'raw'), os.path.join(SRC, 'tools'), os.path.join(SRC, '__pycache__')}
 SKIP_EXT = {'.py', '.pyc', '.tmp'}
 n = size = 0

@@ -1,5 +1,5 @@
 """Apply removals: everything hidden in Edit mode (data/overrides.js "hidden") is taken off the site for good.
-- Files (and video posters) are MOVED to M:\\CMM-Site\\_removed\\<same path>, not deleted, so it can be undone.
+- Files (and video posters) are MOVED to M:\\CMM-Site-Assets\\_removed\\<same path>, not deleted, so it can be undone.
 - Their rows are dropped from inspiration/credits.csv, lip-credits.csv, videos/videos.csv, chanel/index.csv.
 - Each is recorded in data/removed.json (with its Instagram code) so it is never re-added; REGISTER.csv lists them.
 - The hidden list in overrides.js is cleared and the action logged. Then re-run build_media.py and build_register.py.
@@ -7,7 +7,7 @@ Run: python tools/apply_removals.py
 """
 import csv, json, os, re, shutil, urllib.parse, datetime
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-BIN = r'M:\CMM-Site\_removed'
+BIN = r'M:\CMM-Site-Assets\_removed'
 OVP = os.path.join(ROOT, 'data', 'overrides.js')
 t = open(OVP, encoding='utf-8').read()
 m = re.search(r'window\.SITE_OVERRIDES\s*=\s*', t)
