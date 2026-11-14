@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (photo picking: + buttons back, banner in the description box)
+- Fixed: the + button on each photo was missing its styling (a stray line left from removing the minimise pill broke the rule), so it showed as a tiny grey button at the bottom of the tile. It is back in the top-right corner of every photo.
+- While the chat sends the client to pick photos, the photo description is hidden and the "Tap + on any photo to add it · Back to your enquiry" banner sits in the description box's place. The description returns when picking ends.
+
 ### 2026-11-15 (chat open: the page behind can't be used)
 - While the chat window is up, a clear layer behind it takes every tap, swipe and scroll, and the arrow / page keys do nothing, so the carousel arrows, nav and tiles can't be used until the chat is closed. The layer lifts while the chat sends the client to pick photos, then returns.
 - The M:\CMM-Site\final-draft working copy was brought up to date with GitHub (index.html, enquire.html, data/site-content.js, settings/pricing-settings.js, tools/build_site.py, tools/publish.py), so publish.py no longer drops enquire.html.
