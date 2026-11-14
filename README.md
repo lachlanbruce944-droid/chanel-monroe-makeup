@@ -11,7 +11,7 @@ Visitors browse looks by style (natural, glam, bridal, editorial, character & FX
 |---|---|---|
 | Pages, styles, scripts, data | GitHub Pages (`site/`) | Light static files, about 2.5 MB. Deployed by GitHub Actions on every push to `main`. |
 | Photos and video clips | Supabase Storage, public bucket `media` | About 750 MB of optimised WebP and MP4, served from Supabase's CDN with long cache headers. |
-| Master media | `M:\CMM-Site-Assets\media` (local) | Original files and the optimised mirror that is uploaded to Supabase. Not in this repository. |
+| Master media | This folder, not in git | Original photos and clips in `src\images`; the optimised mirror uploaded to Supabase in `local\media` (with download caches and removed content in `local\`). |
 
 Pages only download what is on screen: images use lazy loading and responsive sizes (800px and 1600px copies), and clips load only while visible.
 
@@ -57,6 +57,17 @@ git add -A; git commit -m "Short description"; git push
 `publish.py` rebuilds the content register, builds `site/` from `src/`, and refreshes `docs/content-register.csv`.
 The original photos and clips sit in `src/images/` on this computer only (git ignores them; the site serves them from Supabase).
 New or replaced photos and clips go through `tools/optimize_media.py` and `tools/upload_media.py` first. See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## Everything is in this folder
+
+Code, content, tools, the original photos and clips (`src\images`) and the working media (`local\`) are all here, so the site can be edited, built, previewed and published from this one folder.
+Photos and clips are not in git: back up this folder, not just GitHub. To preview the built site on this computer:
+
+```powershell
+python -m http.server 8000 --directory site     # then open http://localhost:8000
+```
+
+Online services the site uses (accounts, not files): GitHub Pages (hosting), Supabase (photos and clips, enquiries, selfies, the `enquiry-email` function, source in `supabase/functions/`), Resend (emails), cal.com (phone-call bookings), GoDaddy (domain and email DNS).
 
 ## Phones and tablets
 

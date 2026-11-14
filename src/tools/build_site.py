@@ -6,10 +6,13 @@
 Usage: python tools/build_site.py <output folder>     e.g. M:\\CMM-Site\\chanel-monroe-makeup\\site
 """
 import json, os, re, shutil, sys, urllib.parse
+LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'local')   # <repo>\local: media, media-src, _removed (not in git)
 SRC = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = sys.argv[1]
 BASE = sys.argv[2] if len(sys.argv) > 2 else 'https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/'   # 2nd arg: test against a local media server
-MAN = json.load(open(r'M:\CMM-Site-Assets\media\manifest.json', encoding='utf-8'))
+_man = os.path.join(LOCAL, r'media\manifest.json')
+if not os.path.exists(_man): _man = os.path.join(SRC, 'data', 'media-manifest.json')   # copy kept in git (publish.py refreshes it)
+MAN = json.load(open(_man, encoding='utf-8'))
 
 def to_cdn(path):
     raw = urllib.parse.unquote(path)

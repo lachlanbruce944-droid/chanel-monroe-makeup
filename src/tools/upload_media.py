@@ -1,4 +1,4 @@
-"""Upload the optimised media (M:\\CMM-Site-Assets\\media\\images\\...) to the public Supabase Storage bucket 'media'.
+"""Upload the optimised media (local\\media\\images\\...) to the public Supabase Storage bucket 'media'.
 Run it yourself:   python tools/upload_media.py
 It asks for your project's SECRET key (Supabase dashboard > Project Settings > API Keys > Secret keys, 'sb_secret_...',
 or the legacy service_role key). The key is typed into this window only: not shown, not saved, never sent anywhere but Supabase.
@@ -6,10 +6,11 @@ Files already in the bucket are skipped, so it is safe to re-run after adding me
 Every file gets Cache-Control: one year (names never change; a changed file gets a new name), so browsers and the CDN keep them.
 """
 import getpass, json, mimetypes, os, sys, urllib.request, urllib.error
+LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'local')   # <repo>\local: media, media-src, _removed (not in git)
 from concurrent.futures import ThreadPoolExecutor
 URL = 'https://qxiugfatpybldluipcyy.supabase.co'
 BUCKET = 'media'
-ROOT = r'M:\CMM-Site-Assets\media'
+ROOT = os.path.join(LOCAL, r'media')
 mimetypes.add_type('image/webp', '.webp')
 
 print('Tip: paste with a RIGHT-CLICK in this window (Ctrl+V does not paste into a hidden prompt).')

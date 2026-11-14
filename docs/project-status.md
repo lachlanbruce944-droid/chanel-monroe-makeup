@@ -9,8 +9,8 @@ The current state of the site and the open items. Update it in the same commit a
 **Working folder (since 2026-11-15):** `M:\CMM-Site\chanel-monroe-makeup`, the git clone itself. Edit `src/`, run `python src\tools\publish.py`, then commit and push from this folder (see CONTRIBUTING.md). Original photos and clips are in `src\images` locally (ignored by git).
 **Old copies (reference only, do not edit):** `M:\CMM-Site-Assets\final-draft` (previous working copy), `C:\Users\USER\repos\chanel-monroe-makeup` (previous clone)
 **CRM:** `C:\Users\USER\OneDrive\Desktop\ChanelMonroe-CRM` (local trial build, not in git); its sidebar links to the live site and this folder
-**Media:** Supabase Storage bucket `media` (project ref qxiugfatpybldluipcyy); optimised mirror `M:\CMM-Site-Assets\media`, originals in `src\images` (local, ignored by git)
-**Archive (not in git):** `M:\CMM-Site-Assets\_archive` (first mock-up, one-off pipeline scripts), `M:\CMM-Site-Assets\_removed` (removed content, restorable)
+**Media:** Supabase Storage bucket `media` (project ref qxiugfatpybldluipcyy); optimised mirror `local\media`, originals in `src\images` (local, ignored by git)
+**Archive (not in git):** `M:\CMM-Site-Assets\_archive` (first mock-up, one-off pipeline scripts), `local\_removed` (removed content, restorable)
 
 **Site structure (decided 2026-11-11):** six main style groups replace Natural / Special occasions / Editorial / Parties:
 

@@ -34,7 +34,7 @@ File names: lower case, words joined with `-`, no spaces or `@` in new files.
 
 1. Hide the item in Edit mode (press **E** on the site, then ✕ on the item) and save to `data/overrides.js`.
 2. Run `python tools\apply_removals.py`.
-   The file moves to `M:\CMM-Site-Assets\_removed\` (so it can be restored), its credit row is dropped, and it is logged in `data/removed.json` so it is never re-added.
+   The file moves to `local\_removed\` (so it can be restored), its credit row is dropped, and it is logged in `data/removed.json` so it is never re-added.
 3. Run `python tools\build_media.py`.
 
 ## 4. Publish
@@ -51,5 +51,5 @@ Then, in the repository folder (`M:\CMM-Site\chanel-monroe-makeup`): review `git
 - **Register everything.** The register is rebuilt on every publish; if something cannot be registered, it does not go on the site.
 - **Credit everything.** Every inspiration photo and clip carries its artist's handle and post link.
 - **No secrets in the repo.** The Supabase secret key is typed in when `upload_media.py` asks for it and is never saved.
-- **Heavy media stays out of git.** Photos and clips live on Supabase, in `src\images` and in `M:\CMM-Site-Assets\media`; the repo keeps only their credit records.
+- **Heavy media stays out of git.** Photos and clips live on Supabase, in `src\images` and in `local\media`; the repo keeps only their credit records.
 - **Log every change** in `CHANGELOG.md`, and keep `docs/project-status.md` current.

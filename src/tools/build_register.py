@@ -6,6 +6,7 @@ Before adding anything new, check its Instagram code / URL / name against REGIST
 brand name or affiliate handle.
 """
 import csv, json, os, re
+LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'local')   # <repo>\local: media, media-src, _removed (not in git)
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def js(name, var):
     p = os.path.join(ROOT, 'data', name)
@@ -36,7 +37,7 @@ for c, why in (json.load(open(rej, encoding='utf-8')) if os.path.exists(rej) els
     rows.append(dict(kind='rejected-post', key=c, name='', section='', file='', status='rejected: ' + why, source='https://www.instagram.com/p/%s/' % c))
 for l in js('lessons.js', 'LESSONS') or []:
     rows.append(dict(kind='lesson', key=code(l['post']), name=l['title'], section='Lessons / ' + l['topic'], file=re.sub('%20', ' ', l['src']), status='live', source=l['by'] + ' ' + l['post']))
-rmp = os.path.join(ROOT, 'data', 'removed.json')   # applied removals (tools/apply_removals.py); files in M:\CMM-Site-Assets\_removed
+rmp = os.path.join(ROOT, 'data', 'removed.json')   # applied removals (tools/apply_removals.py); files in local\_removed
 for r in (json.load(open(rmp, encoding='utf-8')) if os.path.exists(rmp) else []):
     rows.append(dict(kind='removed', key=r['code'], name='', section=r['section'], file=r['file'], status='removed %s: %s' % (r['removed'], r['reason']),
                      source='https://www.instagram.com/p/%s/' % r['code'] if r['code'] else ''))

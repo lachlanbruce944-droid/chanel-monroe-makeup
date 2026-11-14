@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (everything needed lives in the repo folder)
+- The working media moved from `M:\CMM-Site-Assets` into this folder's `local\` (ignored by git): `media` (optimised mirror and `manifest.json`), `media-src` (download caches), `_removed`, `media-rename-plan.csv`. With the originals in `src\images`, the site can be edited, built, previewed and published from `M:\CMM-Site\chanel-monroe-makeup` alone.
+- Every media tool finds `local\` from its own location, so the folder works wherever it is copied. `build_site.py` falls back to `src\data\media-manifest.json` (kept in git) when `local\media` is missing.
+- `M:\CMM-Site-Assets` now holds only old copies for reference (`final-draft`, `_archive`). README has a preview command and the list of online services.
+
 ### 2026-11-15 (everything except the repo moved to M:\CMM-Site-Assets)
 - `M:\CMM-Site` now holds only the repo (`chanel-monroe-makeup`). Everything else moved, unchanged, to `M:\CMM-Site-Assets`: `media` (optimised mirror and `manifest.json`), `media-src`, `_removed`, `_archive`, `final-draft` (old working copy) and `media-rename-plan.csv`. A README.txt there lists what each folder is.
 - Every tool that reads or writes those folders now points at `M:\CMM-Site-Assets` (publish, build_site, optimize_media, upload_media, apply_removals, cutout_products, make_backgrounds, migrate_media_names, make_zip). README, CONTRIBUTING, CLAUDE.md, project status, .gitignore and the CRM readme updated. Older changelog entries keep the paths as they were at the time.

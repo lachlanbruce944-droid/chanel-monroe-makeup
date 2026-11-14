@@ -1,7 +1,7 @@
 """Make web-ready copies of every image and clip for Supabase Storage (bucket `media`).
 
 Source: src/images (icons, brand logos and the About photo ship with the site on GitHub; lessons are hidden).
-Output: M:\\CMM-Site-Assets\\media\\<storage name>  plus  M:\\CMM-Site-Assets\\media\\manifest.json  {source path: storage name}
+Output: local\\media\\<storage name>  plus  local\\media\\manifest.json  {source path: storage name}
 Storage names follow tools/media_names.py (gallery/..., clips/..., chanel/..., affiliates/..., products/...).
   gallery, Chanel's work, products -> name.webp (1600 wide, q88) + name-800.webp (800 wide, q82)
   affiliate profile -> 480 wide, affiliate posts -> 720 wide, comment avatars -> 96 wide
@@ -10,6 +10,7 @@ Re-run safe: existing outputs are kept. Then upload new files with tools/upload_
 Usage: python tools/optimize_media.py
 """
 import json, os, subprocess, sys
+LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'local')   # <repo>\local: media, media-src, _removed (not in git)
 from concurrent.futures import ProcessPoolExecutor
 from PIL import Image, ImageOps
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -17,7 +18,7 @@ from media_names import storage_names
 
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(SITE, 'images')
-OUT = r'M:\CMM-Site-Assets\media'
+OUT = os.path.join(LOCAL, r'media')
 SKIP = ('icons', 'lessons', 'brands', 'about')
 IMG = ('.jpg', '.jpeg', '.png', '.webp')
 

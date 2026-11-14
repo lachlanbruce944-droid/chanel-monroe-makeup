@@ -1,7 +1,7 @@
 """One-off: rename every file in Supabase Storage (bucket `media`) to the naming rules in tools/media_names.py,
 delete files the site no longer uses, rename the local mirror to match, and publish the site with the new links.
 
-    python tools/migrate_media_names.py            dry run: writes M:\\CMM-Site-Assets\\media-rename-plan.csv, changes nothing
+    python tools/migrate_media_names.py            dry run: writes local\\media-rename-plan.csv, changes nothing
     python tools/migrate_media_names.py --apply    asks for the Supabase secret key, then does it
 
 The secret key (Supabase dashboard > Project Settings > API Keys > Secret keys, 'sb_secret_...') is typed into this
@@ -10,6 +10,7 @@ keeps the cache settings, and uses no extra storage. Safe to re-run: anything al
 The live site shows broken images only between the moves and the publish at the end (a few minutes).
 """
 import csv, getpass, json, os, subprocess, sys, urllib.request, urllib.error
+LOCAL = os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), 'local')   # <repo>\local: media, media-src, _removed (not in git)
 from concurrent.futures import ThreadPoolExecutor
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from media_names import storage_names, SMALL
@@ -17,9 +18,9 @@ from media_names import storage_names, SMALL
 SITE = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 URL = 'https://qxiugfatpybldluipcyy.supabase.co'
 BUCKET = 'media'
-MIRROR = r'M:\CMM-Site-Assets\media'
+MIRROR = os.path.join(LOCAL, r'media')
 REPO = r'C:\Users\USER\repos\chanel-monroe-makeup'
-PLAN = r'M:\CMM-Site-Assets\media-rename-plan.csv'
+PLAN = os.path.join(LOCAL, r'media-rename-plan.csv')
 
 
 def old_small(name):  # the 800 px copy under the old names
@@ -94,7 +95,7 @@ def main(apply):
     for a in deletes:
         p = os.path.join(MIRROR, *a.split('/'))
         if os.path.exists(p):
-            dst = os.path.join(r'M:\CMM-Site-Assets\_removed\media', *a.split('/')); os.makedirs(os.path.dirname(dst), exist_ok=True); os.replace(p, dst)
+            dst = os.path.join(os.path.join(LOCAL, r'_removed\media'), *a.split('/')); os.makedirs(os.path.dirname(dst), exist_ok=True); os.replace(p, dst)
     for root, dirs, files in os.walk(os.path.join(MIRROR, 'images'), topdown=False):
         if not os.listdir(root): os.rmdir(root)
     json.dump({s: new[s][0] for s in new}, open(os.path.join(MIRROR, 'manifest.json'), 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
