@@ -2,6 +2,12 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (after the call button: chat closes to a read-only view, one enquiry per browser)
+- Once an enquiry is sent, "Choose a time" opens Chanel's cal.com booking page in a new tab and the chat closes to a read-only "Your enquiry is with Chanel" view: booking, contact, picks and estimate, a button to open the booking page again, and "reply to your confirmation email" for changes.
+- The sent enquiry is kept in the browser (localStorage `cmm-enquiry-sent`) until the event day has passed (60 days if no date). Until then, every Enquire / Book button shows that view instead of starting a new chat.
+- Practice mode (`?localdb`) never locks the browser; the Test panel's Restart clears the lock. If sending failed, the call button still opens the embedded form and nothing is locked.
+- Checked at 874 × 402, 667 × 375, 390 × 844 and 1440 × 900, inside the site's window and on enquire.html. Edited in the repo (src/ and site/); copy src/enquire.html into the M: working copy before the next publish.
+
 ### 2026-11-14 (chat window: no minimise, 80% of the screen)
 - The "–" minimise button and the "Your enquiry" pill are gone; Esc no longer minimises the chat (it still ends photo picking). ✕ Close is the only way out.
 - The chat window is now centred and 80% of the screen's width and height on every device (checked at 1440 × 900, 874 × 402 and 390 × 844).
