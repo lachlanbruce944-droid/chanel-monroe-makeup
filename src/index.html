@@ -1757,8 +1757,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
 </script>
 <script>
 /* 2026-11-14: Enquire / Book links open the chat enquiry over the site in the same window, so full screen is kept.
-   The chat sits in its own frosted window (right side on wide screens, a tall sheet on upright phones) with a
-   minimise button; minimised, a small "Your enquiry" pill brings it back. At the "reference photos" step the window lifts:
+   The chat sits in its own frosted window, centred and 80% of the screen's width and height (no minimise). At the "reference photos" step the window lifts:
    every carousel photo gets a + button (the chat receives the photo), and a pill takes the client back.
    The overlay cancels the page zoom (js/config.js scales the landscape design) so the chat renders at its own size. */
 (function(){
@@ -1768,10 +1767,8 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     'border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.35);'+
     'background:rgba(245,233,225,.55);-webkit-backdrop-filter:blur(26px) saturate(1.25);backdrop-filter:blur(26px) saturate(1.25)}'+
     '#enqOverlay.on{opacity:1;transform:none}'+
-    '#enqOverlay.away,#enqOverlay.mini{opacity:0!important;transform:translateY(24px) scale(.96)!important;pointer-events:none}'+
-    '#enqMini{position:fixed;z-index:2147482999;display:none;align-items:center;gap:9px;padding:9px 16px 9px 10px;border:0;border-radius:999px;cursor:pointer;'+
+    '#enqOverlay.away{opacity:0!important;transform:translateY(24px) scale(.96)!important;pointer-events:none}'+
     'background:rgba(6,5,14,.82);color:#fff;font:500 13px/1 Jost,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
-    '#enqMini i{width:22px;height:22px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 12%,#e8b9a6 30%,#b8846b 70%);box-shadow:0 0 12px rgba(232,185,166,.7)}'+
     '#track .tile .cmm-plus{position:absolute;top:8px;right:8px;z-index:6;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;'+
     'background:rgba(255,255,255,.94);color:#2a2020;font:600 22px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.28);transition:transform .2s}'+
     '#track .tile .cmm-plus:hover{transform:scale(1.1)}#track .tile .cmm-plus.on{background:#b8846b;color:#fff}'+
@@ -1783,26 +1780,20 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     '#cmmPill button{border:0;border-radius:999px;padding:7px 14px;background:#f5e9e1;color:#2a1c19;font:600 13px Jost,system-ui,sans-serif;cursor:pointer}';
   document.head.appendChild(st);
   function size(){
-    var z=window.UIZ||1, W=innerWidth, H=innerHeight, g=W<500?8:12, w, h;
-    if(W>H){ w=Math.min(560,Math.round(W*.56)); h=Math.min(820,H-2*g) }      /* sideways phones, tablets, desktop: window on the right */
-    else { w=W-2*g; h=Math.round(H*.8) }                                     /* upright phones: tall sheet from the bottom */
-    [ov,mini].forEach(function(el){ if(el) el.style.zoom=z===1?'':(1/z) });   /* cancel the page zoom so sizes are real pixels */
-    if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.right=g+'px'; ov.style.bottom=g+'px' }
-    if(mini){ mini.style.right=g+'px'; mini.style.bottom=(g+64)+'px' }
+    var z=window.UIZ||1, W=innerWidth, H=innerHeight, w, h;
+    w=Math.round(W*.8); h=Math.round(H*.8)                                   /* 80% of the screen on every device, centred */
+    if(ov) ov.style.zoom=z===1?'':(1/z);   /* cancel the page zoom so sizes are real pixels */
+    if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((W-w)/2)+'px'; ov.style.top=Math.round((H-h)/2)+'px' }
   }
-  function minimise(){ if(!ov) return; ov.classList.add('mini'); ov.classList.remove('on'); mini.style.display='flex' }
-  function restore(){ if(!ov) return; mini.style.display='none'; ov.style.display='block'; ov.classList.remove('mini','away'); requestAnimationFrame(function(){ ov.classList.add('on') }) }
   function open(href){
-    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size);
-      mini=document.createElement('button'); mini.id='enqMini'; mini.type='button'; mini.innerHTML='<i></i>Your enquiry';
-      mini.onclick=restore; document.body.appendChild(mini) }
-    if(fr && ov.classList.contains('mini')){ restore(); return }   /* Enquire while minimised: bring the same chat back */
+    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
+    if(fr && ov.classList.contains('on')) return;   /* chat already open: keep it as it is */
     var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
-    fr=ov.firstChild; ov.classList.remove('away','mini'); ov.style.display='block'; mini.style.display='none'; size(); requestAnimationFrame(function(){ ov.classList.add('on') });
+    fr=ov.firstChild; ov.classList.remove('away'); ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.classList.add('on') });
   }
-  function close(){ endPick(false); if(!ov) return; ov.classList.remove('on'); mini.style.display='none'; setTimeout(function(){ ov.style.display='none'; ov.innerHTML=''; fr=null },350) }
+  function close(){ endPick(false); if(!ov) return; ov.classList.remove('on'); setTimeout(function(){ ov.style.display='none'; ov.innerHTML=''; fr=null },350) }
   function send(m){ if(fr&&fr.contentWindow) fr.contentWindow.postMessage(m,'*') }
   /* + buttons on the site's carousel */
   function decorate(){
@@ -1847,11 +1838,10 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   addEventListener('message',function(e){
     var d=e.data||{}; if(!fr||e.source!==fr.contentWindow) return;
     if(d.cmm==='close-enquiry') close();
-    else if(d.cmm==='minimise') minimise();
     else if(d.cmm==='browse') startPick(d.plus,d.picked);
     else if(d.cmm==='refs') setPicked(d.picked);
   });
-  addEventListener('keydown',function(e){ if(e.key==='Escape'&&ov&&ov.classList.contains('on')){ if(pill&&pill.style.display==='flex') endPick(true); else minimise() } });
+  addEventListener('keydown',function(e){ if(e.key==='Escape'&&pill&&pill.style.display==='flex') endPick(true) });
 })();
 </script>
 </body>

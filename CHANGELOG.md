@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (chat window: no minimise, 80% of the screen)
+- The "–" minimise button and the "Your enquiry" pill are gone; Esc no longer minimises the chat (it still ends photo picking). ✕ Close is the only way out.
+- The chat window is now centred and 80% of the screen's width and height on every device (checked at 1440 × 900, 874 × 402 and 390 × 844).
+- Edited in the repo (src/ and site/) because the M:\CMM-Site\final-draft working copy was not reachable this session: copy src/index.html and src/enquire.html into the working copy before the next publish, or the change will be undone.
+
 ### 2026-11-14 (enquiry emails live)
 - Resend DNS records for chanelmonroe.net added in GoDaddy (DKIM TXT resend._domainkey; MX + TXT on "send"; CNAME rsend); the domain is verified.
 - RESEND_API_KEY saved as the `enquiry-email` function secret. Test enquiry sent: Chanel's email to makeup@chanelmonroe.net and the client confirmation were both delivered; the test row was then deleted.

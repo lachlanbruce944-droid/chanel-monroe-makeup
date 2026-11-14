@@ -603,10 +603,9 @@ body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
   .card.confirm{padding:11px;gap:8px}.cf-h b{font-size:17px}.cf-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px}
   .fld{padding:6px 9px}.fld b{font-size:12.5px}.send-big{padding:11px;font-size:14px}
 }
-/* framed in the site's window: minimise button, leaner header */
-.winbtn{font-size:18px;line-height:1;padding:3px 12px;margin-left:auto}
+/* framed in the site's window: leaner header, Close on the right */
 body.framed .brand{display:none}
-body.framed header .back{margin-left:6px}
+body.framed header .back{margin-left:auto}
 
 /* inside the site's window */
 body.framed header .back{display:inline-block!important}
@@ -1611,9 +1610,6 @@ addEventListener('message', e => {
 });
 if(FRAMED){
   document.body.classList.add('framed');
-  const mn = document.createElement('button'); mn.className = 'hbtn winbtn'; mn.title = 'Minimise'; mn.setAttribute('aria-label','Minimise the chat'); mn.textContent = '–';
-  mn.onclick = () => parent.postMessage({ cmm:'minimise' }, '*');
-  document.querySelector('header .back')?.before(mn);
   document.querySelectorAll('a.back, a.brand').forEach(a => {
     if(a.classList.contains('back')) a.textContent = '✕ Close';
     a.onclick = e => { e.preventDefault(); parent.postMessage({ cmm:'close-enquiry' }, '*') };
