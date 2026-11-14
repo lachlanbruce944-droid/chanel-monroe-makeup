@@ -2,6 +2,9 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (affiliates use the Medium tiles)
+- The Affiliates page always shows the Medium tile option (pictures only, 55% of the screen; name and details stay in the popup), for every visitor, including anyone who picked another size in the old settings tab. Set by `fixed:'b'` on the `afftile` setting in `src/index.html`.
+
 ### 2026-11-15 (fix: + buttons missing when browsing looks for an enquiry)
 - "Browse looks" in the chat showed the site's photos without the + buttons. The 2026-11-14 change that removed the chat's minimise pill left the last line of its style rule behind; that stray text swallowed the next rule (the + button's position and look), so browsers dropped it. Removed the stray line; the + buttons sit top right of every photo again.
 
