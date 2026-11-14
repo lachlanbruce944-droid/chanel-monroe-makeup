@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (enquiry emails live)
+- Resend DNS records for chanelmonroe.net added in GoDaddy (DKIM TXT resend._domainkey; MX + TXT on "send"; CNAME rsend); the domain is verified.
+- RESEND_API_KEY saved as the `enquiry-email` function secret. Test enquiry sent: Chanel's email to makeup@chanelmonroe.net and the client confirmation were both delivered; the test row was then deleted.
+
 ### 2026-11-14 (chat in its own window, clearer confirm card, emails on send)
 - On the site the chat is now its own frosted window (right side on wide screens and sideways phones, a tall sheet on upright phones) instead of covering the whole screen. "–" minimises it to a "Your enquiry" pill; Esc minimises; ✕ Close ends it.
 - The deposit/terms question is gone; pressing "Send my enquiry" is the client's OK to be contacted.
