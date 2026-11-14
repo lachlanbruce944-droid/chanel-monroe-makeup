@@ -116,7 +116,6 @@ function renderNav(){
   /* Lessons tab hidden for now (redesign later): set SHOW_LESSONS = true to bring it back */
   var SHOW_LESSONS=false;
   h+='<span class="sep"></span>'+(SHOW_LESSONS?'<div class="item"><button class="gbtn" data-p="lessons">Lessons</button></div><span class="sep"></span>':'')+PAGES.slice(1).filter(function(p){return p.id!=='lessons'}).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
-  h+='<div class="item"><button class="gear" id="gear" type="button" aria-label="Settings" aria-haspopup="dialog" aria-expanded="false"><svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div>';
   $('nav').innerHTML=h;markNav();
 }
 function markNav(){[].forEach.call($('nav').querySelectorAll('.gbtn'),function(x){x.setAttribute('aria-current',page?x.dataset.p===page:(x.dataset.g!=null&&+x.dataset.g===cur))})}
@@ -732,13 +731,13 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   }
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
-    if(fr && ov.classList.contains('on')) return;   /* chat already open: keep it as it is */
+    if(fr){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
     fr=ov.firstChild; ov.classList.remove('away'); ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.classList.add('on') });
   }
-  function close(){ endPick(false); if(!ov) return; ov.classList.remove('on'); setTimeout(function(){ ov.style.display='none'; ov.innerHTML=''; fr=null },350) }
+  function close(){ endPick(false); if(!ov) return; ov.classList.remove('on'); setTimeout(function(){ if(!ov.classList.contains('on')) ov.style.display='none' },350) }   /* hidden, not unloaded */
   function send(m){ if(fr&&fr.contentWindow) fr.contentWindow.postMessage(m,'*') }
   /* + buttons on the site's carousel */
   function decorate(){
