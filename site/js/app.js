@@ -711,6 +711,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     'border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.35);'+
     'background:rgba(245,233,225,.55);-webkit-backdrop-filter:blur(26px) saturate(1.25);backdrop-filter:blur(26px) saturate(1.25)}'+
     '#enqOverlay.on{opacity:1;transform:none}'+
+    '#enqShade{position:fixed;inset:0;z-index:2147482990;display:none;background:rgba(0,0,0,.12);touch-action:none}'+
     '#enqOverlay.away{opacity:0!important;transform:translateY(24px) scale(.96)!important;pointer-events:none}'+
     'background:rgba(6,5,14,.82);color:#fff;font:500 13px/1 Jost,system-ui,sans-serif;box-shadow:0 10px 30px rgba(0,0,0,.35);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}'+
     '#track .tile .cmm-plus{position:absolute;top:8px;right:8px;z-index:6;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;'+
@@ -729,8 +730,18 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     if(ov) ov.style.zoom=z===1?'':(1/z);   /* cancel the page zoom so sizes are real pixels */
     if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((W-w)/2)+'px'; ov.style.top=Math.round((H-h)/2)+'px' }
   }
+  var shade=null;
+  function chatUp(){ return !!ov && ov.classList.contains('on') && !ov.classList.contains('away') && ov.style.display!=='none' }
+  function syncShade(){ if(shade) shade.style.display=chatUp()?'block':'none'; document.body.classList.toggle('cmm-chat-up',chatUp()) }
+  /* keys meant for the page (arrows, space, page up/down) do nothing while the chat is up */
+  addEventListener('keydown',function(e){ if(chatUp() && /^(Arrow\w+|Page\w+|Home|End| )$/.test(e.key)){ e.stopImmediatePropagation(); e.preventDefault() } },true);
   function open(href){
-    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
+    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size);
+      /* while the chat is up, a clear layer behind it takes every tap, swipe and scroll, so the page underneath
+         (carousel arrows, nav, tiles) can't be used; it lifts when the chat sends the client to pick photos */
+      shade=document.createElement('div'); shade.id='enqShade'; document.body.appendChild(shade);
+      ['click','pointerdown','touchstart','wheel'].forEach(function(t){ shade.addEventListener(t,function(e){ e.preventDefault(); e.stopPropagation() },{passive:false}) });
+      new MutationObserver(syncShade).observe(ov,{attributes:true,attributeFilter:['class','style']}) }
     if(fr){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;

@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (chat open: the page behind can't be used)
+- While the chat window is up, a clear layer behind it takes every tap, swipe and scroll, and the arrow / page keys do nothing, so the carousel arrows, nav and tiles can't be used until the chat is closed. The layer lifts while the chat sends the client to pick photos, then returns.
+- The M:\CMM-Site\final-draft working copy was brought up to date with GitHub (index.html, enquire.html, data/site-content.js, settings/pricing-settings.js, tools/build_site.py, tools/publish.py), so publish.py no longer drops enquire.html.
+
 ### 2026-11-14 (titles clear of the nav, one caption style, no settings tab, chat stays loaded)
 - Every style's title now sits a little below the top nav instead of touching it (an older `#gallery .ghead{margin-top:0}` rule was overriding the gap).
 - Glam, Bridal and Character & FX photo description boxes now use the same frosted dark overlay as Natural, Editorial and Parties.
