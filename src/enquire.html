@@ -603,10 +603,15 @@ body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
   .card.confirm{padding:11px;gap:8px}.cf-h b{font-size:17px}.cf-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px}
   .fld{padding:6px 9px}.fld b{font-size:12.5px}.send-big{padding:11px;font-size:14px}
 }
-/* framed in the site's window: minimise button, leaner header */
-.winbtn{font-size:18px;line-height:1;padding:3px 12px;margin-left:auto}
+/* ===== enquiry sent: a read-only view of the details, no second enquiry from this browser ===== */
+body.locked #comp,body.locked #browseBtn,body.locked #tray,body.locked #fab,body.locked #side,body.locked #tabs,body.locked #gallery,body.locked #calPanel{display:none!important}
+body.locked #conv{grid-row:1 / -1}
+.sentview .fld{cursor:default}
+.sentview .sv-note{margin:0;font-size:14px;line-height:1.5;color:var(--soft)}
+.sentview a.send-big{display:block;text-align:center;text-decoration:none}
+/* framed in the site's window: leaner header, Close on the right */
 body.framed .brand{display:none}
-body.framed header .back{margin-left:6px}
+body.framed header .back{margin-left:auto}
 
 /* inside the site's window */
 body.framed header .back{display:inline-block!important}
@@ -967,18 +972,18 @@ msgs.addEventListener('scroll', () => { pinned = msgs.scrollHeight - msgs.scroll
 if('ResizeObserver' in window) new ResizeObserver(() => { if(pinned){ msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' } }).observe(msgs);
 function setStatus(t){ $('#status').textContent = t }
 
-async function say(text, onStart){
+async function say(text, onStart, instant){   // instant: no thinking dots or typing (the intro once it has been seen)
   S.busy = true; S.skip = false;
   const row = botRow(), orb = row.firstChild;
   const dots = document.createElement('div'); dots.className = 'dots'; dots.innerHTML = '<i></i><i></i><i></i>';
   row.appendChild(dots); orbState(orb, 'think'); scroll(); setStatus('thinking…');
-  if(!fast()) await wait(rand(...CONFIG.thinkTime));
+  if(!fast() && !instant) await wait(rand(...CONFIG.thinkTime));
   dots.remove();
   const b = document.createElement('div'); b.className = 'b bot'; row.appendChild(b);
   orbState(orb, 'talk'); setStatus('typing…');
   if(onStart) onStart();   // answer buttons / text box appear as soon as the message starts
   const caret = '<span class="caret"></span>';
-  if(fast()){ b.textContent = text }
+  if(fast() || instant){ b.textContent = text }
   else {
     for(let i = 1; i <= text.length; i++){
       if(S.skip){ break }
@@ -1022,9 +1027,13 @@ async function askNext(){
   let text = q.ask(S.answers);
   if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
     text = `Lovely to meet you, ${first(S.answers.name)}! You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
-  S.typing = say(text, () => renderComposer(q));
+  const instant = q.id === 'name' && introSeen();
+  if(q.id === 'name') try{ sessionStorage.setItem('cmm-intro-seen', '1') }catch(e){}
+  S.typing = say(text, () => renderComposer(q), instant);
   await S.typing;
 }
+/* the intro types itself out once per visit; after that it is simply there */
+function introSeen(){ try{ return sessionStorage.getItem('cmm-intro-seen') === '1' }catch(e){ return false } }
 
 async function answer(q, value, shown){
   if(S.busy){ S.skip = true; await S.typing }   // answered while it was still typing: finish the line first
@@ -1219,6 +1228,7 @@ async function submit(){
   try{
     const res = await saveToSupabase(row);
     S.sent = true; S.enquiryId = res.id; btn.remove();
+    if(!res.simulated) saveSent();   // this browser now shows the sent enquiry instead of starting a new one
     if(!res.simulated) fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`, { method:'POST', keepalive:true,
       headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ id: res.id }) }).catch(() => {});   // emails makeup@chanelmonroe.net + the client
     updateDev();
@@ -1242,9 +1252,52 @@ function bookCard(){
   c.innerHTML = `<div class="bc-h"><span class="bc-ic">📞</span><div><b>Schedule your phone call</b>
       <small>Free · 15 minutes · Chanel calls you${ph ? ' on ' + esc(ph) : ''}</small></div></div>
     <a class="book" href="${esc(calUrl())}" id="bookBtn">Choose a time <span aria-hidden="true">→</span></a>
-    <small class="bc-f">Chanel's booking form opens right here · <a href="${esc(calUrl())}" target="_blank" rel="noopener">open in a new tab</a></small>`;
+    <small class="bc-f">${S.sent ? "Chanel's booking page opens in a new tab" : `Chanel's booking form opens right here · <a href="${esc(calUrl())}" target="_blank" rel="noopener">open in a new tab</a>`}</small>`;
   msgs.appendChild(c); scroll();
-  c.querySelector('#bookBtn').onclick = e => { e.preventDefault(); openCal() };
+  const b = c.querySelector('#bookBtn');
+  if(S.sent){
+    b.target = '_blank'; b.rel = 'noopener';
+    b.onclick = () => setTimeout(() => showSent(sentRecord() || saveSent(liveMode()), true), 150);   // the link opens cal.com; the chat closes to the details view
+  } else b.onclick = e => { e.preventDefault(); openCal() };
+}
+
+/* ---------- after sending: keep a read-only view of the enquiry, and no second enquiry ---------- */
+const SENT_KEY = 'cmm-enquiry-sent';
+function sentRecord(){
+  try{ const r = JSON.parse(localStorage.getItem(SENT_KEY)); if(r && r.until > Date.now()) return r; if(r) localStorage.removeItem(SENT_KEY) }catch(e){}
+  return null;
+}
+function saveSent(keep = true){   // keep=false in ?localdb practice mode: show the view, don't lock the browser
+  const qs = activeQs(), contact = ['name','email','phone'], f = q => ({ l:q.label, v: display(q, S.answers[q.id]) || '-' });
+  const est = estimate(), ev = S.answers.event_date, now = Date.now();
+  const rec = { id:S.enquiryId, at:now, name:val('name'), cal:calUrl(),
+    until: ev ? Math.max(new Date(ev + 'T23:59:59').getTime(), now + 864e5) : now + 60*864e5,   // locked until the event day has passed (60 days if no date)
+    booking: qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(f), contact: qs.filter(q => contact.includes(q.id)).map(f),
+    picks: S.refs.map(x => thumb(x.src)).concat(S.affs.map(x => x.avatar)),
+    est: est ? { t:(est.open ? 'from ' : '') + money(est.total), lines:est.lines.join(' · ') } : null };
+  if(keep) try{ localStorage.setItem(SENT_KEY, JSON.stringify(rec)) }catch(e){}
+  return rec;
+}
+function showSent(r, booked){
+  if(!r) return;
+  S.sent = true; S.started = true; S.busy = false;
+  document.body.classList.add('locked'); comp.innerHTML = ''; $('#status').textContent = 'Enquiry sent';
+  const grid = xs => `<div class="cf-grid">${xs.map(x => `<div class="fld"><small>${esc(x.l)}</small><b>${esc(x.v)}</b></div>`).join('')}</div>`;
+  const when = new Date(r.at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
+  msgs.innerHTML = `<div class="card confirm sentview">
+    <div class="cf-h"><b>Your enquiry is with Chanel ✨</b><small>Sent ${esc(when)}</small></div>
+    <p class="sv-note">${booked
+      ? "Chanel's booking page has opened in a new tab: pick a time there for your free phone call."
+      : `Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel has your details and will be in touch. Here's what you sent.`}</p>
+    <div class="cf-sec"><span class="cf-l">Your booking</span>${grid(r.booking || [])}</div>
+    <div class="cf-sec"><span class="cf-l">Contact</span>${grid(r.contact || [])}</div>
+    ${(r.picks || []).length ? `<div class="cf-sec"><span class="cf-l">Your picks</span><div class="refs">${r.picks.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div></div>` : ''}
+    ${r.est ? `<div class="est"><b>Estimate: ${esc(r.est.t)}</b><span>${esc(r.est.lines)}</span><span>Chanel confirms your final quote on your phone call.</span></div>` : ''}
+    <a class="send-big" href="${esc(r.cal)}" target="_blank" rel="noopener">📞 ${booked ? 'Open the booking page again' : 'Schedule your phone call'} <span aria-hidden="true">→</span></a>
+    <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to send another enquiry.</small></div>
+  </div>`;
+  const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
+  top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
 }
 /* cal.com's Enquiry form, embedded over the chat so the client never leaves the page */
 function openCal(){
@@ -1611,9 +1664,6 @@ addEventListener('message', e => {
 });
 if(FRAMED){
   document.body.classList.add('framed');
-  const mn = document.createElement('button'); mn.className = 'hbtn winbtn'; mn.title = 'Minimise'; mn.setAttribute('aria-label','Minimise the chat'); mn.textContent = '–';
-  mn.onclick = () => parent.postMessage({ cmm:'minimise' }, '*');
-  document.querySelector('header .back')?.before(mn);
   document.querySelectorAll('a.back, a.brand').forEach(a => {
     if(a.classList.contains('back')) a.textContent = '✕ Close';
     a.onclick = e => { e.preventDefault(); parent.postMessage({ cmm:'close-enquiry' }, '*') };
@@ -1656,6 +1706,7 @@ function updateDev(){
 $('#devbtn').hidden = !SHOW_TEST_PANEL;
 $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
 function restart(){
+  try{ localStorage.removeItem(SENT_KEY) }catch(e){} document.body.classList.remove('locked');
   sideSeen = new Set();
   Object.assign(S, { teamAll:false, forUsed:false, forFilled:false, history:[], earlyNoted:false, answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
   msgs.innerHTML = ''; comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
@@ -1699,6 +1750,8 @@ async function loadFirst(sources, key){
   }).catch(() => { S.mediaFailed = true; S.byGroup = {}; renderGallery() });
   S.byGroup = {};
   await Promise.race([loadPrices(), wait(1500)]);
+  const sent = liveMode() ? sentRecord() : null;
+  if(sent){ showSent(sent, false); return }
   askNext();
 })();
 </script>

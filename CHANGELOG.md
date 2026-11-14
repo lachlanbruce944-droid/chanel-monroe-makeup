@@ -2,6 +2,24 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (titles clear of the nav, one caption style, no settings tab, chat stays loaded)
+- Every style's title now sits a little below the top nav instead of touching it (an older `#gallery .ghead{margin-top:0}` rule was overriding the gap).
+- Glam, Bridal and Character & FX photo description boxes now use the same frosted dark overlay as Natural, Editorial and Parties.
+- The settings (gear) tab is removed from the nav; the site uses its default settings (anything a visitor saved earlier still applies).
+- Closing the chat now hides it instead of unloading it, so reopening shows the same conversation; within a visit the intro appears straight away instead of typing out again.
+- Checked at 874 × 402, 667 × 375 and 1440 × 900. Edited in the repo (src/ and site/); copy src/index.html and src/enquire.html into the M: working copy before the next publish.
+
+### 2026-11-14 (after the call button: chat closes to a read-only view, one enquiry per browser)
+- Once an enquiry is sent, "Choose a time" opens Chanel's cal.com booking page in a new tab and the chat closes to a read-only "Your enquiry is with Chanel" view: booking, contact, picks and estimate, a button to open the booking page again, and "reply to your confirmation email" for changes.
+- The sent enquiry is kept in the browser (localStorage `cmm-enquiry-sent`) until the event day has passed (60 days if no date). Until then, every Enquire / Book button shows that view instead of starting a new chat.
+- Practice mode (`?localdb`) never locks the browser; the Test panel's Restart clears the lock. If sending failed, the call button still opens the embedded form and nothing is locked.
+- Checked at 874 × 402, 667 × 375, 390 × 844 and 1440 × 900, inside the site's window and on enquire.html. Edited in the repo (src/ and site/); copy src/enquire.html into the M: working copy before the next publish.
+
+### 2026-11-14 (chat window: no minimise, 80% of the screen)
+- The "–" minimise button and the "Your enquiry" pill are gone; Esc no longer minimises the chat (it still ends photo picking). ✕ Close is the only way out.
+- The chat window is now centred and 80% of the screen's width and height on every device (checked at 1440 × 900, 874 × 402 and 390 × 844).
+- Edited in the repo (src/ and site/) because the M:\CMM-Site\final-draft working copy was not reachable this session: copy src/index.html and src/enquire.html into the working copy before the next publish, or the change will be undone.
+
 ### 2026-11-14 (enquiry emails live)
 - Resend DNS records for chanelmonroe.net added in GoDaddy (DKIM TXT resend._domainkey; MX + TXT on "send"; CNAME rsend); the domain is verified.
 - RESEND_API_KEY saved as the `enquiry-email` function secret. Test enquiry sent: Chanel's email to makeup@chanelmonroe.net and the client confirmation were both delivered; the test row was then deleted.
