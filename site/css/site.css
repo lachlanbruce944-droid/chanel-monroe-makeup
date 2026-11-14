@@ -889,3 +889,9 @@ body.vidbg .fab .pill,body.vidbg .fab .pill.solid{background:rgba(6,5,14,.62)!im
 html body .ghead{margin-top:8px!important;padding-top:9px!important;padding-bottom:10px!important;border-radius:12px!important}
 html body #gallery .capbar{height:auto!important;min-height:0!important;padding:9px 22px 10px!important}
 html body .fab .pill,html body .fab .pill.solid,html body.vidbg .fab .pill,html body.vidbg .fab .pill.solid{border-color:transparent!important}
+/* 2026-11-14: every style's title sits clear of the top nav, and every section's photo description box has the frosted
+   dark overlay Natural uses (Glam, Bridal and Character & FX were plain text) */
+html body #gallery .ghead{margin-top:clamp(8px,2.2vh,14px)!important}
+html body #gallery .capbar{background:rgba(6,5,14,.62);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);border-radius:14px}
+html body #gallery .capbar,html body #gallery .capbar *{color:#fff!important}
+html body #gallery .capbar .sub,html body #gallery .capbar .src{color:rgba(255,255,255,.82)!important}
