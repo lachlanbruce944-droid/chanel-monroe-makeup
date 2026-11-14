@@ -588,6 +588,9 @@ body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
   background:var(--bg);border:1px solid var(--line);transition:border-color .2s,transform .15s,background .2s;cursor:pointer;-webkit-user-select:none;user-select:none}
 .fld:hover{border-color:var(--acc)}
 .fld:active{transform:scale(.97);background:var(--bg2)}
+.fld.has-pic{display:grid;grid-template-columns:38px 1fr;column-gap:9px;align-items:center}
+.fld.has-pic img{grid-row:span 2;width:38px;height:38px;border-radius:50%;object-fit:cover}
+img.b.me.selfie{padding:0;width:min(150px,40vw);height:auto;aspect-ratio:3/4;object-fit:cover;border-radius:18px 18px 5px 18px;background:var(--bg2)}
 .fld small{font-size:10.5px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
 .fld b{font-size:13.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
 .fld:disabled{cursor:default;opacity:.85}.fld:disabled:hover{border-color:var(--line)}
@@ -765,9 +768,11 @@ const QUESTIONS = [
   { id:'name', label:'Name', type:'text', placeholder:'First and last name',
     ask:() => "Hi there ✨ I'm Chanel's booking assistant.\nA few quick taps, then a free phone consult.\n\nWhat's your name?",
     validate:v => v.trim().length >= 2 || 'Please type your name' },
+  { id:'selfie', label:'Selfie', type:'photo', optional:true,
+    ask:a => `Thanks, ${first(a.name)}! Could you send a quick selfie in good lighting?\nFace a window in daylight, no filter, hair off your face if you can. It helps Chanel see your skin tone and features.` },
   { id:'category', label:'Booking', type:'index',
     ask:a => { const g = suggestion('category');
-      return `Lovely to meet you, ${first(a.name)}!\nThe + buttons on the photos are on now, so save any looks you love.\n\n` +
+      return `${a.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(a.name)}!`}\nThe + buttons on the photos are on now, so save any looks you love.\n\n` +
         (g ? `You've been browsing ${CATS.find(c => c.id === g).name.toLowerCase()}, so I've opened that section.\n` : '') +
         'Pick a booking type, then the style you love.' } },
   { id:'look', label:'Service', type:'chips', when:a => a.category !== 'lesson',
@@ -947,6 +952,7 @@ function display(q, v){
   if(q.type === 'index') return CATS.find(c => c.id === v)?.name || v;
   if(q.type === 'date') return fmtDate(v);
   if(q.type === 'time') return fmtTime(v);
+  if(q.type === 'photo') return v === '__skip' ? 'Skipped' : 'Added ✓';
   if(q.type === 'pick' && q.kind === 'refs') return S.refs.length ? `${S.refs.length} look${S.refs.length>1?'s':''} added` : 'None added';
   if(q.type === 'pick' && q.kind === 'affs') return S.affs.length ? S.affs.map(x => '@'+x.h).join(', ') : 'None picked';
   if(Array.isArray(v)) return v.map(x => q.options ? labelOf(q, x) : x).join(', ');
@@ -1021,7 +1027,7 @@ async function askNext(){
   comp.innerHTML = '';
   let text = q.ask(S.answers);
   if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
-    text = `Lovely to meet you, ${first(S.answers.name)}! You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
+    text = `${S.answers.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(S.answers.name)}!`} You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
   S.typing = say(text, () => renderComposer(q));
   await S.typing;
 }
@@ -1031,7 +1037,8 @@ async function answer(q, value, shown){
   S.answers[q.id] = value;
   S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
   comp.innerHTML = '';
-  me(shown ?? display(q, value));
+  if(q.type === 'photo' && value !== '__skip' && S.selfie){ const im = document.createElement('img'); im.className = 'b me selfie'; im.src = S.selfie.preview; im.alt = 'Your selfie'; msgs.appendChild(im); scroll() }
+  else me(shown ?? display(q, value));
   if(q.type === 'pick') pickRow(q.kind);
   if(q.id === 'name' && !S.started){ S.started = true; unlockPlus() }
   if(['category','sub_style'].includes(q.id) && S.tab === 'all') renderGallery();
@@ -1127,7 +1134,42 @@ function _renderComposer(q){
     w.append(chip('Skip','ghost', () => answer(q, '__skip', 'Skip for now')));
     comp.appendChild(w); S.pickComposer = { w, q, n, refs }; refreshPick(); return;
   }
+  if(q.type === 'photo') return photoComposer(q);
   textBox(q, v => answer(q, v));
+}
+/* SELFIE: camera (front) or photo library. Shrunk on the phone to ~1200px JPEG, then uploaded straight away
+   to the private "selfies" bucket so sending stays quick. If the upload fails the photo is just left out. */
+function photoComposer(q){
+  const w = document.createElement('div'); w.className = 'chips';
+  const pickFile = cam => { const i = document.createElement('input'); i.type = 'file'; i.accept = 'image/*';
+    if(cam) i.setAttribute('capture','user'); i.onchange = () => i.files[0] && takeSelfie(q, i.files[0]); i.click() };
+  w.append(chip('📷 Take a selfie','pri', () => pickFile(true)), chip('Choose a photo','', () => pickFile(false)),
+    chip('Skip for now','ghost', () => { S.selfie = null; answer(q, '__skip', 'Skip for now') }));
+  comp.appendChild(w);
+}
+async function shrinkImage(file, max = 1200){
+  const url = URL.createObjectURL(file);
+  try{
+    const img = await new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = url });
+    const k = Math.min(1, max / Math.max(img.naturalWidth, img.naturalHeight));
+    const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth*k); c.height = Math.round(img.naturalHeight*k);
+    c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
+    const blob = await new Promise(ok => c.toBlob(ok, 'image/jpeg', .85));
+    return { blob, preview: c.toDataURL('image/jpeg', .6) };
+  } finally { URL.revokeObjectURL(url) }
+}
+async function takeSelfie(q, file){
+  let pic; try{ pic = await shrinkImage(file) }catch(e){ toast("That photo couldn't be opened. Try another one."); return }
+  S.selfie = { preview: pic.preview, path: null };
+  if(liveMode()){
+    const path = crypto.randomUUID() + '.jpg';
+    S.selfie.upload = fetch(`${CONFIG.supabaseUrl}/storage/v1/object/selfies/${path}`, { method:'POST',
+      headers: Object.assign({ apikey: CONFIG.supabaseAnonKey, 'Content-Type':'image/jpeg', 'x-upsert':'false' },
+        /^sb_/.test(CONFIG.supabaseAnonKey) ? {} : { Authorization:'Bearer ' + CONFIG.supabaseAnonKey }), body: pic.blob })
+      .then(r => { if(r.ok) S.selfie && (S.selfie.path = path); else console.warn('selfie upload', r.status) })
+      .catch(e => console.warn('selfie upload', e));
+  } else S.selfie.path = 'local-test';
+  await answer(q, 'added', '');
 }
 function refreshPick(){
   const P = S.pickComposer; if(!P || !P.w.isConnected) return;
@@ -1179,9 +1221,9 @@ function pickRow(kind){
 async function showSummary(){
   await say(`Here's everything, ${first(S.answers.name)}. Tap any detail to change it.`);
   const card = document.createElement('div'); card.className = 'card confirm'; card.id = 'summary';
-  const field = q => `<button type="button" class="fld" data-edit="${q.id}" title="Tap to change">
-      <small>${esc(q.label)}</small><b>${esc(display(q, S.answers[q.id]) || '-')}</b></button>`;
-  const qs = activeQs(), contact = ['name','email','phone'];
+  const field = q => `<button type="button" class="fld${q.id==='selfie' && S.selfie ? ' has-pic' : ''}" data-edit="${q.id}" title="Tap to change">
+      ${q.id==='selfie' && S.selfie ? `<img src="${S.selfie.preview}" alt="">` : ''}<small>${esc(q.label)}</small><b>${esc(display(q, S.answers[q.id]) || '-')}</b></button>`;
+  const qs = activeQs(), contact = ['name','selfie','email','phone'];
   const est = estimate();
   card.innerHTML = `
     <div class="cf-h"><b>Check your details</b><small>Tap any box to change it</small></div>
@@ -1215,7 +1257,9 @@ async function submit(){
   document.querySelectorAll('#summary [data-edit]').forEach(b => { b.disabled = true; b.removeAttribute('data-edit') });
   document.querySelector('#summary .cf-f')?.remove();
   document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sent');
+  if(S.selfie?.upload) await Promise.race([S.selfie.upload, wait(15000)]);
   const row = buildRow();
+  if(S.selfie?.path && S.answers.selfie !== '__skip') row.selfie_path = S.selfie.path;
   try{
     const res = await saveToSupabase(row);
     S.sent = true; S.enquiryId = res.id; btn.remove();

@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (selfie step after the name)
+- The chat now asks for a selfie in good lighting right after the client's name: "Take a selfie" (front camera), "Choose a photo" or "Skip for now". The photo is shrunk on the phone (about 1200px JPEG), shows in the chat as the client's message, and appears as a tappable "Selfie" box on the confirm card.
+- Selfies upload to a private Supabase bucket `selfies` (the website can upload but never read them); the `enquiry-email` function (v6, source in `supabase/functions/enquiry-email/`) attaches the selfie to Chanel's email and shows it at the top. If the upload fails the enquiry still sends, without the photo.
+- Needs `docs/enquiry-selfies.sql` run once (bucket, upload rule, `selfie_path` column). Until then selfies are left out and everything else works as before.
+
 ### 2026-11-14 (enquiry emails live)
 - Resend DNS records for chanelmonroe.net added in GoDaddy (DKIM TXT resend._domainkey; MX + TXT on "send"; CNAME rsend); the domain is verified.
 - RESEND_API_KEY saved as the `enquiry-email` function secret. Test enquiry sent: Chanel's email to makeup@chanelmonroe.net and the client confirmation were both delivered; the test row was then deleted.
