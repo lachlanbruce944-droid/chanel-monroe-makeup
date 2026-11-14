@@ -574,6 +574,50 @@ body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
 #msgs,#gallery,#side,#comp,.tiles,.chips,.idx-l,.idx-r{scrollbar-width:none;-webkit-overflow-scrolling:touch}
 #msgs::-webkit-scrollbar,#gallery::-webkit-scrollbar,#side::-webkit-scrollbar,#comp::-webkit-scrollbar,.tiles::-webkit-scrollbar{display:none;width:0;height:0}
 #msgs{overscroll-behavior-y:contain;scroll-behavior:smooth}
+
+/* ===== confirm card ===== */
+.card.confirm{padding:16px;border-radius:20px;display:flex;flex-direction:column;gap:12px;max-width:640px;align-self:stretch;
+  background:color-mix(in srgb,var(--card) 92%,transparent);border:1px solid color-mix(in srgb,var(--acc) 35%,transparent);box-shadow:0 14px 36px rgba(30,15,15,.14)}
+.cf-h{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.cf-h b{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:22px}
+.cf-h small{font-size:12px;color:var(--soft)}
+.cf-sec{display:flex;flex-direction:column;gap:6px}
+.cf-l{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--acc);font-weight:600}
+.cf-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px}
+.fld{display:flex;flex-direction:column;align-items:flex-start;gap:2px;text-align:left;padding:8px 11px;border-radius:12px;min-width:0;
+  background:var(--bg);border:1px solid var(--line);transition:border-color .2s,transform .15s,background .2s;cursor:pointer;-webkit-user-select:none;user-select:none}
+.fld:hover{border-color:var(--acc)}
+.fld:active{transform:scale(.97);background:var(--bg2)}
+.fld small{font-size:10.5px;color:var(--soft);text-transform:uppercase;letter-spacing:.06em}
+.fld b{font-size:13.5px;font-weight:600;max-width:100%;overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.fld:disabled{cursor:default;opacity:.85}.fld:disabled:hover{border-color:var(--line)}
+.card.confirm .refs img{width:46px;height:46px}
+.card.confirm .est{margin:0}
+.send-big{width:100%;padding:14px 16px;border-radius:14px;background:var(--acc);color:var(--onacc);font-size:15.5px;font-weight:600;letter-spacing:.01em;
+  box-shadow:0 8px 22px color-mix(in srgb,var(--acc) 40%,transparent);transition:transform .15s}
+.send-big:active{transform:scale(.98)}.send-big:disabled{opacity:.7}
+.cf-f{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center}
+.cf-f small{font-size:11px;color:var(--soft)}
+.linkish{font-size:13px;color:var(--acc);text-decoration:underline;text-underline-offset:3px;padding:2px}
+@media (max-height:480px) and (orientation:landscape){
+  .card.confirm{padding:11px;gap:8px}.cf-h b{font-size:17px}.cf-grid{grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:5px}
+  .fld{padding:6px 9px}.fld b{font-size:12.5px}.send-big{padding:11px;font-size:14px}
+}
+/* framed in the site's window: minimise button, leaner header */
+.winbtn{font-size:18px;line-height:1;padding:3px 12px;margin-left:auto}
+body.framed .brand{display:none}
+body.framed header .back{margin-left:6px}
+
+/* inside the site's window */
+body.framed header .back{display:inline-block!important}
+/* narrow sideways window (e.g. phone landscape): tiles drop their icons so the values stay readable */
+@media (max-height:480px) and (orientation:landscape) and (max-width:620px){
+  body.details-top .tile2 .ic{display:none}
+  body.details-top .tile2{padding:5px 8px;gap:0}
+  body.details-top .tile2 b{font-size:11.5px}.tile2 .lb{font-size:9px;letter-spacing:.04em}
+  body.details-top .tile2[data-k="style"],body.details-top .tile2[data-k="place"]{flex-grow:1.6}
+  body.details-top .tile2[data-k="time"],body.details-top .tile2[data-k="price"]{flex-grow:.8}
+}
 </style>
 </head>
 <body data-g="glam">
@@ -783,8 +827,6 @@ const QUESTIONS = [
     validate:v => /^(\+?61|0)4\d{8}$/.test(v.replace(/[\s()-]/g,'')) || /^\+?\d{8,12}$/.test(v.replace(/[\s()-]/g,'')) || 'Please enter a valid phone number' },
   { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
     ask:() => 'Anything else Chanel should know?' },
-  { id:'consent', label:'Terms', type:'chips', options:['I agree'],
-    ask:() => `Last thing: a ${PRICES.meta.depositPct}% deposit secures your date and the minimum booking is ${money(PRICES.meta.minimumBooking)}. Happy to go ahead?` }
 ];
 
 /* ---------- ATTENTION: which styles the client spends the most time looking at ----------
@@ -1135,21 +1177,26 @@ function pickRow(kind){
 
 /* ---------- summary, save, book ---------- */
 async function showSummary(){
-  await say(`Thanks ${first(S.answers.name)}! Here's your enquiry. Check it over and tap Edit to change anything.`);
-  const card = document.createElement('div'); card.className = 'card'; card.id = 'summary';
-  const rows = activeQs().filter(q => q.id !== 'consent').map(q =>
-    `<dt>${esc(q.label)}</dt><dd>${esc(display(q, S.answers[q.id]))}</dd><dd><button class="ed" data-edit="${q.id}">Edit</button></dd>`).join('');
+  await say(`Here's everything, ${first(S.answers.name)}. Tap any detail to change it.`);
+  const card = document.createElement('div'); card.className = 'card confirm'; card.id = 'summary';
+  const field = q => `<button type="button" class="fld" data-edit="${q.id}" title="Tap to change">
+      <small>${esc(q.label)}</small><b>${esc(display(q, S.answers[q.id]) || '-')}</b></button>`;
+  const qs = activeQs(), contact = ['name','email','phone'];
   const est = estimate();
-  card.innerHTML = `<h3>Your enquiry</h3><dl>${rows}</dl>` +
-    (est ? `<div class="est"><b>Estimate: ${est.open ? 'from ' : ''}${money(est.total)}</b><span>${esc(est.lines.join(' · '))}</span><span>${PRICES.meta.depositPct}% deposit (about ${money(est.deposit)}) secures your date. Chanel confirms the final quote on your phone consult.</span></div>` : '') +
-    (S.refs.length ? `<div class="refs">${S.refs.map(x => `<img src="${esc(thumb(x.src))}" alt="" title="${esc(x.d||'')}">`).join('')}</div>` : '') +
-    (S.affs.length ? `<div class="refs">${S.affs.map(x => `<img src="${esc(x.avatar)}" alt="" title="@${esc(x.h)}" style="border-radius:50%">`).join('')}</div>` : '') +
-    `<div class="acts"><button class="chip pri" id="sendBtn">Looks good, send it</button><button class="chip ghost" id="addMore">+ Add looks</button></div>`;
+  card.innerHTML = `
+    <div class="cf-h"><b>Check your details</b><small>Tap any box to change it</small></div>
+    <div class="cf-sec"><span class="cf-l">Your booking</span><div class="cf-grid">${qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(field).join('')}</div></div>
+    <div class="cf-sec"><span class="cf-l">Contact</span><div class="cf-grid">${qs.filter(q => contact.includes(q.id)).map(field).join('')}</div></div>
+    ${S.refs.length || S.affs.length ? `<div class="cf-sec"><span class="cf-l">Your picks</span><div class="refs">` +
+      S.refs.map(x => `<img src="${esc(thumb(x.src))}" alt="" title="${esc(x.d||'')}">`).join('') +
+      S.affs.map(x => `<img src="${esc(x.avatar)}" alt="" title="${esc(x.name || x.h)}" style="border-radius:50%">`).join('') + `</div></div>` : ''}
+    ${est ? `<div class="est"><b>Estimate: ${est.open ? 'from ' : ''}${money(est.total)}</b><span>${esc(est.lines.join(' · '))}</span><span>Chanel confirms your final quote on your phone call.</span></div>` : ''}
+    <button type="button" class="send-big" id="sendBtn">Send my enquiry <span aria-hidden="true">→</span></button>
+    <div class="cf-f"><button type="button" class="linkish" id="addMore">+ Add looks or artists</button><small>By sending, you're happy for Chanel to contact you about this booking.</small></div>`;
   msgs.appendChild(card); scroll();
   card.querySelectorAll('[data-edit]').forEach(b => b.onclick = () => editAnswer(b.dataset.edit));
   $('#sendBtn').onclick = submit;
-  $('#addMore').onclick = () => minimise(true);
-  $('#addMore').textContent = '+ Add looks or artists';
+  $('#addMore').onclick = () => FRAMED ? goSite(true) : minimise(true);
   updateDev();
 }
 async function editAnswer(id){
@@ -1165,11 +1212,15 @@ async function editAnswer(id){
 async function submit(){
   if(S.sent) return;
   const btn = $('#sendBtn'); btn.disabled = true; btn.textContent = 'Sending…';
-  document.querySelectorAll('#summary [data-edit], #addMore').forEach(b => b.remove());
+  document.querySelectorAll('#summary [data-edit]').forEach(b => { b.disabled = true; b.removeAttribute('data-edit') });
+  document.querySelector('#summary .cf-f')?.remove();
+  document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sent');
   const row = buildRow();
   try{
     const res = await saveToSupabase(row);
     S.sent = true; S.enquiryId = res.id; btn.remove();
+    if(!res.simulated) fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`, { method:'POST', keepalive:true,
+      headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ id: res.id }) }).catch(() => {});   // emails makeup@chanelmonroe.net + the client
     updateDev();
     await say((res.simulated
       ? "All sent ✨ (test mode: saved to the local test database)\n"
@@ -1232,7 +1283,7 @@ function buildRow(){
     affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
     viewing: Attention.data(),
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
-    consent: a.consent === 'I agree',
+    consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted
     calendar_event: calendarEvent(),
     source: 'web-chat'
   };
@@ -1560,6 +1611,9 @@ addEventListener('message', e => {
 });
 if(FRAMED){
   document.body.classList.add('framed');
+  const mn = document.createElement('button'); mn.className = 'hbtn winbtn'; mn.title = 'Minimise'; mn.setAttribute('aria-label','Minimise the chat'); mn.textContent = '–';
+  mn.onclick = () => parent.postMessage({ cmm:'minimise' }, '*');
+  document.querySelector('header .back')?.before(mn);
   document.querySelectorAll('a.back, a.brand').forEach(a => {
     if(a.classList.contains('back')) a.textContent = '✕ Close';
     a.onclick = e => { e.preventDefault(); parent.postMessage({ cmm:'close-enquiry' }, '*') };

@@ -2,6 +2,12 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-14 (chat in its own window, clearer confirm card, emails on send)
+- On the site the chat is now its own frosted window (right side on wide screens and sideways phones, a tall sheet on upright phones) instead of covering the whole screen. "–" minimises it to a "Your enquiry" pill; Esc minimises; ✕ Close ends it.
+- The deposit/terms question is gone; pressing "Send my enquiry" is the client's OK to be contacted.
+- Confirm card redesigned: "Check your details" with booking and contact details as tappable boxes (tap any box to change that answer, no Edit buttons), picks, estimate, and a large "Send my enquiry" button.
+- After saving, the chat asks the `enquiry-email` function to email the details to makeup@chanelmonroe.net (and a confirmation to the client), so the database trigger in `docs/enquiry-emails.sql` is now optional. Emails start flowing once the Resend key is saved and chanelmonroe.net is verified.
+
 ### 2026-11-14 (enquiry emails: set-up started)
 - Supabase Edge Function `enquiry-email` deployed: for each new enquiry it emails Chanel (makeup@chanelmonroe.net, reply goes to the client) the full enquiry with reference photos and artists, and emails the client a branded confirmation with a "Choose a time for your phone call" button. It sends once per enquiry and only for new rows.
 - Resend: domain chanelmonroe.net added (sending from enquiries@chanelmonroe.net). Still to do: DNS records, a Resend API key saved as the RESEND_API_KEY function secret, and the database trigger in `docs/enquiry-emails.sql`.
