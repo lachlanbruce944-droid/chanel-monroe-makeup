@@ -138,7 +138,7 @@ function tileHTML(it,k){
   var w=Math.max(.56,Math.min(1,(it.w||4)/(it.h||5))), pins=O.pinned[key(GROUPS[cur],sub)]||[], pinned=pins.indexOf(it.src)>=0;
   var media=it.type==='video'?'<video muted loop playsinline preload="none" onerror="var t=this.closest(\'.tile\');if(t)t.remove()" poster="'+(it.poster||'')+'" data-src="'+it.src+'"></video>'
     :'<img loading="'+(k<3?'eager':'lazy')+'" decoding="async"'+(k<2?' fetchpriority="high"':'')+' src="'+it.src+'"'+srcset(it.src)+' alt="'+esc(desc(it))+'" onerror="this.closest(\'.tile\').remove()">';
-  return '<figure class="tile'+(pinned?' pinned':'')+(hid(it)?' isHidden':'')+'" data-k="'+k+'" draggable="'+EDIT+'" style="aspect-ratio:'+w+'">'+media+(it.own?'<span class="own">Chanel’s work</span>':'')+
+  return '<figure class="tile'+(pinned?' pinned':'')+(hid(it)?' isHidden':'')+'" data-k="'+k+'" draggable="'+EDIT+'" style="--r:'+w+';aspect-ratio:'+w+'">'+media+(it.own?'<span class="own">Chanel’s work</span>':'')+
     '<figcaption><b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)+'</figcaption>'+
     (EDIT?'<div class="ectl"><button data-a="pin" class="'+(pinned?'on':'')+'" title="Pin: always show here, in this order">📌</button><button data-a="hide" class="'+(hid(it)?'on':'')+'" title="Hide from the site">✕</button>'+moveOptions(it)+'</div><div class="ecap" contenteditable="true" data-a="cap" title="Edit the description">'+esc(desc(it))+'</div>':'')+'</figure>';
 }

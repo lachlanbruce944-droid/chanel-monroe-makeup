@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-15 (iPhone Safari: carousel photos line up)
+- On iPhone Safari the main carousel photos came out at different heights and out of line. Each photo's width came from `aspect-ratio` with `height:100%` inside nested flex boxes, which WebKit sizes inconsistently. The carousel (`#track`) is now a size container and every photo gets an exact size from it (`height:100cqh`, width = height × the photo's ratio `--r`); browsers without container units (before iOS 16) keep the old rule.
+- Checked in Chromium at 874 × 402, 852 × 393, 932 × 430, 667 × 375, 390 × 844 and 1440 × 900: same photo heights and widths as before, carousel still scrolls. WebKit itself could not be run here; confirm on an iPhone.
+- Edited from the cloud copy of the repo: run `git pull` in `M:\CMM-Site\chanel-monroe-makeup` before the next local edit.
+
 ### 2026-11-15 (affiliates use the Medium tiles)
 - The Affiliates page always shows the Medium tile option (pictures only, 55% of the screen; name and details stay in the popup), for every visitor, including anyone who picked another size in the old settings tab. Set by `fixed:'b'` on the `afftile` setting in `src/index.html`.
 
