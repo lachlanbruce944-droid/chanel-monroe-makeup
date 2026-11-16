@@ -9,7 +9,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <!--
   apply.html: chat-style application form, opened over the site like the enquiry chat (added 2026-11-16).
-    apply.html?type=team        "Join the team"        (About)
+    apply.html?type=team        "Become an associate"        (About)
     apply.html?type=affiliate   "Become an affiliate"  (Affiliates)
   Answers go to the Supabase edge function `application`, which saves them in the CRM (crm_people, status "applied",
   shown in the CRM's Employees section) and emails Chanel plus a confirmation to the applicant.
@@ -65,7 +65,7 @@ header small{display:block;font:500 10.5px/1.2 var(--ff);letter-spacing:.14em;te
 </head>
 <body>
 <div class="app">
-  <header><div class="orb" aria-hidden="true"></div><h1 id="title">Join the team<small id="kicker">Chanel Monroe Makeup</small></h1>
+  <header><div class="orb" aria-hidden="true"></div><h1 id="title">Become an associate<small id="kicker">Chanel Monroe Makeup</small></h1>
     <button class="x" id="close" aria-label="Close">×</button></header>
   <div id="msgs" aria-live="polite"></div>
   <div id="comp"></div>
@@ -114,8 +114,8 @@ var Q = {
     { id:'notes', label:'Anything else', type:'text', area:true, ask:function(){ return 'Anything else you’d like Chanel to know?' }, ph:'Optional', optional:true }
   ]
 }[TYPE];
-$('title').firstChild.textContent = TYPE === 'affiliate' ? 'Become an affiliate' : 'Join the team';
-document.title = (TYPE === 'affiliate' ? 'Become an affiliate' : 'Join the team') + ' · Chanel Monroe Makeup';
+$('title').firstChild.textContent = TYPE === 'affiliate' ? 'Become an affiliate' : 'Become an associate';
+document.title = (TYPE === 'affiliate' ? 'Become an affiliate' : 'Become an associate') + ' · Chanel Monroe Makeup';
 
 var S = { a:{}, editing:null, sent:false, id:(crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) };
 var wait = function(ms){ return new Promise(function(r){ setTimeout(r, ms) }) };
