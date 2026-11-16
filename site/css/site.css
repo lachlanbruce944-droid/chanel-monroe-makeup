@@ -1018,7 +1018,7 @@ body.m #affBox .g9{height:100%;min-width:0;min-height:0;box-sizing:border-box;ga
 body.m .car .card.tm{width:132px}body.m .car .card.tm .av{width:118px;height:118px}
 body.m .offer{width:min(calc(76 * var(--uvw)),300px)}body.m .rev{width:min(calc(76 * var(--uvw)),300px)}body.m .lesson{width:min(calc(42 * var(--uvw)),170px)}
 body.m .msec:last-of-type{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
-/* bottom right: Enquire always, plus Pricing / Join the team / Become an affiliate for the section in view */
+/* bottom right: Enquire always, plus Pricing / Become an associate / Become an affiliate for the section in view */
 body.m .fab{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom))!important;height:auto!important;z-index:65;gap:8px;opacity:1!important;pointer-events:auto!important}
 body.m .fab .pill{padding:11px 18px!important;font-size:13px!important;letter-spacing:.06em;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 body.m .fab .pill:not(.solid){background:color-mix(in srgb,var(--card) 88%,transparent)!important;color:var(--fg)!important;border-color:var(--line)!important}
