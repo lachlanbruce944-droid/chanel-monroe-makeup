@@ -2,6 +2,11 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-17 (mobile affiliate popup fit)
+- Bound the mobile affiliate popup to the visible screen, with a compact profile above equal-height photo rows; sideways phones use two columns. Close stays above the content and safe-area insets are respected.
+- Profile content scales down to 85%; unusually long biographies remain scrollable rather than clipped. Refit after fonts, avatar loading, rotation and visual viewport changes.
+- Source: src/index.html; rebuilt site with the publishing script.
+
 ### 2026-11-16 (mobile site; Lessons, Reviews, team and application forms; Brands and Products removed)
 - **Phones get a vertical one-page site** (same address; `body.m`, switched on by `(max-width:600px), (pointer:coarse) and (max-height:500px)`, portrait and sideways; `?m=1` / `?m=0` force it). Sections run top to bottom in nav order: About, Natural, Glam, Bridal, Editorial, Character & FX, Parties & Seasons, Lessons, Reviews, Affiliates. Each style keeps its own colours and fonts, with sub-style chips and a swipe carousel (captions and credits on every photo; tap for the big view).
 - Phone top bar: brand on the left, ☰ on the right opens a menu from the right with every section and each style's sub-styles. The intro and "turn your phone sideways" screens no longer show on phones (tablets unchanged). Phones are never zoomed (`js/config.js`).
