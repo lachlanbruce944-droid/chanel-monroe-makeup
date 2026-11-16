@@ -2,6 +2,9 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-17 (associate terminology)
+- Website About heading and application calls to action now say Associates / Become an associate. Form URL and stored team kind stay compatible with existing CRM records.
+
 ### 2026-11-17 (mobile affiliate popup fit)
 - Bound the mobile affiliate popup to the visible screen, with a compact profile above equal-height photo rows; sideways phones use two columns. Close stays above the content and safe-area insets are respected.
 - Profile content scales down to 85%; unusually long biographies remain scrollable rather than clipped. Refit after fonts, avatar loading, rotation and visual viewport changes.
