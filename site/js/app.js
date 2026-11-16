@@ -432,7 +432,20 @@ document.addEventListener('click',function(e){var c=e.target.closest('[data-aff]
     '<div class="g9" style="grid-template-rows:repeat('+Math.max(1,Math.ceil(Math.min(9,a.imgs.length)/3))+',minmax(0,1fr))">'+(a.imgs.length?a.imgs.slice(0,9).map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
   $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
 /* the profile panel never scrolls: its content scales down until it fits */
-function fitAff(){fitPanel($('affBox').querySelector('.side'))}
+function fitAff(){
+  if(!document.body.classList.contains('m')){fitPanel($('affBox').querySelector('.side'));return}
+  requestAnimationFrame(function(){
+    var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;
+    w.style.zoom=1;
+    var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
+    // Measure unscaled layout height; flex shrinking and page zoom cannot disguise overflow.
+    var natural=Math.max(w.scrollHeight,w.offsetHeight);
+    w.style.zoom=Math.max(.85,Math.min(1,room/Math.max(1,natural)));
+    sd.scrollTop=0;
+  });
+}
+if(document.fonts)document.fonts.ready.then(function(){if($('affMod').classList.contains('open'))fitAff()});
+if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff()});
 function fitPanel(sd){var w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
   var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),z=1;
   while(z>0.55&&w.getBoundingClientRect().height>room+1){z-=0.03;w.style.zoom=z}}
