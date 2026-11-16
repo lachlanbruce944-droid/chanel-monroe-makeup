@@ -2,6 +2,10 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Associate terminology (2026-11-17)
+
+About and application calls to action use Associates / Become an associate. The application continues to use type=team for existing database compatibility.
+
 ## Latest fix (2026-11-17)
 
 Mobile affiliate popups have bounded profile/photo areas, compact text, uniform photo rows and an accessible close button. Very long profiles can scroll. Source and built output must be published together.
