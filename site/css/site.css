@@ -997,6 +997,24 @@ body.m #m-affiliates{--av:min(calc(44 * var(--uvw)),190px)}
 body.m #m-affiliates .car .card[data-aff]{width:var(--av)!important;padding:0!important}
 body.m #m-affiliates .car .card[data-aff] img.av{width:var(--av)!important;height:var(--av)!important;margin:0!important;border-width:3px!important}
 body.m #m-affiliates .car .card[data-aff] :is(b,small){display:none!important}
+/* Affiliate phone popup: bounded profile + equal-height photo rows, including sideways phones. */
+body.m #affMod.mod{padding:calc(46px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));height:calc(100 * var(--uvh));box-sizing:border-box;align-items:stretch}
+body.m #affMod .x{position:absolute;top:calc(6px + env(safe-area-inset-top));right:14px;width:36px;height:36px;color:#fff}
+body.m #affBox.aff{width:100%;height:100%;max-height:100%;min-height:0;border-radius:14px;overflow:hidden;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,55fr) minmax(0,45fr)}
+body.m #affBox .side{min-height:0;min-width:0;padding:12px 16px;border-right:0;border-bottom:1px solid var(--line);justify-content:flex-start;overflow:auto!important;overscroll-behavior:contain}
+body.m #affBox .side .sin{flex:0 0 auto;width:100%;min-width:0;overflow-wrap:anywhere}
+body.m #affBox .side img.av{width:56px!important;height:56px!important;margin:0 auto 6px}
+body.m #affBox h2{font-size:21px;line-height:1.1;margin:0 0 4px}
+body.m #affBox .role{font-size:11px;margin:0 0 6px}
+body.m #affBox .stats{font-size:11px;gap:16px;margin:0 0 6px}
+body.m #affBox .bio{font-size:12px;line-height:1.35;margin:0 0 8px}
+body.m #affBox .side .pill{font-size:11px;padding:8px 10px;margin:5px 0}
+body.m #affBox .g9{height:100%;min-width:0;min-height:0;box-sizing:border-box;gap:3px;padding:3px}
+@media (orientation:landscape){
+ body.m #affBox.aff{grid-template-columns:minmax(0,40fr) minmax(0,60fr);grid-template-rows:minmax(0,1fr)}
+ body.m #affBox .side{border-bottom:0;border-right:1px solid var(--line);padding:8px 12px}
+ body.m #affBox .side img.av{width:42px!important;height:42px!important}
+}
 body.m .car .card.tm{width:132px}body.m .car .card.tm .av{width:118px;height:118px}
 body.m .offer{width:min(calc(76 * var(--uvw)),300px)}body.m .rev{width:min(calc(76 * var(--uvw)),300px)}body.m .lesson{width:min(calc(42 * var(--uvw)),170px)}
 body.m .msec:last-of-type{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
