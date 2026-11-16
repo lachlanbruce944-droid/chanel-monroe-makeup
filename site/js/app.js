@@ -237,7 +237,7 @@ setInterval(function(){if(!po.classList.contains('open')||document.hidden)return
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
 $('openPricing').onclick=function(){poOpen(page?0:cur)};
 /* 2026-11-16: Pricing shows only in the style sections; About and Affiliates put their own form button in its place; Enquire always stays */
-var CTX={about:['Join the team','apply.html?type=team'],affiliates:['Become an affiliate','apply.html?type=affiliate']};
+var CTX={about:['Become an associate','apply.html?type=team'],affiliates:['Become an affiliate','apply.html?type=affiliate']};
 function setFab(pg){var c=CTX[pg],b=$('ctxBtn');$('openPricing').hidden=!!pg;b.hidden=!c;if(c){b.textContent=c[0];b.setAttribute('href',c[1])}}
 $('poX').onclick=function(){po.classList.remove('open')};
 po.addEventListener('click',function(e){if(e.target===po||(e.target===$('poView')&&po.dataset.layout==='c'))po.classList.remove('open')});
@@ -411,9 +411,9 @@ var TEAM=null;
   if(!window.fetch)return;fetch(u+'/rest/v1/rpc/site_team',{method:'POST',headers:{apikey:k,'Content-Type':'application/json'},body:'{}'})
   .then(function(r){return r.ok?r.json():[]}).then(function(d){if(Array.isArray(d)&&d.length){TEAM=d;if(window.onTeam)window.onTeam()}}).catch(function(){})})();
 function teamHTML(){var T=TEAM||window.TEAM_PLACEHOLDER||[],ph=!TEAM;
-  return '<h3>The team</h3>'+carousel(T.map(function(t){return '<div class="card tm'+(ph?' soon':'')+'">'+(t.photo_url?'<img class="av" src="'+esc(t.photo_url)+'" alt="">':'<span class="av ph" aria-hidden="true"></span>')+
+  return '<h3>Associates</h3>'+carousel(T.map(function(t){return '<div class="card tm'+(ph?' soon':'')+'">'+(t.photo_url?'<img class="av" src="'+esc(t.photo_url)+'" alt="">':'<span class="av ph" aria-hidden="true"></span>')+
     '<b>'+esc(ph?t.role:(t.name||''))+'</b><small>'+esc(ph?'Joining soon':(t.role||''))+'</small></div>'}).join('')+
-    '<a class="card tm join" href="apply.html?type=team" style="text-decoration:none"><span class="av ph plus" aria-hidden="true">+</span><b>Join the team</b><small>Artists and assistants</small></a>')}
+    '<a class="card tm join" href="apply.html?type=team" style="text-decoration:none"><span class="av ph plus" aria-hidden="true">+</span><b>Become an associate</b><small>Artists and assistants</small></a>')}
 window.onTeam=function(){if(page==='about'&&!document.body.classList.contains('m'))openPage('about');if(window.mRenderTeam)window.mRenderTeam()};
 function openLesson(i){var x=(window.LESSONS||[])[i];if(!x)return;
   $('lsBox').innerHTML='<video controls playsinline autoplay src="'+x.src+'" poster="'+x.poster+'"></video><div class="ls-info"><small>'+esc(x.topic)+'</small><h2>'+esc(x.title||x.topic)+'</h2><p>By '+esc(x.by)+'</p><a class="pill" href="'+x.post+'" target="_blank" rel="noopener">Watch on Instagram ↗</a></div>';
@@ -628,7 +628,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(fal
 /* ==== 2026-11-16: MOBILE SITE. Phones get one continuous vertical page: the sections in nav order, top to bottom
    (About, the six styles, Lessons, Reviews, Affiliates). Each style is a swipe carousel with its sub-style chips.
    Top bar: brand on the left, ☰ opens a menu from the right with every section and sub-style.
-   Bottom right: Enquire always; Pricing in the style sections; Join the team (About) and Become an affiliate (Affiliates). ==== */
+   Bottom right: Enquire always; Pricing in the style sections; Become an associate (About) and Become an affiliate (Affiliates). ==== */
 var mLists={},mCur=-1;
 function mInit(){
   page='m';   /* stops the desktop gallery's auto-scroll */
@@ -838,7 +838,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   }
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
-    var form=href.split('?')[0];   /* enquire.html or apply.html (Join the team / Become an affiliate) */
+    var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
     if(fr&&fr.dataset.form===form&&(form!=='apply.html'||fr.dataset.href===href)){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
