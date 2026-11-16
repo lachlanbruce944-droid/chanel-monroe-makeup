@@ -12,7 +12,7 @@ var GROUPS = [
   {id:'parties',  name:'Parties & Seasons', tag:'Every celebration needs a little sparkle.',
    subs:['Glitter bar and gems','Kids face paint','Express designs','Easter','Christmas and New Year','Holiday specials'], looks:['easter','christmas','birthday','festival','hens','mini-paint']}
 ];
-var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'affiliates',name:'Affiliates'},{id:'brands',name:'Brands'},{id:'products',name:'Products'}];
+var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'reviews',name:'Reviews'},{id:'affiliates',name:'Affiliates'}];   /* 2026-11-16: Brands and Products removed from the site */
 var DESC = {
  'No-makeup makeup':['Skin that looks like skin, only better','A barely-there base with a soft flush'],
  'Clean polished':['Clean, even skin and groomed brows','Polished, simple and camera-ready'],
@@ -55,6 +55,11 @@ var DESC = {
 };;
 (function(){
 var $=function(id){return document.getElementById(id)};
+/* 2026-11-16: phones (portrait or sideways) get the vertical one-page site; desktops and tablets keep the horizontal one. ?m=1 / ?m=0 force it. */
+var MQ_M=matchMedia('(max-width:600px), (pointer:coarse) and (max-height:500px)'),
+    MOBILE=/[?&]m=1\b/.test(location.search)||(!/[?&]m=0\b/.test(location.search)&&MQ_M.matches);
+if(MOBILE)document.body.classList.add('m');
+if(!/[?&]m=[01]\b/.test(location.search))(MQ_M.addEventListener?MQ_M.addEventListener('change',function(e){if(e.matches!==MOBILE)location.reload()}):MQ_M.addListener(function(e){if(e.matches!==MOBILE)location.reload()}));
 var D=Object.assign({nav:'a',theme:'b',cap:'c',price:'b',mix:'b',perGroup:25,videosPerGroup:4},window.DESIGN||{});
 var SAVED=window.SITE_OVERRIDES||{}; ['hidden','log'].forEach(function(k){SAVED[k]=SAVED[k]||[]}); ['pinned','captions','moved'].forEach(function(k){SAVED[k]=SAVED[k]||{}});
 var O=JSON.parse(JSON.stringify(SAVED)), BASE=(window.MEDIA||[]).map(function(x){return Object.assign({},x)});
@@ -113,9 +118,7 @@ function renderNav(){
   h+=GROUPS.map(function(g,i){
     var subs=g.subs.map(function(s){return '<button data-g="'+i+'" data-s="'+esc(s)+'">'+esc(s)+'<small>'+items().filter(function(x){return !x.own&&x.s===s&&!hid(x)}).length+'</small></button>'}).join('');
     return '<div class="item"><button class="gbtn" data-g="'+i+'">'+g.name+'</button><div class="dd"><button data-g="'+i+'" data-s=""><b>All '+g.name+'</b></button>'+subs+'</div></div>'}).join('');
-  /* Lessons tab hidden for now (redesign later): set SHOW_LESSONS = true to bring it back */
-  var SHOW_LESSONS=false;
-  h+='<span class="sep"></span>'+(SHOW_LESSONS?'<div class="item"><button class="gbtn" data-p="lessons">Lessons</button></div><span class="sep"></span>':'')+PAGES.slice(1).filter(function(p){return p.id!=='lessons'}).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
+  h+='<span class="sep"></span>'+PAGES.slice(1).map(function(p){return '<div class="item"><button class="gbtn" data-p="'+p.id+'">'+p.name+'</button></div>'}).join('');
   $('nav').innerHTML=h;markNav();
 }
 function markNav(){[].forEach.call($('nav').querySelectorAll('.gbtn'),function(x){x.setAttribute('aria-current',page?x.dataset.p===page:(x.dataset.g!=null&&+x.dataset.g===cur))})}
@@ -143,7 +146,7 @@ function tileHTML(it,k){
     (EDIT?'<div class="ectl"><button data-a="pin" class="'+(pinned?'on':'')+'" title="Pin: always show here, in this order">📌</button><button data-a="hide" class="'+(hid(it)?'on':'')+'" title="Hide from the site">✕</button>'+moveOptions(it)+'</div><div class="ecap" contenteditable="true" data-a="cap" title="Edit the description">'+esc(desc(it))+'</div>':'')+'</figure>';
 }
 function go(i,s){
-  page=null;$('gallery').hidden=false;$('info').hidden=true;
+  page=null;$('gallery').hidden=false;$('info').hidden=true;setFab(null);
   cur=i;sub=s||null;var g=GROUPS[i];document.body.dataset.g=g.id;markNav();renderSubs();
   $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(DESC[sub]||[''])[0]+'.':g.tag;
   shown=(sub||EDIT)?pick(g,sub):bySub(g,SEL[g.id]);if(!EDIT)shown=spreadVideos(shown);
@@ -233,6 +236,9 @@ setInterval(function(){if(!po.classList.contains('open')||document.hidden)return
   f.forEach(function(x,j){x.classList.toggle('on',j===n)});d.forEach(function(x,j){x.classList.toggle('on',j===n)})},3800);
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
 $('openPricing').onclick=function(){poOpen(page?0:cur)};
+/* 2026-11-16: Pricing shows only in the style sections; About and Affiliates put their own form button in its place; Enquire always stays */
+var CTX={about:['Join the team','apply.html?type=team'],affiliates:['Become an affiliate','apply.html?type=affiliate']};
+function setFab(pg){var c=CTX[pg],b=$('ctxBtn');$('openPricing').hidden=!!pg;b.hidden=!c;if(c){b.textContent=c[0];b.setAttribute('href',c[1])}}
 $('poX').onclick=function(){po.classList.remove('open')};
 po.addEventListener('click',function(e){if(e.target===po||(e.target===$('poView')&&po.dataset.layout==='c'))po.classList.remove('open')});
 $('poPrev').onclick=function(){poGo(poIdx-1)};$('poNext').onclick=function(){poGo(poIdx+1)};
@@ -243,7 +249,14 @@ var poRaf=0;$('poView').addEventListener('scroll',function(){if(po.dataset.layou
 function sec(id){return SECTIONS.filter(function(s){return s.id===id})[0]||{groups:[]}}
 var aboutTimer=0;
 function openPage(id){
-  page=id;document.body.dataset.g=id;markNav();$('gallery').hidden=true;var el=$('info');el.hidden=false;el.scrollTop=0;clearInterval(aboutTimer);
+  page=id;document.body.dataset.g=id;markNav();setFab(id);$('gallery').hidden=true;var el=$('info');el.hidden=false;el.scrollTop=0;clearInterval(aboutTimer);
+  var P=pageHTML(id);
+  el.innerHTML=P.h;el.scrollTop=0;var pbg=function(){document.documentElement.style.setProperty('--pagebg',getComputedStyle(document.body).backgroundColor)};pbg();setTimeout(pbg,700);requestAnimationFrame(function(){el.scrollTop=0});
+  if(id==='about')buildAboutGrid(P.own);
+  startCarousels(el);
+}
+/* the content of each page (About, Lessons, Reviews, Affiliates): used by the desktop pages and the mobile one-page site */
+function pageHTML(id){
   var ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/', h='';
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
@@ -252,7 +265,7 @@ function openPage(id){
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      '<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+
+      '<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>'+
       (lines.length?'':'<p class="note-small">Bio lines still to write: edit ABOUT_LINES in data/site-content.js.</p>');
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
@@ -268,6 +281,7 @@ function openPage(id){
       '<p class="note-small">'+esc((sec('brands').lines||[]).slice(-1)[0]||'')+' ModelCo closed in 2025: its link goes to the brand’s old site, which now points to MCoBeauty.</p>';
   }
   if(id==='lessons')h=lessonsHTML();
+  if(id==='reviews')h=reviewsHTML();
   if(id==='products'){
     /* catalogue: "In Chanel's kit" first, then every category (up to 25 each); tap a product for its details */
     var C=catalog(),kit=(sec('products').groups.filter(function(g){return /kit/i.test(g.name)})[0]||{tiles:[]}).tiles;
@@ -277,9 +291,7 @@ function openPage(id){
       (kit.length?'<h3>Also in the kit</h3><ul class="kitlist">'+kit.map(function(t){return '<li>'+esc(t.text)+'</li>'}).join('')+'</ul>':'')+
       '<p class="note-small">'+esc((sec('products').lines||[]).slice(-1)[0]||'')+'</p>';
   }
-  el.innerHTML=h;el.scrollTop=0;var pbg=function(){document.documentElement.style.setProperty('--pagebg',getComputedStyle(document.body).backgroundColor)};pbg();setTimeout(pbg,700);requestAnimationFrame(function(){el.scrollTop=0});
-  if(id==='about')buildAboutGrid(own);
-  startCarousels(el);
+  return {h:h,own:own};
 }
 
 /* ---- About: short biography, taken from Chanel's Instagram (posts, tags and highlights). Confirm with Chanel before going live. ---- */
@@ -338,7 +350,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Enter'&&e.target.mat
 function carousel(inner){return '<div class="car"><div class="rail">'+inner+'</div></div>'}
 var cars=[];
 function startCarousels(root){
-  cars=[];[].forEach.call(root.querySelectorAll('.car'),function(c,k){
+  cars=cars.filter(function(s){return s.el.isConnected&&!root.contains(s.el)});[].forEach.call(root.querySelectorAll('.car'),function(c,k){
     var rail=c.querySelector('.rail');if(!rail.children.length){c.remove();return}
     /* no double-ups: a row that fits on screen stays still (centred); a longer row loops with exactly one hidden copy,
        which only comes into view after every real item has passed */
@@ -378,11 +390,31 @@ window.addEventListener('resize',function(){cars.forEach(function(s){s.half=(s.r
 
 /* ---- Lessons: short tutorial clips with sound (data/lessons.js), in chapter order; tap one to watch ---- */
 var LESSON_ORDER=['Skin prep & maintenance','What to eat for your skin','Daily routine','Skincare','Sun protection','Check-ups: derms, skin checks & allergies','Wardrobe ideas','Colours that suit you','Makeup looks & styles','Hair styling','Nails','Cosmetic tattoo','Tattoos & unique features','Make it last all day','Removal & cleaning'];
-function lessonsHTML(){var L=window.LESSONS||[];var cats=LESSON_ORDER.filter(function(c){return L.some(function(x){return x.topic===c})});
-  L.forEach(function(x){if(cats.indexOf(x.topic)<0)cats.push(x.topic)});
-  return '<h1>Lessons</h1><p class="lead">Short tutorials and tips from artists, skin professionals and stylists, from skin prep to taking it all off. Tap a lesson to watch it with sound.</p>'+
-    (L.length?cats.map(function(c){return '<h3>'+esc(c)+'</h3>'+carousel(L.map(function(x,i){return x.topic!==c?'':'<div class="lesson" role="button" tabindex="0" data-lesson="'+i+'"><div class="lp"><img loading="lazy" src="'+x.poster+'" alt=""><span class="dur">'+Math.round(x.dur)+'s</span><span class="play" aria-hidden="true"></span></div><b>'+esc(x.title||c)+'</b><small>'+esc(x.by)+'</small></div>'}).join(''))}).join(''):'<p class="note-small">Lessons are on their way.</p>')+
-    '<p class="note-small">Clips belong to the creators credited on each one. General tips only: see a GP, dermatologist or skin-check clinic for anything about your own skin.</p>'}
+function lessonsHTML(){
+  var O2=window.LESSON_OFFERS||[],V=window.LESSON_VIDEOS||[],bk=(window.BOOKING_LINKS||{}).lesson||'enquire.html?for=lesson';
+  var price=function(o){return o.price==null?'Price on enquiry':(o.from===false?'':'From ')+money(o.price)};
+  return '<h1>Lessons</h1><p class="lead">Learn to do your own makeup, on your own face, with your own kit. One-to-one or with friends, at your place anywhere on the Gold Coast.</p>'+
+    '<h3>Lessons with Chanel</h3>'+carousel(O2.map(function(o){return '<div class="offer"><small>'+esc(o.who||'')+(o.time?' · '+esc(o.time):'')+'</small><b>'+esc(o.title)+'</b><p>'+esc(o.text||'')+'</p>'+
+      '<div class="of-f"><span>'+price(o)+'</span><a class="pill solid" href="'+bk+'" style="text-decoration:none">Book</a></div></div>'}).join(''))+
+    '<h3>Video tutorials</h3>'+carousel(V.map(function(x,i){return '<div class="lesson'+(x.src?'':' soon')+'"'+(x.src?' role="button" tabindex="0" data-video="'+i+'"':'')+'><div class="lp">'+(x.poster?'<img loading="lazy" src="'+x.poster+'" alt="">':'')+
+      (x.src?'<span class="play" aria-hidden="true"></span>':'<span class="soon-t">Coming soon</span>')+'</div><b>'+esc(x.title)+'</b><small>'+esc(x.topic||'')+'</small></div>'}).join(''))+
+    '<p class="note-small">Tutorials are on the way. Want a lesson sooner? Tap Book or Enquire.</p>'}
+function reviewsHTML(){
+  var R=window.REVIEWS||[],real=R.filter(function(r){return !r.placeholder});
+  var star=function(n){var h='';for(var i=0;i<5;i++)h+='<i class="'+(i<n?'on':'')+'">★</i>';return '<span class="stars">'+h+'</span>'};
+  return '<h1>Reviews</h1><p class="lead">'+(real.length?'Kind words from brides, birthday girls, shoot crews and everyone in between.':'Client reviews are on their way. Booked with Chanel before? She’d love to hear how it went.')+'</p>'+
+    carousel((real.length?real:R).map(function(r){return r.placeholder?'<div class="rev soon">'+star(0)+'<p>A client review will appear here soon.</p><b>Coming soon</b></div>':
+      '<div class="rev">'+star(r.stars||5)+'<p>“'+esc(r.text)+'”</p><b>'+esc(r.name)+'</b><small>'+esc([r.event,r.source].filter(Boolean).join(' · '))+'</small></div>'}).join(''))}
+/* About → The team: active team members Chanel ticks "Show on website" in the CRM (Supabase site_team()), else placeholders */
+var TEAM=null;
+(function(){var u=window.SUPABASE_URL||'https://qxiugfatpybldluipcyy.supabase.co',k=window.SUPABASE_KEY||'sb_publishable_sGLIpIxvos66FLVI9vPSbg_qXsTT6rt';
+  if(!window.fetch)return;fetch(u+'/rest/v1/rpc/site_team',{method:'POST',headers:{apikey:k,'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){return r.ok?r.json():[]}).then(function(d){if(Array.isArray(d)&&d.length){TEAM=d;if(window.onTeam)window.onTeam()}}).catch(function(){})})();
+function teamHTML(){var T=TEAM||window.TEAM_PLACEHOLDER||[],ph=!TEAM;
+  return '<h3>The team</h3>'+carousel(T.map(function(t){return '<div class="card tm'+(ph?' soon':'')+'">'+(t.photo_url?'<img class="av" src="'+esc(t.photo_url)+'" alt="">':'<span class="av ph" aria-hidden="true"></span>')+
+    '<b>'+esc(ph?t.role:(t.name||''))+'</b><small>'+esc(ph?'Joining soon':(t.role||''))+'</small></div>'}).join('')+
+    '<a class="card tm join" href="apply.html?type=team" style="text-decoration:none"><span class="av ph plus" aria-hidden="true">+</span><b>Join the team</b><small>Artists and assistants</small></a>')}
+window.onTeam=function(){if(page==='about'&&!document.body.classList.contains('m'))openPage('about');if(window.mRenderTeam)window.mRenderTeam()};
 function openLesson(i){var x=(window.LESSONS||[])[i];if(!x)return;
   $('lsBox').innerHTML='<video controls playsinline autoplay src="'+x.src+'" poster="'+x.poster+'"></video><div class="ls-info"><small>'+esc(x.topic)+'</small><h2>'+esc(x.title||x.topic)+'</h2><p>By '+esc(x.by)+'</p><a class="pill" href="'+x.post+'" target="_blank" rel="noopener">Watch on Instagram ↗</a></div>';
   $('lessonMod').classList.add('open')}
@@ -392,7 +424,7 @@ new MutationObserver(function(){if(!$('lessonMod').classList.contains('open')){v
 
 /* ---- affiliate popup: avatar, bio, 3 x 3 of their latest work ---- */
 function fmtN(n){return n==null?'':n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
-$('info').addEventListener('click',function(e){var c=e.target.closest('[data-aff]');if(!c)return;var a=(window.AFFILIATES||[])[+c.dataset.aff];if(!a)return;
+document.addEventListener('click',function(e){var c=e.target.closest('[data-aff]');if(!c)return;var a=(window.AFFILIATES||[])[+c.dataset.aff];if(!a)return;
   var ig='https://www.instagram.com/'+a.h+'/';
   $('affBox').innerHTML='<div class="side"><div class="sin"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
     (a.posts!=null?'<div class="stats"><span><b>'+fmtN(a.posts)+'</b>posts</span><span><b>'+fmtN(a.followers)+'</b>followers</span></div>':'')+
@@ -528,7 +560,7 @@ if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding
   document.addEventListener('keydown',function(e){if(e.key==='Escape'&&!HS.hidden)hsClose()});
   $('rotHint').textContent=ios?'Not turning? Swipe down from the top-right corner and switch off Portrait Orientation Lock.'
     :'Not turning? Switch on Auto-rotate in your quick settings.';
-  function upd(){var p=por.matches,step=p?'turn':(!isFs()&&!skip)?(canFs?'full':'ios'):'',need=(dev.matches||force)&&!!step;
+  function upd(){var p=por.matches,step=p?'turn':(!isFs()&&!skip)?(canFs?'full':'ios'):'',need=(dev.matches||force)&&!!step&&!MOBILE;   /* no intro or turn-sideways screen on the mobile site */
     document.body.classList.add('gated');
     if(step){R.dataset.step=step;$('rotT').textContent=TXT[step][0];$('rotP').textContent=TXT[step][1]}
     if(step!=='ios'||!need)HS.hidden=true;   /* the sheet only belongs to the iPhone sideways step */
@@ -579,7 +611,69 @@ function setpOpen(on){var p=$('setp'),g=$('gear');if(!g)return;p.hidden=!on;g.se
   if(on){var z=window.UIZ||1,r=g.getBoundingClientRect();p.style.top=(r.bottom/z+6)+'px';p.style.right=Math.max(8,(innerWidth-r.right)/z-4)+'px'}}
 document.addEventListener('click',function(e){if(e.target.closest('#gear')){setpOpen($('setp').hidden);return}if(!e.target.closest('#setp'))setpOpen(false)});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(false)});
+
+/* ==== 2026-11-16: MOBILE SITE. Phones get one continuous vertical page: the sections in nav order, top to bottom
+   (About, the six styles, Lessons, Reviews, Affiliates). Each style is a swipe carousel with its sub-style chips.
+   Top bar: brand on the left, ☰ opens a menu from the right with every section and sub-style.
+   Bottom right: Enquire always; Pricing in the style sections; Join the team (About) and Become an affiliate (Affiliates). ==== */
+var mLists={},mCur=-1;
+function mInit(){
+  page='m';   /* stops the desktop gallery's auto-scroll */
+  var order=[{id:'about',name:'About'}].concat(GROUPS.map(function(g,i){return {id:g.id,name:g.name,gi:i}}),PAGES.slice(1));
+  var bar='<header class="mbar" id="mbar"><a class="mbrand" href="#m-about">Chanel Monroe <i>Makeup</i></a>'+
+    '<button class="mburger" id="mburger" aria-label="Menu" aria-expanded="false" aria-controls="mdrawer"><span></span><span></span><span></span></button></header>'+
+    '<div class="mscrim" id="mscrim" hidden></div><nav class="mdrawer" id="mdrawer" aria-label="Sections" data-g="about" hidden><button class="md-x" id="mdx" aria-label="Close menu"></button><div class="md-in">'+
+    order.map(function(o){if(o.gi==null)return '<a class="md-l" href="#m-'+o.id+'">'+esc(o.name)+'</a>';
+      var g=GROUPS[o.gi];return '<div class="md-g"><button class="md-l md-t" aria-expanded="false">'+esc(g.name)+'<i aria-hidden="true"></i></button><div class="md-subs">'+
+        '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="">All '+esc(g.name)+'</a>'+g.subs.map(function(sb){return '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="'+esc(sb)+'">'+esc(sb)+'</a>'}).join('')+'</div></div>'}).join('')+
+    '<a class="pill solid md-enq" href="'+BOOK+'" style="text-decoration:none">Enquire</a></div></nav>';
+  var secs=order.map(function(o){
+    if(o.gi==null){var P=pageHTML(o.id);if(o.id==='about')mOwn=P.own;return '<section class="msec mpage" id="m-'+o.id+'" data-g="'+o.id+'">'+P.h+'</section>'}
+    var g=GROUPS[o.gi];
+    return '<section class="msec mstyle" id="m-'+g.id+'" data-g="'+g.id+'" data-gi="'+o.gi+'"><div class="mhead"><h2>'+esc(g.name)+'</h2><p class="mtag">'+esc(g.tag)+'</p></div>'+
+      '<div class="mchips" role="tablist"><button class="chip" data-ms="" aria-pressed="true">All</button>'+g.subs.map(function(sb){return '<button class="chip" data-ms="'+esc(sb)+'" aria-pressed="false">'+esc(sb)+'</button>'}).join('')+'</div>'+
+      '<div class="mstrip"><div class="mtrack" id="mt-'+g.id+'"></div></div><p class="mhint">Swipe for more · tap a photo to see it bigger</p></section>'}).join('');
+  document.body.insertAdjacentHTML('afterbegin',bar);
+  var m=document.createElement('main');m.id='mobile';m.innerHTML=secs;$('mbar').insertAdjacentElement('afterend',m);
+  GROUPS.forEach(function(g,i){mFill(i,null)});
+  if(mOwn)buildAboutGrid(mOwn);
+  startCarousels(m);
+  /* menu */
+  var dr=$('mdrawer'),sc=$('mscrim'),bt=$('mburger');
+  function menu(on){if(on){dr.hidden=false;sc.hidden=false;requestAnimationFrame(function(){document.body.classList.add('md-open')})}
+    else{document.body.classList.remove('md-open');setTimeout(function(){if(!document.body.classList.contains('md-open')){dr.hidden=true;sc.hidden=true}},320)}
+    bt.setAttribute('aria-expanded',on)}
+  bt.onclick=function(){menu(!document.body.classList.contains('md-open'))};sc.onclick=function(){menu(false)};$('mdx').onclick=function(){menu(false)};
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')menu(false)});
+  dr.addEventListener('click',function(e){var t=e.target.closest('.md-t');if(t){var g=t.parentNode;g.classList.toggle('open');t.setAttribute('aria-expanded',g.classList.contains('open'));return}
+    var a=e.target.closest('a[href^="#m-"]');if(!a)return;e.preventDefault();menu(false);
+    if(a.dataset.mg!=null)mFill(+a.dataset.mg,a.dataset.ms||null);mGo(a.getAttribute('href').slice(1))});
+  $('mbar').querySelector('.mbrand').onclick=function(e){e.preventDefault();window.scrollTo({top:0,behavior:'smooth'})};
+  /* sub-style chips and photo taps */
+  m.addEventListener('click',function(e){var c=e.target.closest('.mstyle .chip');if(c){var sec=c.closest('.mstyle');mFill(+sec.dataset.gi,c.dataset.ms||null);return}
+    var t=e.target.closest('.mtrack .tile');if(t&&!e.target.closest('a')){var gi=+t.closest('.mstyle').dataset.gi;shown=mLists[gi];lbShow(+t.dataset.k);$('lb').classList.add('open')}});
+  /* which section is in view: the page colours, background effects and the bottom-right buttons follow it */
+  var secEls=[].slice.call(m.querySelectorAll('.msec'));
+  function spy(){var y=innerHeight*.42,best=secEls[0];secEls.forEach(function(el){if(el.getBoundingClientRect().top<=y)best=el});
+    if(best.dataset.g!==document.body.dataset.g){document.body.dataset.g=best.dataset.g}
+    var gi=best.dataset.gi!=null?+best.dataset.gi:-1;if(best.id!==spy.id){spy.id=best.id;mCur=gi;setFab(gi>=0?null:best.dataset.g)}
+    document.body.classList.toggle('m-top',scrollY<8)}
+  addEventListener('scroll',function(){if(!spy.q){spy.q=1;requestAnimationFrame(function(){spy.q=0;spy()})}},{passive:true});
+  addEventListener('resize',spy);spy();
+  $('openPricing').onclick=function(){poOpen(mCur>=0?mCur:0)};
+  window.mRenderTeam=function(){var a=$('m-about');if(!a)return;var P=pageHTML('about');a.innerHTML=P.h;buildAboutGrid(P.own);startCarousels(a)};
+  if(location.hash&&/^#m-/.test(location.hash))setTimeout(function(){mGo(location.hash.slice(1))},60);
+}
+var mOwn=null;
+function mGo(id){var el=$(id);if(!el)return;var top=el.getBoundingClientRect().top+scrollY-($('mbar').offsetHeight||0)+1;window.scrollTo({top:top,behavior:'smooth'})}
+function mFill(gi,sb){var g=GROUPS[gi],list=sb?pick(g,sb):spreadVideos(bySub(g,SEL[g.id])),tr=$('mt-'+g.id);if(!tr)return;
+  mLists[gi]=list;tr.innerHTML=list.map(function(it,k){return tileHTML(it,k).replace(' loading="eager"',' loading="'+(gi===0&&k<3?'eager':'lazy')+'"').replace(' fetchpriority="high"','')}).join('');
+  tr.parentNode.scrollLeft=0;
+  [].forEach.call(tr.closest('.mstyle').querySelectorAll('.chip'),function(c){c.setAttribute('aria-pressed',(c.dataset.ms||null)===(sb||null))});
+  [].forEach.call(tr.querySelectorAll('video'),function(v){if(mvio)mvio.observe(v);else{v.src=v.dataset.src}})}
+var mvio=('IntersectionObserver' in window)?new IntersectionObserver(function(es){es.forEach(function(e){var v=e.target;if(e.isIntersecting){if(!v.src)v.src=v.dataset.src;var p=v.play();if(p&&p.catch)p.catch(function(){})}else v.pause()})},{threshold:.5}):null;
 renderNav();remixAll();buildPricing();go(0);
+if(MOBILE)mInit();
 if(/[?&]edit/.test(location.search))setEdit(true);
 })();;
 /* Editorial liquid background - WebGL2 shader (domain-warped noise, two-tone liquid edges).
@@ -712,10 +806,10 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     'background:rgba(245,233,225,.55);-webkit-backdrop-filter:blur(26px) saturate(1.25);backdrop-filter:blur(26px) saturate(1.25)}'+
     '#enqOverlay.on{opacity:1;transform:none}'+
     '#enqOverlay.away{opacity:0!important;transform:translateY(24px) scale(.96)!important;pointer-events:none}'+
-    '#track .tile .cmm-plus{position:absolute;top:8px;right:8px;z-index:6;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;'+
+    '.tile .cmm-plus{position:absolute;top:8px;right:8px;z-index:6;width:38px;height:38px;border-radius:50%;border:0;cursor:pointer;'+
     'background:rgba(255,255,255,.94);color:#2a2020;font:600 22px/1 system-ui,sans-serif;box-shadow:0 3px 12px rgba(0,0,0,.28);transition:transform .2s}'+
-    '#track .tile .cmm-plus:hover{transform:scale(1.1)}#track .tile .cmm-plus.on{background:#b8846b;color:#fff}'+
-    '#track .tile.cmm-on{outline:3px solid #b8846b;outline-offset:-3px}'+
+    '.tile .cmm-plus:hover{transform:scale(1.1)}.tile .cmm-plus.on{background:#b8846b;color:#fff}'+
+    '.tile.cmm-on{outline:3px solid #b8846b;outline-offset:-3px}'+
     'body.cmm-picking #track .tile{cursor:default}body.cmm-picking #track .tile figcaption a{pointer-events:none}'+
     '#cmmPill{position:fixed;left:50%;bottom:calc(86px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:2147482999;display:none;align-items:center;gap:10px;'+
     'padding:9px 10px 9px 16px;border-radius:999px;background:rgba(6,5,14,.78);color:#fff;font:500 13px/1.2 Jost,system-ui,sans-serif;'+
@@ -725,23 +819,25 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function size(){
     var z=window.UIZ||1, W=innerWidth, H=innerHeight, w, h;
     w=Math.round(W*.8); h=Math.round(H*.8)                                   /* 80% of the screen on every device, centred */
+    if(document.body.classList.contains('m')){ w=W-16; h=H-16-(window.visualViewport?0:0) }   /* phones (vertical site): nearly full screen */
     if(ov) ov.style.zoom=z===1?'':(1/z);   /* cancel the page zoom so sizes are real pixels */
     if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((W-w)/2)+'px'; ov.style.top=Math.round((H-h)/2)+'px' }
   }
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
-    if(fr){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
-    var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
+    var form=href.split('?')[0];   /* enquire.html or apply.html (Join the team / Become an affiliate) */
+    if(fr&&fr.dataset.form===form&&(form!=='apply.html'||fr.dataset.href===href)){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
+    var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
-    fr=ov.firstChild; ov.classList.remove('away'); ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.classList.add('on') });
+    fr=ov.firstChild; fr.dataset.form=form; fr.dataset.href=href.split(/[?&]v=/)[0]; ov.classList.remove('away'); ov.style.display='block'; size(); requestAnimationFrame(function(){ ov.classList.add('on') });
   }
   function close(){ endPick(false); if(!ov) return; ov.classList.remove('on'); setTimeout(function(){ if(!ov.classList.contains('on')) ov.style.display='none' },350) }   /* hidden, not unloaded */
   function send(m){ if(fr&&fr.contentWindow) fr.contentWindow.postMessage(m,'*') }
   /* + buttons on the site's carousel */
   function decorate(){
     if(!pickMode) return;
-    [].forEach.call(document.querySelectorAll('#track .tile'),function(t){
+    [].forEach.call(document.querySelectorAll('#track .tile, .mtrack .tile'),function(t){
       var img=t.querySelector('img'); if(!img) return;
       var src=img.getAttribute('src'), b=t.querySelector('.cmm-plus');
       if(!b){ b=document.createElement('button'); b.type='button'; b.className='cmm-plus'; b.setAttribute('aria-label','Add this look to your enquiry');
@@ -761,21 +857,21 @@ if(/[?&]edit/.test(location.search))setEdit(true);
       pill.lastChild.onclick=function(){ endPick(true) }; document.body.appendChild(pill) }
     pill.style.display='flex'; if(ov) ov.classList.add('away'); document.body.classList.toggle('cmm-picking',pickMode);
     setPicked(list);
-    if(!mo){ var tr=document.getElementById('track'); if(tr){ mo=new MutationObserver(decorate); mo.observe(tr,{childList:true}) } }
+    if(!mo){ var tr=document.getElementById('track'); if(tr){ mo=new MutationObserver(decorate); mo.observe(tr,{childList:true}); var mm=document.getElementById('mobile'); if(mm) mo.observe(mm,{childList:true,subtree:true}) } }
   }
   function endPick(back){
     pickMode=false; if(pill) pill.style.display='none'; document.body.classList.remove('cmm-picking');
-    [].forEach.call(document.querySelectorAll('#track .cmm-plus'),function(b){ b.remove() });
-    [].forEach.call(document.querySelectorAll('#track .cmm-on'),function(t){ t.classList.remove('cmm-on') });
+    [].forEach.call(document.querySelectorAll('.cmm-plus'),function(b){ b.remove() });
+    [].forEach.call(document.querySelectorAll('.cmm-on'),function(t){ t.classList.remove('cmm-on') });
     if(back&&ov){ ov.classList.remove('away'); ov.classList.add('on'); send({cmm:'browse-done'}) }
   }
   /* while picking for the enquiry, a photo itself does nothing (no description popup); only its + button works */
   document.addEventListener('click',function(e){
     if(!pickMode||!e.target.closest) return;
-    if(e.target.closest('#track .tile')&&!e.target.closest('.cmm-plus')){ e.preventDefault(); e.stopPropagation() }
+    if(e.target.closest('#track .tile, .mtrack .tile')&&!e.target.closest('.cmm-plus')){ e.preventDefault(); e.stopPropagation() }
   },true);
   document.addEventListener('click',function(e){
-    var a=e.target.closest&&e.target.closest('a[href^="enquire.html"]'); if(!a) return;
+    var a=e.target.closest&&e.target.closest('a[href^="enquire.html"],a[href^="apply.html"]'); if(!a) return;
     e.preventDefault(); e.stopPropagation(); open(a.getAttribute('href'));
   },true);
   addEventListener('message',function(e){

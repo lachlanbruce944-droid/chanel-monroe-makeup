@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Apply · Chanel Monroe Makeup</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<!--
+  apply.html: chat-style application form, opened over the site like the enquiry chat (added 2026-11-16).
+    apply.html?type=team        "Join the team"        (About)
+    apply.html?type=affiliate   "Become an affiliate"  (Affiliates)
+  Answers go to the Supabase edge function `application`, which saves them in the CRM (crm_people, status "applied",
+  shown in the CRM's Employees section) and emails Chanel plus a confirmation to the applicant.
+  ?test runs it without sending anything.
+-->
+<style>
+:root{--ff:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;--fh:"Cormorant Garamond",Georgia,serif;--ease:cubic-bezier(.2,.7,.2,1);
+  --bg:#f5e9e1;--bg2:#ead2c4;--fg:#3a2622;--soft:#7a5a50;--acc:#b8846b;--line:#e2c3b2;--card:#fbf3ee}
+*{box-sizing:border-box}html,body{margin:0;height:100%}
+body{font-family:var(--ff);-webkit-font-smoothing:antialiased;font-size:15px;color:var(--fg);background:transparent;overflow:hidden}
+body:not(.framed){background:radial-gradient(120% 90% at 20% 0%,#fbf3ee,var(--bg) 55%,var(--bg2))}
+button,input,textarea{font:inherit;color:inherit}button{cursor:pointer;border:0;background:none}
+.app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:720px;margin:0 auto}
+header{flex:none;display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+header h1{margin:0;font:500 20px/1.1 var(--fh);flex:1}
+header small{display:block;font:500 10.5px/1.2 var(--ff);letter-spacing:.14em;text-transform:uppercase;color:var(--soft)}
+.x{width:34px;height:34px;border-radius:50%;background:color-mix(in srgb,var(--card) 70%,transparent);border:1px solid var(--line);font-size:18px;line-height:1}
+#msgs{flex:1;overflow-y:auto;padding:8px 14px 10px;display:flex;flex-direction:column;gap:8px;scrollbar-width:none}
+#msgs::-webkit-scrollbar{display:none}
+.row{display:flex;align-items:flex-end;gap:8px}
+.orb{flex:none;width:30px;height:30px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 8%,#f3c9b6 22%,#c98a73 55%,#8d5848);box-shadow:0 0 14px rgba(201,138,115,.55);animation:breathe 3.2s ease-in-out infinite}
+.row.cont .orb{visibility:hidden}
+@keyframes breathe{50%{transform:scale(1.07);box-shadow:0 0 22px rgba(201,138,115,.75)}}
+.b{max-width:84%;padding:10px 14px;border-radius:16px;line-height:1.5;white-space:pre-wrap;word-wrap:break-word;animation:pop .3s var(--ease) both}
+.b.bot{background:color-mix(in srgb,var(--card) 76%,transparent);border:1px solid color-mix(in srgb,#fff 45%,transparent);border-bottom-left-radius:5px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.b.me{align-self:flex-end;background:var(--fg);color:var(--bg);border-bottom-right-radius:5px;box-shadow:0 6px 18px rgba(30,15,15,.18);cursor:pointer}
+.dots{display:inline-flex;gap:4px;padding:12px 14px;border-radius:16px;background:color-mix(in srgb,var(--card) 76%,transparent)}
+.dots i{width:6px;height:6px;border-radius:50%;background:var(--soft);animation:blink 1.2s infinite}.dots i:nth-child(2){animation-delay:.2s}.dots i:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+@keyframes pop{from{opacity:0;transform:translateY(6px)}}
+#comp{flex:none;padding:8px 14px calc(12px + env(safe-area-inset-bottom));min-height:20px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{padding:9px 14px;border-radius:999px;border:1px solid var(--line);background:color-mix(in srgb,var(--card) 80%,transparent);font-size:14px;font-weight:500;box-shadow:0 3px 12px rgba(30,15,15,.08);transition:.2s;animation:pop .3s var(--ease) both}
+.chip[aria-pressed="true"],.chip.pri{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip.ghost{background:none;box-shadow:none;color:var(--soft)}
+.inrow{display:flex;gap:8px}
+.inrow input,.inrow textarea{flex:1;min-width:0;padding:11px 14px;border-radius:14px;border:1px solid var(--line);background:color-mix(in srgb,#fff 70%,transparent);outline:none;font-size:16px}
+.inrow textarea{min-height:46px;max-height:120px;resize:none}
+.inrow input:focus,.inrow textarea:focus{border-color:var(--acc)}
+.send{flex:none;width:46px;border-radius:14px;background:var(--fg);color:var(--bg);font-size:18px}
+.err{color:#a3402b;font-size:13px;margin:6px 2px 0}
+.sum{align-self:stretch;max-width:none;background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid var(--line);border-radius:18px;padding:14px;animation:pop .3s var(--ease) both}
+.sum h2{margin:0 0 8px;font:500 22px/1.1 var(--fh)}
+.flds{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:6px}
+.fld{text-align:left;padding:8px 10px;border-radius:12px;border:1px solid var(--line);background:#fff8}
+.fld small{display:block;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
+.fld b{display:block;font-weight:500;font-size:14px;margin-top:2px;word-break:break-word}
+.big{display:block;width:100%;margin-top:12px;padding:13px;border-radius:14px;background:var(--fg);color:var(--bg);font-weight:600;font-size:15px}
+.fine{font-size:12px;color:var(--soft);margin:8px 2px 0}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0}
+@media (max-height:460px){header{padding:6px 12px 4px}header h1{font-size:17px}.b{padding:7px 11px;font-size:13.5px}.chip{padding:6px 11px;font-size:13px}#msgs{gap:6px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header><div class="orb" aria-hidden="true"></div><h1 id="title">Join the team<small id="kicker">Chanel Monroe Makeup</small></h1>
+    <button class="x" id="close" aria-label="Close">×</button></header>
+  <div id="msgs" aria-live="polite"></div>
+  <div id="comp"></div>
+  <input class="hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+</div>
+<script>
+(function(){
+'use strict';
+var CONFIG = {
+  fnUrl: 'https://qxiugfatpybldluipcyy.supabase.co/functions/v1/application',
+  typeSpeed: 14
+};
+var qs = new URLSearchParams(location.search), TYPE = qs.get('type') === 'affiliate' ? 'affiliate' : 'team', TEST = qs.has('test');
+var FRAMED = window.parent !== window;
+if(FRAMED) document.body.classList.add('framed');
+var $ = function(id){ return document.getElementById(id) }, msgs = $('msgs'), comp = $('comp');
+var esc = function(s){ return String(s == null ? '' : s).replace(/[&<>"]/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c] }) };
+var first = function(n){ return String(n || '').trim().split(/\s+/)[0] || '' };
+var EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+/* ---- questions: type text | chips | multi; optional ones get a Skip chip ---- */
+var Q = {
+  team: [
+    { id:'name', label:'Name', type:'text', ask:function(){ return 'Hi! Thanks for wanting to join Chanel’s team ✨\nThis takes about a minute. What’s your full name?' }, ph:'First and last name', check:function(v){ return v.trim().length >= 2 || 'Please type your name' } },
+    { id:'role', label:'Role', type:'chips', ask:function(a){ return 'Lovely to meet you, ' + first(a.name) + '! What do you do?' }, opts:['Makeup artist','Hair stylist','Makeup and hair','Assistant or junior artist','Other'] },
+    { id:'experience', label:'Experience', type:'chips', ask:function(){ return 'How long have you been working as an artist?' }, opts:['Still studying','Under 1 year','1 to 3 years','3 to 5 years','5+ years'] },
+    { id:'skills', label:'Skills', type:'multi', ask:function(){ return 'Which kinds of work are you confident with? Pick all that fit.' }, opts:['Bridal','Soft and full glam','Editorial and shoots','SFX and body paint','Face paint','Airbrush','Lashes','Hair up-styles'] },
+    { id:'availability', label:'Availability', type:'multi', ask:function(){ return 'When are you usually free to work?' }, opts:['Weekdays','Weekends','Early mornings','Evenings','Happy to travel'] },
+    { id:'areas', label:'Based in', type:'text', ask:function(){ return 'Which suburb are you based in?' }, ph:'e.g. Burleigh Heads', optional:true },
+    { id:'instagram', label:'Instagram or portfolio', type:'text', ask:function(){ return 'Where can Chanel see your work? An Instagram handle or portfolio link is perfect.' }, ph:'@yourhandle or a link' },
+    { id:'abn', label:'ABN', type:'chips', ask:function(){ return 'Do you have an ABN?' }, opts:['Yes','Not yet'] },
+    { id:'email', label:'Email', type:'text', inputType:'email', ask:function(){ return 'What’s the best email for you?' }, ph:'you@example.com', check:function(v){ return EMAIL.test(v.trim()) || 'That email doesn’t look quite right' } },
+    { id:'phone', label:'Phone', type:'text', inputType:'tel', ask:function(){ return 'And a mobile number?' }, ph:'04xx xxx xxx', check:function(v){ return v.replace(/[^\d+]/g,'').length >= 8 || 'Please add a phone number' } },
+    { id:'notes', label:'About you', type:'text', area:true, ask:function(){ return 'Anything else Chanel should know? Training, kit, favourite looks…' }, ph:'Optional', optional:true }
+  ],
+  affiliate: [
+    { id:'name', label:'Name', type:'text', ask:function(){ return 'Hi! Thanks for wanting to be one of Chanel’s affiliates ✨\nAffiliates are the local artists and creatives she trusts and sends clients to. What’s your full name?' }, ph:'First and last name', check:function(v){ return v.trim().length >= 2 || 'Please type your name' } },
+    { id:'business', label:'Business', type:'text', ask:function(a){ return 'Lovely to meet you, ' + first(a.name) + '! What’s your business called?' }, ph:'Business name', optional:true },
+    { id:'role', label:'Service', type:'chips', ask:function(){ return 'What service do you offer?' }, opts:['Hair','Nails','Brows','Lashes','Photography','Videography','Spray tan','Skin and beauty therapy','Florals and styling','Other'] },
+    { id:'instagram', label:'Instagram', type:'text', ask:function(){ return 'What’s your Instagram handle?' }, ph:'@yourbusiness' },
+    { id:'website', label:'Website', type:'text', ask:function(){ return 'Do you have a website or booking link?' }, ph:'Optional', optional:true },
+    { id:'areas', label:'Areas', type:'text', ask:function(){ return 'Which areas do you cover?' }, ph:'e.g. Gold Coast and Tweed', optional:true },
+    { id:'offer', label:'Offer for clients', type:'text', area:true, ask:function(){ return 'Anything special for Chanel’s clients? A referral offer, packages, what makes you different?' }, ph:'Optional', optional:true },
+    { id:'email', label:'Email', type:'text', inputType:'email', ask:function(){ return 'What’s the best email for you?' }, ph:'you@example.com', check:function(v){ return EMAIL.test(v.trim()) || 'That email doesn’t look quite right' } },
+    { id:'phone', label:'Phone', type:'text', inputType:'tel', ask:function(){ return 'And a mobile number?' }, ph:'04xx xxx xxx', check:function(v){ return v.replace(/[^\d+]/g,'').length >= 8 || 'Please add a phone number' } },
+    { id:'notes', label:'Anything else', type:'text', area:true, ask:function(){ return 'Anything else you’d like Chanel to know?' }, ph:'Optional', optional:true }
+  ]
+}[TYPE];
+$('title').firstChild.textContent = TYPE === 'affiliate' ? 'Become an affiliate' : 'Join the team';
+document.title = (TYPE === 'affiliate' ? 'Become an affiliate' : 'Join the team') + ' · Chanel Monroe Makeup';
+
+var S = { a:{}, editing:null, sent:false, id:(crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) };
+var wait = function(ms){ return new Promise(function(r){ setTimeout(r, ms) }) };
+function scroll(){ msgs.scrollTop = msgs.scrollHeight }
+new ResizeObserver(scroll).observe(msgs);
+
+var lastBot = false;
+async function bot(text){
+  var row = document.createElement('div'); row.className = 'row' + (lastBot ? ' cont' : ''); lastBot = true;
+  row.innerHTML = '<div class="orb" aria-hidden="true"></div><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div>';
+  msgs.appendChild(row); scroll(); await wait(380);
+  var b = document.createElement('div'); b.className = 'b bot'; row.replaceChild(b, row.lastChild);
+  for(var i = 1; i <= text.length; i++){ b.textContent = text.slice(0, i); if(i % 3 === 0) scroll(); await wait(CONFIG.typeSpeed) }
+  scroll();
+}
+function me(text, id){ lastBot = false; var b = document.createElement('div'); b.className = 'b me'; b.textContent = text; b.title = 'Tap to change';
+  if(id) b.onclick = function(){ if(!S.sent) edit(id) }; msgs.appendChild(b); scroll() }
+var shown = function(q, v){ return Array.isArray(v) ? v.join(', ') : v === '' || v == null ? 'Skipped' : String(v) };
+
+function nextQ(){ return Q.filter(function(q){ return !(q.id in S.a) })[0] }
+async function step(){
+  comp.innerHTML = '';
+  var q = nextQ(); if(!q) return summary();
+  await bot(q.ask(S.a)); compose(q);
+}
+function answer(q, v){ S.a[q.id] = v; me(shown(q, v), q.id); if(S.editing){ S.editing = null; comp.innerHTML = ''; return summary() } step() }
+function compose(q){
+  comp.innerHTML = '';
+  if(q.type === 'chips' || q.type === 'multi'){
+    var w = document.createElement('div'); w.className = 'chips'; var pick = [];
+    q.opts.forEach(function(o){ var c = document.createElement('button'); c.type = 'button'; c.className = 'chip'; c.textContent = o; c.setAttribute('aria-pressed', 'false');
+      c.onclick = function(){ if(q.type === 'chips') return answer(q, o);
+        var i = pick.indexOf(o); if(i < 0) pick.push(o); else pick.splice(i, 1); c.setAttribute('aria-pressed', i < 0); done.hidden = !pick.length };
+      w.appendChild(c) });
+    if(q.type === 'multi'){ var done = document.createElement('button'); done.type = 'button'; done.className = 'chip pri'; done.textContent = 'Done ✓'; done.hidden = true;
+      done.onclick = function(){ answer(q, pick.slice()) }; w.appendChild(done) }
+    comp.appendChild(w); return;
+  }
+  var row = document.createElement('div'); row.className = 'inrow';
+  var inp = document.createElement(q.area ? 'textarea' : 'input'); if(!q.area) inp.type = q.inputType || 'text';
+  inp.placeholder = q.ph || ''; inp.autocomplete = { name:'name', email:'email', phone:'tel' }[q.id] || 'off';
+  if(S.a[q.id] && typeof S.a[q.id] === 'string') inp.value = S.a[q.id];
+  var go = document.createElement('button'); go.type = 'button'; go.className = 'send'; go.textContent = '↑'; go.setAttribute('aria-label', 'Send');
+  var err = document.createElement('p'); err.className = 'err'; err.hidden = true;
+  var submit = function(){ var v = inp.value.trim();
+    if(!v && q.optional) return answer(q, '');
+    var ok = q.check ? q.check(v) : (v.length > 0 || 'Please type an answer');
+    if(ok !== true){ err.textContent = ok; err.hidden = false; return }
+    answer(q, v) };
+  go.onclick = submit; inp.onkeydown = function(e){ if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); submit() } };
+  row.append(inp, go); comp.appendChild(row); comp.appendChild(err);
+  if(q.optional){ var sk = document.createElement('div'); sk.className = 'chips'; sk.style.marginTop = '6px';
+    var c = document.createElement('button'); c.type = 'button'; c.className = 'chip ghost'; c.textContent = 'Skip'; c.onclick = function(){ answer(q, '') };
+    sk.appendChild(c); comp.appendChild(sk) }
+  setTimeout(function(){ inp.focus({ preventScroll:true }) }, 50);
+}
+function edit(id){ var q = Q.filter(function(x){ return x.id === id })[0]; if(!q) return; S.editing = id;
+  var old = document.getElementById('sum'); if(old) old.remove();
+  bot('Sure, let’s change ' + q.label.toLowerCase() + '.').then(function(){ compose(q) }) }
+
+async function summary(){
+  comp.innerHTML = '';
+  await bot('Here’s everything. Tap anything to change it, then send it to Chanel.');
+  var old = document.getElementById('sum'); if(old) old.remove();
+  var d = document.createElement('div'); d.className = 'sum'; d.id = 'sum';
+  d.innerHTML = '<h2>' + (TYPE === 'affiliate' ? 'Your affiliate application' : 'Your application') + '</h2><div class="flds">' +
+    Q.map(function(q){ return '<button type="button" class="fld" data-e="' + q.id + '"><small>' + esc(q.label) + '</small><b>' + esc(shown(q, S.a[q.id])) + '</b></button>' }).join('') +
+    '</div><button type="button" class="big" id="sendApp">Send to Chanel →</button><p class="fine">By sending, you’re happy for Chanel to contact you about working together. Your details are only used for this.</p>';
+  msgs.appendChild(d); scroll();
+  d.addEventListener('click', function(e){ var f = e.target.closest('[data-e]'); if(f && !S.sent) edit(f.dataset.e) });
+  $('sendApp').onclick = send;
+}
+async function send(){
+  var btn = $('sendApp'); if(S.sent || !btn) return; btn.disabled = true; btn.textContent = 'Sending…';
+  var ok = TEST, why = '';
+  if(!TEST){
+    try{
+      var r = await fetch(CONFIG.fnUrl, { method:'POST', headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify({ type:TYPE, id:S.id, answers:S.a, hp:$('hp').value }) });
+      var j = await r.json().catch(function(){ return {} }); ok = r.ok && j.ok; why = j.error || ('HTTP ' + r.status);
+    }catch(e){ why = String(e) }
+  }
+  if(!ok){ btn.disabled = false; btn.textContent = 'Try sending again'; console.warn('application', why);
+    await bot('Sorry, that didn’t go through. Please try again, or email makeup@chanelmonroe.net.'); return }
+  S.sent = true; btn.textContent = 'Sent ✓';
+  await bot('Thank you, ' + first(S.a.name) + '! 💛 Your ' + (TYPE === 'affiliate' ? 'affiliate application' : 'application') + ' is with Chanel. You’ll get a confirmation email, and she’ll be in touch.');
+  var w = document.createElement('div'); w.className = 'chips';
+  var c = document.createElement('button'); c.type = 'button'; c.className = 'chip pri'; c.textContent = FRAMED ? 'Back to the site' : 'Done'; c.onclick = close;
+  w.appendChild(c); comp.innerHTML = ''; comp.appendChild(w);
+}
+function close(){ if(FRAMED) parent.postMessage({ cmm:'close-enquiry' }, '*'); else location.href = './' }
+$('close').onclick = close;
+step();
+})();
+</script>
+</body>
+</html>

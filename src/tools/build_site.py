@@ -64,7 +64,9 @@ open(os.path.join(OUT, 'js', 'config.js'), 'w', encoding='utf-8').write(
     "window.MEDIA_BASE = '%s';\nwindow.MEDIA_M = true;   /* gallery photos have 540px copies (name.m.webp) */\n" % BASE +
     "/* Relative design: landscape screens bigger than the 874 x 402 phone design show that design scaled up evenly. */\n"
     "(function(){var DW=874,DH=402,r=document.documentElement;\n"
-    "  function fit(){var w=innerWidth,h=innerHeight,s=w>h?Math.max(1,Math.min(w/DW,h/DH)):1;window.UIZ=s;\n"
+    "  var MQ=matchMedia('(max-width:600px), (pointer:coarse) and (max-height:500px)'),q=location.search;   /* phones: vertical site, never zoomed */\n"
+    "  function phone(){return /[?&]m=1\\b/.test(q)||(!/[?&]m=0\\b/.test(q)&&MQ.matches)}\n"
+    "  function fit(){var w=innerWidth,h=innerHeight,s=(w>h&&!phone())?Math.max(1,Math.min(w/DW,h/DH)):1;window.UIZ=s;\n"
     "    r.style.zoom=s===1?'':s;r.style.setProperty('--uvh',h/s/100+'px');r.style.setProperty('--uvw',w/s/100+'px')}\n"
     "  fit();addEventListener('resize',fit)})();\n")
 for folder in ('data', 'settings'):
@@ -77,7 +79,7 @@ for folder in ('data', 'settings'):
 shutil.copytree(os.path.join(SRC, 'images', 'icons'), os.path.join(OUT, 'images', 'icons'), ignore=shutil.ignore_patterns('*.ttf'))
 for d in ('brands', 'about'):
     if os.path.isdir(os.path.join(SRC, 'images', d)): shutil.copytree(os.path.join(SRC, 'images', d), os.path.join(OUT, 'images', d))
-for f in ('robots.txt', 'site.webmanifest', 'enquire.html'):   # enquire.html: the chat enquiry page, shipped as-is
+for f in ('robots.txt', 'site.webmanifest', 'enquire.html', 'apply.html'):   # the chat enquiry and application pages, shipped as-is
     if os.path.exists(os.path.join(SRC, f)): shutil.copy(os.path.join(SRC, f), OUT)
 open(os.path.join(OUT, '.nojekyll'), 'w').close()
 size = sum(os.path.getsize(os.path.join(r, f)) for r, _, fs in os.walk(OUT) for f in fs)

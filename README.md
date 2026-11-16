@@ -1,7 +1,7 @@
 # Chanel Monroe Makeup â€” website
 
 The website for **Chanel Monroe Makeup**, a mobile makeup artist on the Gold Coast (Instagram [@chanelmonroemakeup](https://www.instagram.com/chanelmonroemakeup/)).
-Visitors browse looks by style (natural, glam, bridal, editorial, character & FX, parties), see pricing, local affiliate artists, and the brands and products in Chanel's kit, then enquire.
+Visitors browse looks by style (natural, glam, bridal, editorial, character & FX, parties), see pricing, lessons, reviews and local affiliate artists, then enquire. Phones get a vertical one-page version of the same site.
 
 **Live site:** https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/
 
