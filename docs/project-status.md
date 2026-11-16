@@ -2,6 +2,10 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Latest fix (2026-11-17)
+
+Mobile affiliate popups have bounded profile/photo areas, compact text, uniform photo rows and an accessible close button. Very long profiles can scroll. Source and built output must be published together.
+
 ## Current state (2026-11-12)
 
 **Live site:** https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/ (GitHub Pages, deployed from `site/` by `.github/workflows/deploy-pages.yml`)
