@@ -1405,7 +1405,7 @@ function consultationCard(r){
   const when = new Date(c.startTime).toLocaleString('en-AU', {timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'});
   return `<section class="consult-result" aria-live="polite"><b>${c.status === 'confirmed' ? 'Phone call confirmed' : 'Phone call requested · awaiting approval'}</b><p>${esc(when)} · Brisbane time</p>
     <small>${c.synced ? 'Linked to your enquiry.' : c.syncing ? 'Linking to your enquiry…' : 'Your call is saved with Cal.com. Linking to your enquiry is pending.'}</small>
-    ${!c.synced && !c.syncing ? '<button type="button" class="chip" id="retryConsultation">Retry linking</button>' : ''}</section>`;
+    ${!c.syncing && (!c.synced || c.status === 'pending') ? `<button type="button" class="chip" id="retryConsultation">${c.synced ? 'Check approval status' : 'Retry linking'}</button>` : ''}</section>`;
 }
 function affiliateTiles(r){
   if(!r.consultation || r.consultation.status !== 'confirmed') return '';
@@ -1419,7 +1419,7 @@ function storeConsultation(r){
   S.consultationRecord = r;
 }
 async function syncConsultation(r){
-  if(!CONFIG.consultationSync || !r?.id || !r.consultation || r.consultation.synced || S.syncBusy) return;
+  if(!CONFIG.consultationSync || !r?.id || !r.consultation || (r.consultation.synced && r.consultation.status === 'confirmed') || S.syncBusy) return;
   S.syncBusy = true; r.consultation.syncing = true; storeConsultation(r); showSent(r,false);
   try{
     if(!liveMode()) throw new Error('Practice mode');
@@ -1560,6 +1560,7 @@ function gcalTestLink(){
 function calUrl(){
   // cal.com books the PHONE CONSULT, so no event date is prefilled: the client picks a call time
   const a = S.answers, p = new URLSearchParams(), L = look(a), est = estimate();
+  p.set('timeZone', CONFIG.timezone);
   if(a.name) p.set('name', a.name);
   if(val('email')) p.set('email', a.email);
   if(val('phone')){ let ph = a.phone.replace(/[\s()-]/g,''); if(/^0\d{9}$/.test(ph)) ph = '+61' + ph.slice(1); p.set('attendeePhoneNumber', ph) }
@@ -1913,7 +1914,7 @@ async function loadFirst(sources, key){
   S.byGroup = {};
   await Promise.race([loadPrices(), wait(1500)]);
   const sent = liveMode() ? sentRecord() : null;
-  if(sent){ showSent(sent, false); if(sent.consultation && !sent.consultation.synced) syncConsultation(sent); return }
+  if(sent){ showSent(sent, false); if(sent.consultation && (!sent.consultation.synced || sent.consultation.status === 'pending')) syncConsultation(sent); return }
   askNext();
 })();
 </script>
