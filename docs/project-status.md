@@ -2,6 +2,9 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Consultation completion (17 November 2026)
+Embedded phone consultation completion displays confirmed/pending dates in Brisbane time. Confirmed calls reveal selected-affiliate photo tiles and Instagram DM links. Full enquiry UUID is included in Cal notes and metadata; server verification checks host/event/attendee/reference. Existing CRM booking is updated through crm_link_consultation; no duplicate client or appointment. Frontend stores a retryable result if linking fails. Rollback: CONFIG.embeddedConsultation=false; external fallback always visible. Pending approvals can be refreshed using Check approval status or by reopening the enquiry. Background approval/cancellation and external-tab completion require a future authenticated webhook. The private selfie policy still needs action-time approval.
+
 ## Pricing booking buttons (2026-11-17)
 
 Each displayed service has a booking button under its price. enquire.html?service=<key> validates against the configured price list and maps to an existing booking category; the client still chooses their preferred style. Different selections reopen the matching form. Descriptions occupy a separate grid column.
