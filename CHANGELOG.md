@@ -11,6 +11,7 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
 
 ### 2026-11-17 (enquiry style search and Browse looks navigation)
 - Added text search at booking-type selection. Existing styles are matched using names, booking categories and editable phrase aliases (e.g. natural wedding, smoky eyes, clean girl, zombie and glitter). Results show both style and category and require an explicit selection; pricing/service selection continues normally.
+- Opening the enquiry or lifting it to browse now closes pricing/photo overlays and clears the popup navigation lock, including the mobile menu.
 - Fixed a repeating MutationObserver update while Browse looks was active: writing identical +/✓ button text repeatedly re-triggered the observer and could freeze navigation. Decoration is now idempotent; the lifted enquiry iframe is also hidden from hit testing and visibility.
 - Claude: phrase mappings live in STYLE_PHRASES in src/enquire.html; do not add unknown styles or infer a service price from search text.
 
