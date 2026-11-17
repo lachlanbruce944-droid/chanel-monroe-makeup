@@ -2,6 +2,18 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Pricing booking buttons (2026-11-17)
+
+Each displayed service has a booking button under its price. enquire.html?service=<key> validates against the configured price list and maps to an existing booking category; the client still chooses their preferred style. Different selections reopen the matching form. Descriptions occupy a separate grid column.
+
+## Desktop affiliate popup (2026-11-17)
+
+Affiliate popup fills available desktop window space; profile centres vertically beside full-height photo rows. Long text scales to 85% with scroll fallback.
+
+## Enquiry style search and navigation (2026-11-17)
+
+Booking-type step has local phrase search across existing styles. STYLE_PHRASES in src/enquire.html owns aliases; selection keeps the existing service/pricing flow. Browse looks decoration no longer rewrites unchanged button text, preventing an observer loop that froze parent navigation.
+
 ## Associate terminology (2026-11-17)
 
 About and application calls to action use Associates / Become an associate. The application continues to use type=team for existing database compatibility.
