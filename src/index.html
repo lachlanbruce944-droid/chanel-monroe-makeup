@@ -2068,7 +2068,12 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     if(ov) ov.style.zoom=z===1?'':(1/z);   /* cancel the page zoom so sizes are real pixels */
     if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((W-w)/2)+'px'; ov.style.top=Math.round((H-h)/2)+'px' }
   }
+  function releaseSiteOverlays(){
+    document.querySelectorAll('.po.open,.mod.open,.lb.open').forEach(function(el){el.classList.remove('open')});
+    document.body.classList.remove('pop-open');
+  }
   function open(href){
+    releaseSiteOverlays();
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
     var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
     if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
@@ -2097,6 +2102,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function updPill(){ if(!pill) return; var n=Object.keys(picked).length;
     pill.firstChild.textContent=pickMode?(n?n+' look'+(n>1?'s':'')+' saved · tap + on any photo':'Tap + on any photo to add it'):'Browsing the site'; }
   function startPick(plus,list){
+    releaseSiteOverlays();
     pickMode=!!plus;
     if(!pill){ pill=document.createElement('div'); pill.id='cmmPill'; pill.innerHTML='<span></span><button type="button">Back to your enquiry</button>';
       pill.lastChild.onclick=function(){ endPick(true) }; document.body.appendChild(pill) }
