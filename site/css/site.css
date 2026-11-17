@@ -997,6 +997,13 @@ body.m #m-affiliates{--av:min(calc(44 * var(--uvw)),190px)}
 body.m #m-affiliates .car .card[data-aff]{width:var(--av)!important;padding:0!important}
 body.m #m-affiliates .car .card[data-aff] img.av{width:var(--av)!important;height:var(--av)!important;margin:0!important;border-width:3px!important}
 body.m #m-affiliates .car .card[data-aff] :is(b,small){display:none!important}
+/* Desktop affiliate popup uses the available window height; profile stays centred. */
+body:not(.m) #affMod{padding:20px;align-items:stretch}
+body:not(.m) #affBox.aff{width:100%;height:calc(calc(100 * var(--uvh)) - 40px);max-height:none;grid-template-columns:minmax(220px,30%) minmax(0,1fr);grid-template-rows:minmax(0,1fr);overflow:hidden}
+body:not(.m) #affBox .side{min-height:0;min-width:0;overflow:auto!important;justify-content:center}
+body:not(.m) #affBox .side .sin{flex:0 0 auto;min-width:0;overflow-wrap:anywhere}
+body:not(.m) #affBox .g9{min-height:0;height:100%;box-sizing:border-box}
+body:not(.m) #affMod .x{top:24px;right:24px;background:rgba(20,16,14,.85);color:#fff;border-radius:50%}
 /* Affiliate phone popup: bounded profile + equal-height photo rows, including sideways phones. */
 body.m #affMod.mod{padding:calc(46px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));height:calc(100 * var(--uvh));box-sizing:border-box;align-items:stretch}
 body.m #affMod .x{position:absolute;top:calc(6px + env(safe-area-inset-top));right:14px;width:36px;height:36px;background:rgba(20,16,14,.85)!important;color:#fff!important;border:1px solid rgba(255,255,255,.5);text-shadow:none}
