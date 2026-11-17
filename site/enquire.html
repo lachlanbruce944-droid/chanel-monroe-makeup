@@ -542,6 +542,13 @@ body.details-side .tiles{grid-template-columns:1fr}
 .bc-f a{color:inherit}
 @media (max-height:480px) and (orientation:landscape){ .cp-h{padding:4px 8px}.cp-h b{font-size:15px}#calPanel iframe{margin-bottom:4px;border-radius:12px} }
 
+#calEmbed{flex:1;min-height:0;width:min(1000px,100%);margin:auto;overflow:auto}
+#calEmbed iframe{display:block;width:100%;height:100%;min-height:520px;margin:0;border:0;background:#fff}
+.cp-fallback{text-align:center;margin:4px 10px 10px;font-size:12px}.cp-fallback a{color:inherit;text-decoration:underline}
+.consult-result{padding:18px;background:var(--bg2);border-radius:16px}.consult-result p{margin:8px 0}
+.artist-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(180px,100%),1fr));gap:14px}
+.artist-tile{display:flex;flex-direction:column;gap:8px;background:var(--bg2);padding:14px;border-radius:18px;text-align:center}
+.artist-tile img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px}.artist-tile .book{margin-top:auto}
 /* ===== gallery sorted into style categories ===== */
 .jump{position:sticky;top:-14px;z-index:3;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:-4px -14px 10px;padding:8px 14px;
   background:color-mix(in srgb,var(--bg) 90%,transparent);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
@@ -683,6 +690,8 @@ const CONFIG = {
   supabaseTable: 'enquiries',
 
   calLink: 'https://cal.com/chanelmonroe/enquiry',
+  embeddedConsultation: true, // rollback: false restores the external booking link
+  consultationSync: true,
   base: { name:'Robina', lat:-28.0780, lng:153.3850 },   // where Chanel travels from: change to her real base suburb
   travelPerKm: null,      // e.g. 0.95 to quote $/km for every km past the included distance (return trip). null = "confirmed on your call"
 
@@ -826,7 +835,7 @@ const QUESTIONS = [
   { id:'event_date', label:'Date', type:'date',
     ask:a => ({ bridal:"When's the wedding?", editorial:"When's the shoot?", lesson:'Pick a date for your lesson.' })[a.category] || "When's the event?" },
   { id:'ready_by', label:'Time', type:'time',
-    ask:a => startMode(a) ? 'What time should Chanel start?' : 'What time do you need to be ready by? Chanel works backwards from this.' },
+    ask:a => startMode(a) ? 'What time should Chanel start?' : 'What time do you need to be ready by? Chanel will confirm the timing on your call.' },
   { id:'location', label:'Suburb', type:'chips', options:SUBURBS, other:true, otherLabel:'Another suburb…', placeholder:'Suburb, e.g. Currumbin',
     ask:() => `Which suburb will the makeup be in?\nChanel uses this to check the distance and confirm any travel costs (travel is included within ${PRICES.meta.includedKm} km).` },
   { id:'quantity', label:'How many', type:'chips', when:a => qtyKind(a) !== 'none',
@@ -907,14 +916,6 @@ async function travelNote(){
   return say(`${sub} is about ${t.km} km away, which is outside the ${PRICES.meta.includedKm} km included.` +
     (t.fee ? ` Travel would be about ${money(t.fee)}, added to your quote.` : ` Chanel will confirm the travel cost on your call.`));
 }
-/* ---------- EARLY START CHECK: big groups with an early ready-by time ---------- */
-async function earlyCheck(){
-  const ev = calendarEvent(); if(!ev || startMode(S.answers) || S.earlyNoted) return;
-  const h = parseInt(ev.start.dateTime.slice(11,13)), day = ev.start.dateTime.slice(0,10) !== S.answers.event_date;
-  if(h >= 5 && !day) return;
-  S.earlyNoted = true;
-  await say(`Heads up: to have everyone ready by ${fmtTime(S.answers.ready_by)}, Chanel would need to start around ${fmtTime(ev.start.dateTime.slice(11,16))}${day ? ' the night before' : ''}. She may bring a second artist, and she'll talk it through on your call.`);
-}
 function emailFix(v){
   const m = v.toLowerCase().match(/^([^\s@]+)@([^\s@]+)$/); if(!m) return null;
   const known = { gmail:'gmail.com', gmial:'gmail.com', gmai:'gmail.com', gamil:'gmail.com', hotmail:'hotmail.com', hotmial:'hotmail.com',
@@ -933,7 +934,6 @@ const DEPENDS = {
 function clearAnswer(id){
   delete S.answers[id];
   (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
-  if(id === 'ready_by' || id === 'quantity') S.earlyNoted = false;
 }
 async function goBack(){
   if(S.busy){ S.skip = true; await S.typing }
@@ -1085,7 +1085,6 @@ async function answer(q, value, shown){
   if(q.id === 'name' && !S.started){ S.started = true; unlockPlus() }
   if(['category','sub_style'].includes(q.id) && S.tab === 'all') renderGallery();
   if(q.id === 'location') await travelNote();
-  if(['quantity','ready_by'].includes(q.id)) await earlyCheck();
   updateDev();
   if(S.returnToSummary){ S.returnToSummary = false; }
   askNext();
@@ -1340,17 +1339,12 @@ async function submit(){
 /* ---------- the final prompt: schedule the phone call on Chanel's cal.com Enquiry form ---------- */
 function bookCard(){
   if(document.querySelector('.bookcard')) return;
-  const ph = val('phone'), c = document.createElement('div'); c.className = 'bookcard';
-  c.innerHTML = `<div class="bc-h"><span class="bc-ic">📞</span><div><b>Schedule your phone call</b>
-      <small>Free · 15 minutes · Chanel calls you${ph ? ' on ' + esc(ph) : ''}</small></div></div>
-    <a class="book" href="${esc(calUrl())}" id="bookBtn">Choose a time <span aria-hidden="true">→</span></a>
-    <small class="bc-f">${S.sent ? "Chanel's booking page opens in a new tab" : `Chanel's booking form opens right here · <a href="${esc(calUrl())}" target="_blank" rel="noopener">open in a new tab</a>`}</small>`;
+  const c = document.createElement('div'); c.className = 'bookcard';
+  c.innerHTML = `<div class="bc-h"><span class="bc-ic">📞</span><div><b>Schedule your phone call</b><small>Free · 15 minutes · Chanel calls you</small></div></div>
+    <a class="book" href="${esc(calUrl())}" id="bookBtn" target="_blank" rel="noopener">Choose a time →</a>
+    <small class="bc-f">${CONFIG.embeddedConsultation ? 'Book here in the chat · ' : ''}<a href="${esc(calUrl())}" target="_blank" rel="noopener">Open booking page in a new tab</a></small>`;
   msgs.appendChild(c); scroll();
-  const b = c.querySelector('#bookBtn');
-  if(S.sent){
-    b.target = '_blank'; b.rel = 'noopener';
-    b.onclick = () => setTimeout(() => showSent(sentRecord() || saveSent(liveMode()), true), 150);   // the link opens cal.com; the chat closes to the details view
-  } else b.onclick = e => { e.preventDefault(); openCal() };
+  if(CONFIG.embeddedConsultation) c.querySelector('#bookBtn').onclick = e => { e.preventDefault(); openCal() };
 }
 
 /* ---------- after sending: keep a read-only view of the enquiry, and no second enquiry ---------- */
@@ -1365,14 +1359,15 @@ function saveSent(keep = true){   // keep=false in ?localdb practice mode: show 
   const rec = { id:S.enquiryId, at:now, name:val('name'), cal:calUrl(),
     until: ev ? Math.max(new Date(ev + 'T23:59:59').getTime(), now + 864e5) : now + 60*864e5,   // locked until the event day has passed (60 days if no date)
     booking: qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(f), contact: qs.filter(q => contact.includes(q.id)).map(f),
-    picks: S.refs.map(x => thumb(x.src)).concat(S.affs.map(x => x.avatar)),
+    picks: S.refs.map(x => thumb(x.src)), affiliates: S.affs.map(x => ({ h:x.h, name:x.name, avatar:x.avatar })),
+    consultation: sentRecord()?.consultation || null,
     est: est ? { t:(est.open ? 'from ' : '') + money(est.total), lines:est.lines.join(' · ') } : null };
   if(keep) try{ localStorage.setItem(SENT_KEY, JSON.stringify(rec)) }catch(e){}
   return rec;
 }
 function showSent(r, booked){
   if(!r) return;
-  S.sent = true; S.started = true; S.busy = false;
+  S.sent = true; S.enquiryId = r.id; S.started = true; S.busy = false;
   document.body.classList.add('locked'); comp.innerHTML = ''; $('#status').textContent = 'Enquiry sent';
   const grid = xs => `<div class="cf-grid">${xs.map(x => `<div class="fld"><small>${esc(x.l)}</small><b>${esc(x.v)}</b></div>`).join('')}</div>`;
   const when = new Date(r.at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
@@ -1381,25 +1376,99 @@ function showSent(r, booked){
     <p class="sv-note">${booked
       ? "Chanel's booking page has opened in a new tab: pick a time there for your free phone call."
       : `Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel has your details and will be in touch. Here's what you sent.`}</p>
+    ${consultationCard(r)}
     <div class="cf-sec"><span class="cf-l">Your booking</span>${grid(r.booking || [])}</div>
     <div class="cf-sec"><span class="cf-l">Contact</span>${grid(r.contact || [])}</div>
     ${(r.picks || []).length ? `<div class="cf-sec"><span class="cf-l">Your picks</span><div class="refs">${r.picks.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div></div>` : ''}
     ${r.est ? `<div class="est"><b>Estimate: ${esc(r.est.t)}</b><span>${esc(r.est.lines)}</span><span>Chanel confirms your final quote on your phone call.</span></div>` : ''}
-    <a class="send-big" href="${esc(r.cal)}" target="_blank" rel="noopener">📞 ${booked ? 'Open the booking page again' : 'Schedule your phone call'} <span aria-hidden="true">→</span></a>
+    ${!r.consultation ? `<a class="send-big" id="resumeBooking" href="${esc(r.cal)}" target="_blank" rel="noopener">📞 Schedule your phone call →</a>` : ''}
+    ${affiliateTiles(r)}
     <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to send another enquiry.</small></div>
   </div>`;
   const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
+  const resume = $('#resumeBooking');
+  if(resume && CONFIG.embeddedConsultation) resume.onclick = e => { e.preventDefault(); openCal(r.cal) };
+  $('#retryConsultation')?.addEventListener('click', () => syncConsultation(r));
   top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
 }
-/* cal.com's Enquiry form, embedded over the chat so the client never leaves the page */
-function openCal(){
+/* Consultation status is persisted locally; only server-verified Cal records update the CRM. */
+function normaliseConsultation(data){
+  if(!data || typeof data.uid !== 'string' || !/^[A-Za-z0-9_-]{8,100}$/.test(data.uid)) return null;
+  const start = new Date(data.startTime), end = new Date(data.endTime);
+  if(!Number.isFinite(+start) || !Number.isFinite(+end) || end <= start) return null;
+  const status = String(data.status || '').toUpperCase();
+  return { uid:data.uid, startTime:start.toISOString(), endTime:end.toISOString(),
+    status:['ACCEPTED','CONFIRMED'].includes(status) ? 'confirmed' : 'pending', synced:false };
+}
+function consultationCard(r){
+  const c = r.consultation; if(!c) return '';
+  const when = new Date(c.startTime).toLocaleString('en-AU', {timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'});
+  return `<section class="consult-result" aria-live="polite"><b>${c.status === 'confirmed' ? 'Phone call confirmed' : 'Phone call requested · awaiting approval'}</b><p>${esc(when)} · Brisbane time</p>
+    <small>${c.synced ? 'Linked to your enquiry.' : c.syncing ? 'Linking to your enquiry…' : 'Your call is saved with Cal.com. Linking to your enquiry is pending.'}</small>
+    ${!c.synced && !c.syncing ? '<button type="button" class="chip" id="retryConsultation">Retry linking</button>' : ''}</section>`;
+}
+function affiliateTiles(r){
+  if(!r.consultation || r.consultation.status !== 'confirmed') return '';
+  const list = (r.affiliates || []).filter(x => /^[A-Za-z0-9._]{1,30}$/.test(x.h || ''));
+  if(!list.length) return '';
+  return `<section class="selected-artists"><h3>Your selected artists</h3><p>Contact each artist to arrange their service and availability.</p><div class="artist-tiles">${list.map(x =>
+    `<article class="artist-tile">${x.avatar ? `<img src="${esc(x.avatar)}" alt="" loading="lazy">` : ''}<b>${esc(x.name || '@'+x.h)}</b><small>@${esc(x.h)}</small><a class="book" href="https://ig.me/m/${encodeURIComponent(x.h)}" target="_blank" rel="noopener">DM on Instagram ↗</a></article>`).join('')}</div></section>`;
+}
+function storeConsultation(r){
+  if(liveMode()) try{ localStorage.setItem(SENT_KEY, JSON.stringify(r)) }catch(e){}
+  S.consultationRecord = r;
+}
+async function syncConsultation(r){
+  if(!CONFIG.consultationSync || !r?.id || !r.consultation || r.consultation.synced || S.syncBusy) return;
+  S.syncBusy = true; r.consultation.syncing = true; storeConsultation(r); showSent(r,false);
+  try{
+    if(!liveMode()) throw new Error('Practice mode');
+    const res = await fetch(`${CONFIG.supabaseUrl}/functions/v1/consultation-sync`, {method:'POST',headers:{'Content-Type':'application/json',apikey:CONFIG.supabaseAnonKey,Authorization:'Bearer '+CONFIG.supabaseAnonKey},
+      body:JSON.stringify({enquiryId:r.id,uid:r.consultation.uid}),signal:AbortSignal.timeout(18000)});
+    if(!res.ok) throw new Error('Link pending');
+    const verified = normaliseConsultation(await res.json());
+    if(!verified) throw new Error('Invalid confirmation');
+    r.consultation = {...verified,synced:true};
+  }catch(e){ r.consultation.syncing = false }
+  finally{ S.syncBusy = false; storeConsultation(r); showSent(r,false) }
+}
+function onCalMessage(e){
+  const frame = document.querySelector('#calEmbed iframe');
+  if(!frame || e.source !== frame.contentWindow || !['https://app.cal.com','https://cal.com'].includes(e.origin)) return;
+  const m = e.data;
+  if(!m || typeof m !== 'object' || !['CAL:cmm-consult:bookingSuccessfulV2','CAL:cmm-consult:rescheduleBookingSuccessfulV2'].includes(m.fullType)) return;
+  const c = normaliseConsultation(m.data); if(!c || !S.enquiryId) return;
+  const r = sentRecord() || S.consultationRecord || saveSent(liveMode());
+  if(r.consultation?.uid === c.uid && r.consultation.startTime === c.startTime && r.consultation.status === c.status) return;
+  r.consultation = c; storeConsultation(r);
+  $('#calPanel')?.classList.remove('on'); showSent(r,false); syncConsultation(r);
+}
+window.addEventListener('message', onCalMessage);
+function openCal(savedUrl){
+  const url = savedUrl || sentRecord()?.cal || calUrl();
+  if(!CONFIG.embeddedConsultation){ window.open(url,'_blank','noopener'); return }
   let p = $('#calPanel');
   if(!p){
     p = document.createElement('div'); p.id = 'calPanel';
     p.innerHTML = `<div class="cp-h"><b>Choose a time for your phone call</b><button class="hbtn" id="cpClose">← Back to chat</button></div>
-      <iframe title="Chanel Monroe booking form" src="${esc(calUrl() + '&embed=true&theme=light')}" allow="payment"></iframe>`;
-    document.body.appendChild(p);
-    p.querySelector('#cpClose').onclick = () => p.classList.remove('on');
+      <p class="cp-fallback">Having trouble? <a href="${esc(url)}" target="_blank" rel="noopener">Open booking page in a new tab</a></p><div id="calEmbed"></div>`;
+    document.body.appendChild(p); p.querySelector('#cpClose').onclick = () => p.classList.remove('on');
+    // Official Cal embed queue; the external link remains usable if the script fails.
+    if(!window.Cal){
+      (function(C,A,L){
+        const push = (a,ar) => a.q.push(ar);
+        C.Cal = function(){ const cal=C.Cal, ar=arguments;
+          if(!cal.loaded){cal.ns={};cal.q=cal.q||[];const script=document.createElement('script');script.src=A;script.async=true;document.head.appendChild(script);cal.loaded=true}
+          if(ar[0]===L){const api=function(){push(api,arguments)};api.q=[];const ns=ar[1];
+            if(typeof ns==='string'){cal.ns[ns]=cal.ns[ns]||api;push(cal.ns[ns],ar);push(cal,['initNamespace',ns])}else push(cal,ar);return}
+          push(cal,ar);
+        };
+      })(window,'https://app.cal.com/embed/embed.js','init');
+    }
+    window.Cal('init','cmm-consult',{origin:'https://app.cal.com'});
+    const api = window.Cal.ns['cmm-consult'];
+    const u = new URL(url), config = Object.fromEntries(u.searchParams);
+    api('inline',{elementOrSelector:'#calEmbed',calLink:u.pathname.slice(1),config:{...config,layout:'month_view',theme:'light'}});
   }
   requestAnimationFrame(() => p.classList.add('on'));
 }
@@ -1498,8 +1567,9 @@ function calUrl(){
   if(calStyle) p.set('Style', calStyle);   // the "Style" checkbox on the Enquiry booking page
   const notes = [L?.name || cat(a).name, val('sub_style'), a.event_date && 'event ' + fmtDate(a.event_date), a.location && (a.location + (travel()?.km ? ' ~' + travel().km + ' km' : '')),
     est && 'est. ' + (est.open ? 'from ' : '') + money(est.total), S.refs.length && S.refs.length + ' reference looks',
-    S.affs.length && 'with ' + S.affs.map(x => '@'+x.h).join(' '), S.enquiryId && 'Ref ' + String(S.enquiryId).slice(0,8)].filter(Boolean).join(' · ');
+    S.affs.length && 'with ' + S.affs.map(x => '@'+x.h).join(' '), S.enquiryId && 'Enquiry reference: ' + S.enquiryId].filter(Boolean).join(' · ');
   p.set('notes', notes);
+  if(S.enquiryId) p.set('metadata[cmmEnquiryId]', S.enquiryId);
   return CONFIG.calLink + '?' + p.toString();
 }
 /* ---------- LOCAL TEST DATABASE ----------
@@ -1800,7 +1870,7 @@ $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
 function restart(){
   try{ localStorage.removeItem(SENT_KEY) }catch(e){} document.body.classList.remove('locked');
   sideSeen = new Set();
-  Object.assign(S, { teamAll:false, forUsed:false, forFilled:false, history:[], earlyNoted:false, answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
+  Object.assign(S, { teamAll:false, forUsed:false, forFilled:false, history:[], answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
   msgs.innerHTML = ''; comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
 }
 function autofill(){
@@ -1843,7 +1913,7 @@ async function loadFirst(sources, key){
   S.byGroup = {};
   await Promise.race([loadPrices(), wait(1500)]);
   const sent = liveMode() ? sentRecord() : null;
-  if(sent){ showSent(sent, false); return }
+  if(sent){ showSent(sent, false); if(sent.consultation && !sent.consultation.synced) syncConsultation(sent); return }
   askNext();
 })();
 </script>
