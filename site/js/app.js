@@ -216,7 +216,7 @@ function buildPricing(){
     var four=shuffle(items().filter(function(x){return x.g===g.id&&!x.own&&x.type!=='video'&&!hid(x)})).slice(0,8);
     var imgs=four.map(function(it,n){return '<figure'+(n?'':' class="on"')+' style="--bg:url(&quot;'+it.src+'&quot;)"><img loading="lazy" src="'+it.src+'" alt="'+esc(desc(it))+'" onerror="this.parentNode.remove()"><figcaption>'+esc(it.s)+' · '+esc(it.by)+'</figcaption></figure>'}).join('')+
       (four.length>1?'<div class="pdots">'+four.map(function(_,n){return '<i'+(n?'':' class="on"')+'></i>'}).join('')+'</div>':'');
-    var rows=g.looks.map(function(k){var L=LOOKS[k];if(!L)return '';return '<li><b>'+esc(L.name)+'</b><span class="amt">'+(L.from?'<small>from</small>':'')+money(L.price)+'<small>'+esc(L.unit)+'</small></span><span class="inc">'+esc(L.includes)+'</span></li>'}).join('');
+    var rows=g.looks.map(function(k){var L=LOOKS[k];if(!L)return '';return '<li><b>'+esc(L.name)+'</b><span class="amt">'+(L.from?'<small>from</small>':'')+money(L.price)+'<small>'+esc(L.unit)+'</small><a class="pill solid price-book" data-price-book href="enquire.html?service='+encodeURIComponent(k)+'" aria-label="Book '+esc(L.name)+'">Book this look</a></span><span class="inc">'+esc(L.includes)+'</span></li>'}).join('');
     return '<section class="page" data-g="'+g.id+'"><div class="page-h"><h2>'+g.name+'</h2><p>'+g.tag+'</p></div><div class="page-imgs">'+imgs+'</div><ul class="plist">'+rows+'</ul>'+
       '<div class="page-f"><span>Minimum booking '+money(LP.minimumBooking||0)+' · '+(LP.depositPct||0)+'% deposit secures your date · travel included within '+(LP.includedKm||0)+' km · style photos are inspiration, credited to their artists</span><a class="pill solid" style="text-decoration:none" href="'+((window.BOOKING_LINKS||{})[g.id]||BOOK)+'" target="_blank" rel="noopener">Book '+g.name+'</a></div></section>'}).join('');
   $('poDots').innerHTML=GROUPS.map(function(g,i){return '<button data-i="'+i+'">'+g.name+'</button>'}).join('');
@@ -838,7 +838,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
     var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
-    if(fr&&fr.dataset.form===form&&(form!=='apply.html'||fr.dataset.href===href)){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
+    if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
