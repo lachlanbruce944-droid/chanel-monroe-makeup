@@ -479,6 +479,14 @@ body.details-side #side.empty::before{content:"Your booking builds here as we ch
 body.details-side .tiles{grid-template-columns:1fr}
 @media (orientation:portrait){ body.details-side .tiles{grid-template-columns:1fr 1fr} }
 
+/* Text lookup shares the chat composer and keeps every result keyboard accessible. */
+.style-search{margin-bottom:10px}.style-search label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.style-search input{box-sizing:border-box;width:100%;min-height:44px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--card);color:var(--fg);font:inherit;font-size:16px}
+.style-search-count{font-size:12px;line-height:1.4;color:var(--soft);margin:6px 0}
+.style-results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;max-height:32dvh;overflow:auto;overscroll-behavior:contain}
+.style-result{text-align:left;padding:10px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--fg);min-height:44px;white-space:normal}
+.style-result strong,.style-result small{display:block}.style-result small{font-size:11px;color:var(--soft);margin-top:3px}
+.idx[hidden]{display:none!important}.style-result:focus-visible,.style-search input:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
 /* ===== indexed style list ===== */
 .idx{display:grid;grid-template-columns:minmax(150px,.9fr) 1.3fr;gap:8px;animation:pop .3s var(--ease) both}
 .idx-l,.idx-r{display:flex;flex-direction:column;gap:3px;min-width:0}
@@ -765,6 +773,22 @@ const qtyKind = a => { if(a.category === 'lesson') return 'none'; const L = look
   if(L.unit === 'per look') return 'looks'; if(L.unit === 'per character') return 'characters'; if(a.category === 'lesson') return 'none'; return 'people' };
 const faceWork = a => !['mini-paint','body-paint'].includes(a.look);
 
+/* Phrase aliases point only to existing styles; this search never changes pricing or submits an enquiry. */
+const STYLE_PHRASES = {
+ 'Classic bridal':'timeless wedding bride elegant traditional', 'Natural radiant bride':'natural wedding bridal fresh glowing light bride', 'Groom grooming':'groom male mens wedding',
+ 'Soft glam':'smoky smokey eyes subtle glamour soft romantic', 'Full glam':'dramatic bold smoky smokey glamorous red carpet', 'Bronzed coastal glam':'bronze beach sunkissed warm tan', 'Old Hollywood':'vintage retro red lip classic hollywood', 'Race day glam':'races melbourne cup gala awards', 'Mature skin glam':'older mature mother bride elegant',
+ 'No-makeup makeup':'barely there minimal natural no makeup light coverage', 'Clean polished':'clean girl work office polished professional', 'Fresh lift':'fresh lifted youthful', 'Dewy glass skin':'dewy glass glowy glowing luminous glossy skin', 'Sun-kissed bronze':'sunkissed bronze beach warm natural', 'Mature natural':'older mature natural mother', 'Sensitive skin':'sensitive gentle reactive skin', 'Maternity glow':'pregnant pregnancy maternity glow',
+ 'Beauty close-up':'beauty closeup campaign studio', 'Graphic liner':'eyeliner graphic bold liner', 'Editorial graphic liner':'fashion editorial graphic liner', 'Colour block and gloss':'color colour bright colourful colorful glossy', 'Lip art':'creative lips lipstick art', 'Avant-garde':'avant garde experimental runway artistic', 'Music video and album art':'music video musician album cover', 'Stage and theatre':'theater theatre stage performance dance',
+ 'SFX and prosthetics':'special effects sfx prosthetic wounds scars zombie horror monster', 'Body paint':'bodypaint body painting painted', 'Cosplay recreation':'cosplay anime comic recreation', 'Halloween character':'halloween spooky vampire witch skeleton horror', 'Fancy dress':'costume fancy dress themed character', 'UV neon':'uv neon glow dark fluorescent',
+ 'Glitter bar and gems':'festival sparkle sparkly glitter rhinestones gems', 'Kids face paint':'children child kids childrens facepaint face painting birthday', 'Express designs':'quick express small fast designs', 'Easter':'easter bunny rabbit', 'Christmas and New Year':'christmas xmas nye new year festive', 'Holiday specials':'holiday seasonal celebration'
+};
+function styleWords(text){return String(text||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/weddings?/g,'bridal').replace(/make[ -]?up/g,' ').replace(/[^a-z0-9]+/g,' ').trim().split(/\s+/).filter(w=>w&&!['i','im','a','an','the','want','would','like','looking','for','something','with','and','or','my','me','look','looks','please','to','of'].includes(w))}
+function searchStyles(query){
+ const words=[...new Set(styleWords(query))];if(!words.length)return [];
+ const entries=CATS.flatMap(c=>(c.subs.length?c.subs:['Makeup lesson']).map(sub=>({category:c.id,categoryName:c.name,sub,terms:styleWords(sub+' '+c.name+' '+(STYLE_PHRASES[sub]||'')+(c.id==='lesson'?' learn tutorial class teaching beginner own kit':''))})));
+ return entries.map(e=>({...e,score:words.reduce((n,w)=>n+(e.terms.some(t=>t===w)?3:w.length>=3&&e.terms.some(t=>t.startsWith(w))?1:0),0),matches:words.every(w=>e.terms.some(t=>t===w||(w.length>=3&&t.startsWith(w))))})).filter(e=>e.matches).sort((a,b)=>b.score-a.score||a.sub.localeCompare(b.sub));
+}
+
 /* ---------- QUESTIONS ----------
    Only name, email and mobile need typing; everything else is a tap.
    options can be a list or a function of the answers; an option can be 'text' or { v, l, n } (value, label, small note).
@@ -779,7 +803,7 @@ const QUESTIONS = [
     ask:a => { const g = suggestion('category');
       return `${a.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(a.name)}!`}\nThe + buttons on the photos are on now, so save any looks you love.\n\n` +
         (g ? `You've been browsing ${CATS.find(c => c.id === g).name.toLowerCase()}, so I've opened that section.\n` : '') +
-        'Pick a booking type, then the style you love.' } },
+        'Search for a look in your own words, or pick a booking type and style below.' } },
   { id:'look', label:'Service', type:'chips', when:a => a.category !== 'lesson',
     options:a => cat(a).looks.map(k => ({ v:k, l:PRICES.looks[k]?.name || k, n:priceTag(k) })).concat([{ v:'unsure', l:'Not sure yet' }]),
     ask:a => ({ bridal:'Is this for the bride, or the bridal party and family?', glam:'Which event is it for?', natural:'Which suits you best?',
@@ -1106,7 +1130,22 @@ function renderIndex(q){
   if(FOR && FOR.length > 1) S.forUsed = true;   // a second visit (after Back) shows every booking type
   box.append(left, right);
   const foot = document.createElement('div'); foot.className = 'idx-foot chips';
-  comp.append(box, foot);
+  const search = document.createElement('div');search.className='style-search';
+  const label=document.createElement('label');label.htmlFor='styleSearch';label.textContent='Find your preferred look';
+  const input=document.createElement('input');input.id='styleSearch';input.type='search';input.placeholder='Try soft glam, natural wedding, smoky eyes…';input.autocomplete='off';input.maxLength=160;
+  input.setAttribute('aria-controls','styleResults');
+  const count=document.createElement('p');count.className='style-search-count';count.setAttribute('role','status');count.setAttribute('aria-live','polite');
+  const results=document.createElement('div');results.id='styleResults';results.className='style-results';
+  input.addEventListener('input',()=>{
+    results.replaceChildren();const query=input.value.trim();box.hidden=!!query;
+    if(!query){count.textContent='Or browse booking types below.';return}
+    const matches=searchStyles(query);count.textContent=matches.length ? `${matches.length} matching styles. Choose one to continue.` : 'No matching style yet. Try “natural”, “glam” or “Halloween”, or clear the search to browse.';
+    matches.forEach(m=>{const b=document.createElement('button');b.type='button';b.className='style-result';
+      const title=document.createElement('strong');title.textContent=m.sub;const detail=document.createElement('small');detail.textContent=m.categoryName;
+      b.append(title,detail);b.onclick=()=>pick(m.category,m.category==='lesson'?null:m.sub);results.appendChild(b)});
+  });
+  count.textContent='Or browse booking types below.';search.append(label,input,count,results);
+  comp.append(search,box,foot);
 }
 function _renderComposer(q){
   if(q.type === 'index') return renderIndex(q);
