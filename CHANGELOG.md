@@ -2,6 +2,9 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-17 (simplify consultation submission message)
+- After the Cal.com form is submitted, show only the requested date/time and the approval/email confirmation message. Removed client-facing Retry linking / Check approval status buttons and technical sync messages. CRM linking continues in the background.
+
 ### 2026-11-17 (consultation confirmation and selected artists)
 - Removed the chat early-start warning. Embedded Cal booking now receives completion events, shows confirmed/pending phone-call date and time in Brisbane time, and preserves the result on reopening.
 - Selected affiliates appear as large image tiles with direct Instagram DM buttons after a confirmed consultation. No message is sent or prefilled.
