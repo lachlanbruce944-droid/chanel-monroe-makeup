@@ -174,9 +174,9 @@ body[data-cap="b"] .capbar{visibility:hidden}
 .plist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:28px;border-top:1px solid var(--line)}
 .plist li{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:11px 0;border-bottom:1px solid var(--line)}
 .plist b{font-weight:500;font-size:15px}
-.plist .amt{text-align:right;font-weight:600;white-space:nowrap}
+.plist li>b{min-width:0;overflow-wrap:anywhere}.plist .amt{grid-column:2;grid-row:1 / span 2;align-self:start;text-align:right;font-weight:600;white-space:nowrap}
 .plist .amt small{display:block;font-weight:400;color:var(--soft);font-size:11.5px}
-.plist .inc{grid-column:1/-1;color:var(--soft);font-size:12.5px;line-height:1.35}
+.plist .inc{grid-column:1;grid-row:2;color:var(--soft);font-size:12.5px;line-height:1.35}
 .page-f{margin-top:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--soft);padding-top:6px}
 .page-f .pill{margin-left:auto}
 .po-foot{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;background:var(--bg);border-top:1px solid var(--line);color:var(--fg)}
@@ -187,6 +187,8 @@ body[data-cap="b"] .capbar{visibility:hidden}
 .dots button[aria-current="true"]{background:var(--fg);color:var(--bg)}
 .po-tabs{display:none}
 .po .x{z-index:3;color:var(--fg);top:16px;right:18px;background:var(--bg)}
+/* Each price owns its booking action; descriptions stay in a separate grid column. */
+.plist .price-book{display:block;width:fit-content;margin:8px 0 0 auto;padding:8px 10px;font-size:10px;line-height:1.3;letter-spacing:.03em;white-space:normal;text-decoration:none;text-align:center;max-width:120px}
 /* Pricing B: tabs down the side */
 .po[data-layout="b"] .po-sheet{flex-direction:row}
 .po[data-layout="b"] .po-tabs{display:flex;flex-direction:column;gap:4px;width:220px;flex:none;padding:26px 14px;background:#151313;color:#f2ece6}
@@ -1438,7 +1440,7 @@ function buildPricing(){
     var four=shuffle(items().filter(function(x){return x.g===g.id&&!x.own&&x.type!=='video'&&!hid(x)})).slice(0,8);
     var imgs=four.map(function(it,n){return '<figure'+(n?'':' class="on"')+' style="--bg:url(&quot;'+it.src+'&quot;)"><img loading="lazy" src="'+it.src+'" alt="'+esc(desc(it))+'" onerror="this.parentNode.remove()"><figcaption>'+esc(it.s)+' · '+esc(it.by)+'</figcaption></figure>'}).join('')+
       (four.length>1?'<div class="pdots">'+four.map(function(_,n){return '<i'+(n?'':' class="on"')+'></i>'}).join('')+'</div>':'');
-    var rows=g.looks.map(function(k){var L=LOOKS[k];if(!L)return '';return '<li><b>'+esc(L.name)+'</b><span class="amt">'+(L.from?'<small>from</small>':'')+money(L.price)+'<small>'+esc(L.unit)+'</small></span><span class="inc">'+esc(L.includes)+'</span></li>'}).join('');
+    var rows=g.looks.map(function(k){var L=LOOKS[k];if(!L)return '';return '<li><b>'+esc(L.name)+'</b><span class="amt">'+(L.from?'<small>from</small>':'')+money(L.price)+'<small>'+esc(L.unit)+'</small><a class="pill solid price-book" data-price-book href="enquire.html?service='+encodeURIComponent(k)+'" aria-label="Book '+esc(L.name)+'">Book this look</a></span><span class="inc">'+esc(L.includes)+'</span></li>'}).join('');
     return '<section class="page" data-g="'+g.id+'"><div class="page-h"><h2>'+g.name+'</h2><p>'+g.tag+'</p></div><div class="page-imgs">'+imgs+'</div><ul class="plist">'+rows+'</ul>'+
       '<div class="page-f"><span>Minimum booking '+money(LP.minimumBooking||0)+' · '+(LP.depositPct||0)+'% deposit secures your date · travel included within '+(LP.includedKm||0)+' km · style photos are inspiration, credited to their artists</span><a class="pill solid" style="text-decoration:none" href="'+((window.BOOKING_LINKS||{})[g.id]||BOOK)+'" target="_blank" rel="noopener">Book '+g.name+'</a></div></section>'}).join('');
   $('poDots').innerHTML=GROUPS.map(function(g,i){return '<button data-i="'+i+'">'+g.name+'</button>'}).join('');
@@ -2068,7 +2070,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function open(href){
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
     var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
-    if(fr&&fr.dataset.form===form&&(form!=='apply.html'||fr.dataset.href===href)){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
+    if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
     ov.innerHTML='<iframe title="Enquire with Chanel Monroe Makeup" src="'+href.replace(/"/g,'&quot;')+'" allow="fullscreen; payment" allowtransparency="true" style="width:100%;height:100%;border:0;display:block;background:transparent"></iframe>';
