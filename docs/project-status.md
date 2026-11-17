@@ -77,3 +77,7 @@ Prices live only in `settings/pricing-settings.js` (LOOK_PRICES). Do not copy pr
 - Retry checklist and Google Business Profile draft: Claude Doc "Chanel Monroe Makeup: retry checklist & Google Business Profile" (https://claude.ai/artifact/LQjkivoQJEEE5taw4wBx2N).
 - Re-scrape affiliate photos and Chanel's comments now and then; both are snapshots from 2026-11-12.
 
+
+## Verification (17 November 2026)
+
+Six automated enquiry/search/navigation checks passed. Live checks: all 26 pricing rows have booking buttons below the price with clear description columns; booking opens the matching service form; pricing closes before the enquiry; Browse looks allows desktop section navigation and return without losing answers. Mobile menu opened and navigated while browsing at 390 × 844. Desktop affiliate popup filled available space at 1440 × 900 with centred profile and equal-height photo rows. No test enquiry was submitted.
