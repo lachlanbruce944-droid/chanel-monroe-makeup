@@ -131,9 +131,9 @@ body[data-cap="b"] .capbar{visibility:hidden}
 .plist{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:28px;border-top:1px solid var(--line)}
 .plist li{display:grid;grid-template-columns:1fr auto;gap:2px 14px;padding:11px 0;border-bottom:1px solid var(--line)}
 .plist b{font-weight:500;font-size:15px}
-.plist .amt{text-align:right;font-weight:600;white-space:nowrap}
+.plist li>b{min-width:0;overflow-wrap:anywhere}.plist .amt{grid-column:2;grid-row:1 / span 2;align-self:start;text-align:right;font-weight:600;white-space:nowrap}
 .plist .amt small{display:block;font-weight:400;color:var(--soft);font-size:11.5px}
-.plist .inc{grid-column:1/-1;color:var(--soft);font-size:12.5px;line-height:1.35}
+.plist .inc{grid-column:1;grid-row:2;color:var(--soft);font-size:12.5px;line-height:1.35}
 .page-f{margin-top:auto;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12.5px;color:var(--soft);padding-top:6px}
 .page-f .pill{margin-left:auto}
 .po-foot{display:flex;align-items:center;justify-content:center;gap:14px;padding:10px;background:var(--bg);border-top:1px solid var(--line);color:var(--fg)}
@@ -144,6 +144,8 @@ body[data-cap="b"] .capbar{visibility:hidden}
 .dots button[aria-current="true"]{background:var(--fg);color:var(--bg)}
 .po-tabs{display:none}
 .po .x{z-index:3;color:var(--fg);top:16px;right:18px;background:var(--bg)}
+/* Each price owns its booking action; descriptions stay in a separate grid column. */
+.plist .price-book{display:block;width:fit-content;margin:8px 0 0 auto;padding:8px 10px;font-size:10px;line-height:1.3;letter-spacing:.03em;white-space:normal;text-decoration:none;text-align:center;max-width:120px}
 /* Pricing B: tabs down the side */
 .po[data-layout="b"] .po-sheet{flex-direction:row}
 .po[data-layout="b"] .po-tabs{display:flex;flex-direction:column;gap:4px;width:220px;flex:none;padding:26px 14px;background:#151313;color:#f2ece6}
