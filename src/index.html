@@ -1663,7 +1663,8 @@ function fitAff(){
     var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom);
     // Measure unscaled layout height; flex shrinking and page zoom cannot disguise overflow.
     var natural=Math.max(w.scrollHeight,w.offsetHeight);
-    w.style.zoom=Math.max(.85,Math.min(1,room/Math.max(1,natural)));
+    var fitted=Math.max(.85,Math.min(1,room/Math.max(1,natural)));w.style.zoom=fitted;
+    sd.style.justifyContent=document.body.classList.contains('m')||natural*fitted>room?'flex-start':'center';
     sd.scrollTop=0;
   });
 }
