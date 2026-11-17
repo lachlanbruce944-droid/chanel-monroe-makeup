@@ -7,7 +7,7 @@ All notable changes to the Chanel Monroe Makeup website, newest first. Every cha
 - Selected affiliates appear as large image tiles with direct Instagram DM buttons after a confirmed consultation. No message is sent or prefilled.
 - CONFIG.embeddedConsultation=false restores the external booking link; a new-tab fallback stays visible. CONFIG.consultationSync controls server linking.
 - consultation-sync verifies Cal booking UID, host, event slug, attendee and full enquiry reference before atomically updating the existing CRM booking. Retry is available if linking fails. The function and SQL are in supabase/. Cal API authentication may be required by the provider; use CAL_API_KEY server-side only if required.
-- Thirteen automated website/server checks and ten CRM checks passed. No live appointment created. Private selfie staff-read migration remains pending action-time confirmation.
+- Fourteen automated website/server checks and ten CRM checks passed. Live calendar loads inside chat; mobile panel/close controls verified at 874 × 402 and 390 × 844. Anonymous RPC invocation denied (401). No live appointment created. Private selfie staff-read migration remains pending action-time confirmation.
 
 ### 2026-11-17 (book from each price)
 - Each service price now has a Book this look button below it, in a separate grid column from its description. Buttons pass a validated service key into the enquiry chat, prefilling category and service while leaving style preference/client details for the client. Wedding trial can be selected directly.
