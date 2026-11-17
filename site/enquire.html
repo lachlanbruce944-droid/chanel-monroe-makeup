@@ -722,7 +722,7 @@ const GROUPS = [
 const PRICE_FALLBACK = {"meta":{"currency":"$","minimumBooking":150,"depositPct":30,"includedKm":20},"looks":{"bridal-look":{"name":"Bridal look","unit":"per bride","price":375,"from":false},"bridal-party":{"name":"Bridal party and family","unit":"per person","price":170,"from":false},"formal":{"name":"Formal and graduation","unit":"per person","price":195,"from":false},"gala":{"name":"Gala, awards and race day","unit":"per person","price":220,"from":false},"milestone":{"name":"Milestone celebration","unit":"per person","price":195,"from":false},"trial":{"name":"Wedding trial","unit":"per trial","price":250,"from":false},"shoot-look":{"name":"Photoshoot look","unit":"per look","price":240,"from":false},"close-up":{"name":"Beauty close-up","unit":"per look","price":275,"from":false},"statement":{"name":"High fashion and statement","unit":"per look","price":300,"from":false},"sfx":{"name":"SFX and prosthetics","unit":"per character","price":520,"from":true},"body-paint":{"name":"Body paint","unit":"per person","price":600,"from":true},"half-day":{"name":"Half day on set","unit":"per booking","price":720,"from":false},"full-day":{"name":"Full day on set","unit":"per booking","price":1350,"from":false},"halloween":{"name":"Halloween","unit":"per person","price":150,"from":false},"easter":{"name":"Easter","unit":"per person","price":110,"from":false},"christmas":{"name":"Christmas and New Year","unit":"per person","price":145,"from":false},"birthday":{"name":"Birthdays and celebrations","unit":"per person","price":145,"from":false},"festival":{"name":"Festivals and day parties","unit":"per person","price":100,"from":false},"hens":{"name":"Hens and themed nights","unit":"per person","price":150,"from":false},"character":{"name":"Full character","unit":"per person","price":280,"from":false},"mini-paint":{"name":"Mini face paint (10 people or more)","unit":"per person","price":20,"from":false},"natural":{"name":"Everyday natural","unit":"per person","price":145,"from":false},"headshot":{"name":"Headshots and work","unit":"per person","price":165,"from":false},"portrait":{"name":"Outdoor and family portraits","unit":"per person","price":140,"from":false},"sensitive":{"name":"Sensitive skin","unit":"per person","price":190,"from":false},"lesson":{"name":"Makeup lesson","unit":"per person","price":280,"from":false}}};
 let PRICES = PRICE_FALLBACK;
 const CATS = [
-  { id:'bridal',    name:'Bridal',              looks:['bridal-look','bridal-party'],                       subs:['Classic bridal','Natural radiant bride','Groom grooming'] },
+  { id:'bridal',    name:'Bridal',              looks:['bridal-look','bridal-party','trial'],                       subs:['Classic bridal','Natural radiant bride','Groom grooming'] },
   { id:'glam',      name:'Glam & events',       looks:['formal','gala','milestone'],                        subs:['Soft glam','Full glam','Bronzed coastal glam','Old Hollywood','Race day glam','Mature skin glam'] },
   { id:'natural',   name:'Natural & everyday',  looks:['natural','headshot','portrait','sensitive'],        subs:['No-makeup makeup','Clean polished','Fresh lift','Dewy glass skin','Sun-kissed bronze','Mature natural','Sensitive skin','Maternity glow'] },
   { id:'editorial', name:'Editorial & shoots',  looks:['shoot-look','close-up','statement','half-day','full-day'], subs:['Beauty close-up','Graphic liner','Editorial graphic liner','Colour block and gloss','Lip art','Avant-garde','Music video and album art','Stage and theatre'] },
@@ -764,6 +764,11 @@ const cat = a => CATS.find(c => c.id === a.category) || {};
 const FOR = ({ special:['bridal','glam'], natural:['natural'], editorial:['editorial'], parties:['parties'],
                bridal:['bridal'], glam:['glam'], fx:['fx'], lesson:['lesson'] })[new URLSearchParams(location.search).get('for')] || null;
 const FOR_CAT = FOR ? FOR[0] : null;
+const REQUESTED_SERVICE = new URLSearchParams(location.search).get('service');
+function bookingPrefill(service){
+  if(!service || !Object.prototype.hasOwnProperty.call(PRICES.looks,service))return null;
+  const c=CATS.find(c=>c.looks.includes(service));return c ? {category:c.id,look:service} : null;
+}
 const look = a => PRICES.looks[a.category === 'lesson' ? 'lesson' : a.look === 'unsure' ? cat(a).looks?.[0] : a.look] || null;
 const money = n => '$' + Number(n).toLocaleString('en-AU');
 const priceTag = k => { const L = PRICES.looks[k]; return L ? `${L.from ? 'from ' : ''}${money(L.price)} ${L.unit}` : '' };
@@ -1047,6 +1052,10 @@ msgs.addEventListener('click', () => { if(S.busy) S.skip = true });
 async function askNext(){
   const q = nextQ();
   if(!q) return showSummary();
+  if(q.id === 'category' && REQUESTED_SERVICE && !S.forUsed){
+    const chosen=bookingPrefill(REQUESTED_SERVICE);
+    if(chosen){S.forUsed=true;S.forFilled=true;Object.assign(S.answers,chosen);S.history=(S.history||[]).concat('category','look');updateDev();if(S.tab==='all')renderGallery();return askNext()}
+  }
   if(q.id === 'category' && FOR && FOR.length === 1 && !S.forUsed){   // came from a section's Book button
     S.forUsed = true; S.forFilled = true;
     S.answers.category = FOR[0]; S.history = (S.history || []).concat('category');
@@ -1056,7 +1065,7 @@ async function askNext(){
   comp.innerHTML = '';
   let text = q.ask(S.answers);
   if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
-    text = `${S.answers.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(S.answers.name)}!`} You came from ${cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
+    text = `${S.answers.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(S.answers.name)}!`} You selected ${PRICES.looks[S.answers.look]?.name || cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
   const instant = q.id === 'name' && introSeen();
   if(q.id === 'name') try{ sessionStorage.setItem('cmm-intro-seen', '1') }catch(e){}
   S.typing = say(text, () => renderComposer(q), instant);
