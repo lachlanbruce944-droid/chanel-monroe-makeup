@@ -433,7 +433,6 @@ document.addEventListener('click',function(e){var c=e.target.closest('[data-aff]
   $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
 /* the profile panel never scrolls: its content scales down until it fits */
 function fitAff(){
-  if(!document.body.classList.contains('m')){fitPanel($('affBox').querySelector('.side'));return}
   requestAnimationFrame(function(){
     var sd=$('affBox').querySelector('.side'),w=sd&&sd.querySelector('.sin');if(!w)return;
     w.style.zoom=1;
