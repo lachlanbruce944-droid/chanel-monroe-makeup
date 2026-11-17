@@ -12,7 +12,7 @@ Affiliate popup fills available desktop window space; profile centres vertically
 
 ## Enquiry style search and navigation (2026-11-17)
 
-Booking-type step has local phrase search across existing styles. STYLE_PHRASES in src/enquire.html owns aliases; selection keeps the existing service/pricing flow. Browse looks decoration no longer rewrites unchanged button text, preventing an observer loop that froze parent navigation.
+Booking-type step has local phrase search across existing styles. STYLE_PHRASES in src/enquire.html owns aliases; selection keeps the existing service/pricing flow. Pricing/photo overlays close when enquiry opens or lifts to browse, releasing the mobile navigation lock. Browse looks decoration no longer rewrites unchanged button text, preventing an observer loop that froze parent navigation.
 
 ## Associate terminology (2026-11-17)
 
