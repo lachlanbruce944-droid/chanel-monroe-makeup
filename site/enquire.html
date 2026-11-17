@@ -1560,7 +1560,7 @@ function gcalTestLink(){
 function calUrl(){
   // cal.com books the PHONE CONSULT, so no event date is prefilled: the client picks a call time
   const a = S.answers, p = new URLSearchParams(), L = look(a), est = estimate();
-  p.set('timeZone', CONFIG.timezone);
+  p.set('cal.tz', CONFIG.timezone);
   if(a.name) p.set('name', a.name);
   if(val('email')) p.set('email', a.email);
   if(val('phone')){ let ph = a.phone.replace(/[\s()-]/g,''); if(/^0\d{9}$/.test(ph)) ph = '+61' + ph.slice(1); p.set('attendeePhoneNumber', ph) }
