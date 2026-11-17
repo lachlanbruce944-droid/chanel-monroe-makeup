@@ -2,6 +2,10 @@
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.
 
+### 2026-11-17 (book from each price)
+- Each service price now has a Book this look button below it, in a separate grid column from its description. Buttons pass a validated service key into the enquiry chat, prefilling category and service while leaving style preference/client details for the client. Wedding trial can be selected directly.
+- Different pricing selections reopen the matching enquiry rather than reusing an iframe with an old service. No price or payment amount is accepted from the URL.
+
 ### 2026-11-17 (desktop affiliate popup)
 - Desktop popup now fills the window with 20px margins, a vertically centred profile and full-height equal photo rows. Profile fitting measures unscaled layout height and allows scrolling for exceptionally long descriptions. Mobile layout remains separate.
 
