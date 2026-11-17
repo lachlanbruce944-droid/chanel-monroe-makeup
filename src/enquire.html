@@ -1388,7 +1388,6 @@ function showSent(r, booked){
   const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
   const resume = $('#resumeBooking');
   if(resume && CONFIG.embeddedConsultation) resume.onclick = e => { e.preventDefault(); openCal(r.cal) };
-  $('#retryConsultation')?.addEventListener('click', () => syncConsultation(r));
   top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
 }
 /* Consultation status is persisted locally; only server-verified Cal records update the CRM. */
@@ -1403,9 +1402,8 @@ function normaliseConsultation(data){
 function consultationCard(r){
   const c = r.consultation; if(!c) return '';
   const when = new Date(c.startTime).toLocaleString('en-AU', {timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'});
-  return `<section class="consult-result" aria-live="polite"><b>${c.status === 'confirmed' ? 'Phone call confirmed' : 'Phone call requested · awaiting approval'}</b><p>${esc(when)} · Brisbane time</p>
-    <small>${c.synced ? 'Linked to your enquiry.' : c.syncing ? 'Linking to your enquiry…' : 'Your call is saved with Cal.com. Linking to your enquiry is pending.'}</small>
-    ${!c.syncing && (!c.synced || c.status === 'pending') ? `<button type="button" class="chip" id="retryConsultation">${c.synced ? 'Check approval status' : 'Retry linking'}</button>` : ''}</section>`;
+  return `<section class="consult-result" aria-live="polite"><b>Phone consultation request submitted</b><p>${esc(when)} · Brisbane time</p>
+    <p>Your request needs to be approved. A confirmation will be sent to you by email.</p></section>`;
 }
 function affiliateTiles(r){
   if(!r.consultation || r.consultation.status !== 'confirmed') return '';
