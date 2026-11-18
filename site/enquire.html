@@ -1166,7 +1166,7 @@ function _renderComposer(q){
     const refs = q.kind === 'refs', n = () => (refs ? S.refs : S.affs).length;
     const w = document.createElement('div'); w.className = 'chips';
     w.append(chip(refs ? 'Browse looks ↗' : 'Browse team ↗','pri', () => {
-      if(refs && FRAMED) return goSite(true);    // inside the site: pick from the site's own carousel
+      if(refs) return browseReferenceLooks();
       if(!refs){ S.tab = 'team'; renderTabs(); renderGallery() } else if(S.tab === 'team'){ S.tab = CONFIG.simpleGallery ? 'all' : 'glam'; renderTabs(); renderGallery() }
       minimise(true) }));
     const d = chip('', '', () => { if(!n()){ toast(refs ? 'Tap + on a photo first, or choose Skip' : 'Tap + on an artist first, or choose Skip'); return } answer(q, n()) });
@@ -1524,7 +1524,7 @@ function renderGallery(){
       }).join('') + `</div>` : `<div class="empty">${S.affFailed ? "Couldn't load the beauty team." : 'Loading…'}</div>`;
   } else if(S.tab === 'all'){
     // every photo, sorted into style categories (site section > sub-style); the client's own pick comes first
-    const G2 = { lesson:'natural' }[S.answers.category] || S.answers.category, sub = S.answers.sub_style;
+    const G2 = { lesson:'natural' }[S.answers.category] || S.answers.category, sub = S.answers.category === 'lesson' ? 'Makeup lesson' : S.answers.sub_style;
     const order = ['bridal','glam','natural','editorial','fx','parties'];
     if(G2 && order.includes(G2)) order.unshift(...order.splice(order.indexOf(G2),1));
     const by = {}; S.media.forEach(m => ((by[m.g] ||= {})[m.s || 'More looks'] ||= []).push(m));
@@ -1680,11 +1680,26 @@ function updateFab(){
   $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
 }
 const FRAMED = window.self !== window.top;
-$('#browseBtn').onclick = () => FRAMED ? goSite(!!(S.pickComposer && S.pickComposer.refs && S.pickComposer.w.isConnected)) : minimise(true);
+$('#browseBtn').onclick = () => S.pickComposer?.refs && S.pickComposer.w.isConnected ? browseReferenceLooks() : FRAMED ? goSite(false) : minimise(true);
 /* ---------- inside the site (framed): the site's carousel is the gallery ---------- */
+function referenceTarget(){
+  const category = S.answers.category === 'lesson' ? 'natural' : S.answers.category;
+  const selected = CATS.find(c => c.id === S.answers.category);
+  const style = S.answers.category === 'lesson' ? 'Makeup lesson' : selected?.subs.includes(S.answers.sub_style) ? S.answers.sub_style : null;
+  return { category: CATS.some(c => c.id === category) ? category : null, style };
+}
+function browseReferenceLooks(){
+  if(FRAMED) return goSite(true);
+  const target = referenceTarget();
+  S.tab = 'all'; renderTabs(); renderGallery(); minimise(true);
+  const gallery = $('#gallery');
+  const section = target.category && (gallery.querySelector('#cat-' + target.category + ' .subcat.mine') || gallery.querySelector('#cat-' + target.category));
+  gallery.scrollTo({top:section ? section.offsetTop - 50 : 0, behavior:'smooth'});
+}
 function goSite(plus){
   lastRefCount = S.refs.length;
-  parent.postMessage({ cmm:'browse', plus: plus && S.started && !S.sent, picked: S.refs.map(r => r.src) }, '*');
+  const target = referenceTarget();
+  parent.postMessage({ cmm:'browse', plus: plus && S.started && !S.sent, picked: S.refs.map(r => r.src), category:target.category, style:target.style }, '*');
 }
 function toggleRefFromSite(d){
   if(!S.started){ return }
