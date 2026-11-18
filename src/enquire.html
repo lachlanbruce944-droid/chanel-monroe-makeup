@@ -1373,7 +1373,7 @@ function affiliateTiles(r){
   const list = (r.affiliates || []).filter(x => /^[A-Za-z0-9._]{1,30}$/.test(x.h || ''));
   if(!list.length) return '';
   return `<section class="selected-artists"><h3>Your selected artists</h3><p>Contact each artist to arrange their service and availability.</p><div class="artist-tiles">${list.map(x =>
-    `<article class="artist-tile">${x.avatar ? `<img src="${esc(x.avatar)}" alt="" loading="lazy">` : ''}<b>${esc(x.name || '@'+x.h)}</b><small>@${esc(x.h)}</small><a class="book" href="https://ig.me/m/${encodeURIComponent(x.h)}" target="_blank" rel="noopener">DM on Instagram ↗</a></article>`).join('')}</div></section>`;
+    `<article class="artist-tile">${x.avatar ? `<img src="${esc(x.avatar)}" alt="" loading="lazy">` : ''}<b>${esc(x.name || '@'+x.h)}</b><small>@${esc(x.h)}</small><a class="book" href="https://www.instagram.com/${encodeURIComponent(x.h)}/" target="_blank" rel="noopener">View Instagram profile ↗</a></article>`).join('')}</div></section>`;
 }
 /* ---------- data shapes ---------- */
 const val = id => { const v = S.answers[id]; return (v === undefined || v === '__skip') ? null : Array.isArray(v) ? v.join(', ') : v };
