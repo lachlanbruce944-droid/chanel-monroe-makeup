@@ -1,3 +1,14 @@
+### 2026-11-19 (prepare CRM consultation and Apple Calendar rollout)
+- Recovered the unpublished CRM consultation update and reviewed it against current GitHub source. Removed Cal.com booking, embedding and linking from the enquiry page. Clients request a Brisbane phone-call time, pending Chanel’s approval.
+- Retained selected artist Instagram DM tiles. Enquiry emails include the pending phone-call time. Removed the old Google Calendar test-event link.
+- The companion CRM handles owner approval, confirmation email retry and optional Apple iCloud Calendar sync. Backend services must be deployed before these frontends; GitHub write access and Supabase deployment access are pending.
+
+### 2026-11-18 (CRM phone consultations; pending deployment)
+- Removed Cal.com embed, script, fallback link and sync from the enquiry. Clients request a preferred phone date/time; Chanel alone approves in the CRM.
+- Enquiry acknowledgement includes the pending consultation time. The CRM sends the confirmed booking email on owner approval, with no client confirmation step.
+- Retired the Cal sync endpoint. The companion CRM migration/function adds scheduling, conflict checks, email retries and the usual three-day lead time with a recorded exception.
+- Source and generated site are updated. Requires the database migration and backend deployment before publishing. See the CRM repository’s docs/CRM-CONSULTATIONS.md.
+
 # Changelog
 
 All notable changes to the Chanel Monroe Makeup website, newest first. Every change to the site gets a dated entry here in the same commit.

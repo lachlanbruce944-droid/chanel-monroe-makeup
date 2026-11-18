@@ -1,8 +1,2 @@
-const {test}=require('node:test'),assert=require('node:assert/strict');
-let handler;global.Deno={env:{get:()=>''},serve:f=>{handler=f}};
-const modulePromise=import('../supabase/functions/consultation-sync/index.ts');
-const eid='12345678-1234-1234-1234-123456789abc',uid='valid-booking-uid';
-const sample=()=>({uid,start:'2026-12-01T01:00:00Z',end:'2026-12-01T01:15:00Z',status:'accepted',hosts:[{username:'chanelmonroe'}],eventType:{slug:'enquiry'},attendees:[{email:'client@example.com'}],metadata:{cmmEnquiryId:eid}});
-test('server accepts matching host, enquiry reference and attendee',async()=>{const {verifiedBooking}=await modulePromise;assert.equal(verifiedBooking(sample(),{email:'CLIENT@example.com'},eid,uid).status,'confirmed');const pending=sample();pending.status='awaiting_host';assert.equal(verifiedBooking(pending,{email:'client@example.com'},eid,uid).status,'pending')});
-test('server rejects wrong host, event, attendee, reference, UID, cancellation and invalid dates',async()=>{const {verifiedBooking}=await modulePromise;for(const patch of [{hosts:[{username:'other'}]},{eventType:{slug:'other'}},{attendees:[{email:'other@example.com'}]},{metadata:{}},{uid:'other'},{status:'cancelled'},{start:'bad'},{end:'2026-12-01T00:00:00Z'}])assert.equal(verifiedBooking({...sample(),...patch},{email:'client@example.com'},eid,uid),null);assert.equal(verifiedBooking(null,{},eid,uid),null)});
-test('endpoint rejects malformed references before using external services',async()=>{await modulePromise;const r=await handler(new Request('https://example.com',{method:'POST',body:JSON.stringify({enquiryId:'bad',uid:'bad'})}));assert.equal(r.status,400)});
+const {test}=require('node:test'),assert=require('node:assert/strict');let handler;global.Deno={serve:f=>handler=f};const loaded=import('../supabase/functions/consultation-sync/index.ts');
+test('retired Cal sync rejects old clients rather than changing CRM approvals',async()=>{await loaded;const r=await handler(new Request('https://example.com',{method:'POST',body:'{}'}));assert.equal(r.status,410);assert.match(await r.text(),/Use the CRM calendar/)});

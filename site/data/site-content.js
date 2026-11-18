@@ -140,7 +140,7 @@
   /* ---------- BOOKING LINKS: where Enquire > Proceed and each Book button go. Paste your real links over the [brackets].
      Styles use their own link; every other section uses "general". Until a link is set, the button opens an email to you. ---------- */
   window.BOOKING_LINKS = {
-    general:   'enquire.html',                  /* the chat enquiry; it ends with the cal.com phone consult */
+    general:   'enquire.html',                  /* the chat enquiry; Chanel approves the requested CRM phone consult */
     natural:   'enquire.html?for=natural',      /* ?for= fills in the booking type for that section */
     special:   'enquire.html?for=special',
     editorial: 'enquire.html?for=editorial',

@@ -2,7 +2,13 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
-## Consultation completion (17 November 2026)
+## Publication check (19 November 2026)
+GitHub and Supabase connections are verified. CRM consultation migration, owner scheduling service and Apple connector are deployed; Cal synchronization is retired. The enquiry-email update remains blocked by automatic approval review because its existing payload forwards private client selfies and enquiry details to Resend and the business inbox. Explicit user approval is required before updating that function. Its old production version remains, so initial acknowledgement copy/pending time is not fully updated. Apple credentials and live signed-in end-to-end verification remain outstanding.
+
+## CRM phone consultations (18 November 2026; not deployed)
+Supersedes the Cal.com flow below. Client requests a preferred Brisbane time in the enquiry; acknowledgement includes pending time. Chanel schedules/approves in the CRM and approval sends the confirmed call email. No client acceptance. The companion CRM migration/function enforces owner approval, calendar conflicts, consultation completion before makeup confirmation and a usual 72-hour gap with recorded short-notice exceptions. Deploy the migration and functions before the form. 22 CRM and 10 website mocked tests passed; live migration/email verification remains outstanding. Historical Cal appointments need manual review; this change does not cancel them.
+
+## Previous consultation flow (17 November 2026; superseded)
 Embedded phone consultation completion displays confirmed/pending dates in Brisbane time. Confirmed calls reveal selected-affiliate photo tiles and Instagram DM links. Full enquiry UUID is included in Cal notes and metadata; server verification checks host/event/attendee/reference. Existing CRM booking is updated through crm_link_consultation; no duplicate client or appointment. Frontend stores a retryable result if linking fails. Rollback: CONFIG.embeddedConsultation=false; external fallback always visible. The client sees only an approval/email confirmation message after submission; technical linking and approval refresh buttons are hidden. Background linking still runs on completion/reopening. Background approval/cancellation and external-tab completion require a future authenticated webhook. The private selfie policy still needs action-time approval.
 
 ## Pricing booking buttons (2026-11-17)

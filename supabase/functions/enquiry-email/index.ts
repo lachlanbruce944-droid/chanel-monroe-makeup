@@ -10,7 +10,6 @@ const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND = Deno.env.get("RESEND_API_KEY") ?? "";
 const FROM = Deno.env.get("FROM_EMAIL") ?? "Chanel Monroe Makeup <enquiries@chanelmonroe.net>";
 const BUSINESS = Deno.env.get("BUSINESS_EMAIL") ?? "makeup@chanelmonroe.net";
-const CAL = "https://cal.com/chanelmonroe/enquiry";
 const SITE = "https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 
@@ -57,6 +56,7 @@ function rows(e: Record<string, any>) {
     ["Booking", [e.category_name, e.look_name].filter(Boolean).join(" · ")],
     ["Style", e.sub_style || (e.lesson_focus?.length ? e.lesson_focus.join(", ") : "")],
     ["Date", when],
+    ["Phone consultation · pending Chanel’s approval", e.consult_requested_at ? new Date(e.consult_requested_at).toLocaleString("en-AU", {timeZone:"Australia/Brisbane", dateStyle:"full", timeStyle:"short"}) + " · Brisbane time" : "Chanel will arrange a time"],
     ["Suburb", e.location ? e.location + travel : ""],
     ["How many", e.quantity],
     ["Trial", e.bridal_trial],
@@ -77,15 +77,6 @@ const shell = (title: string, body: string) => `<!doctype html><html><body style
 <div style="font-family:Georgia,serif;font-size:22px;margin-bottom:4px">Chanel Monroe <span style="font-size:11px;letter-spacing:.2em;color:#7a5a50">MAKEUP</span></div>
 <h1 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:14px 0">${title}</h1>${body}</div>
 <p style="font-size:11px;color:#7a5a50;text-align:center">Chanel Monroe Makeup · Gold Coast · <a href="${SITE}" style="color:#7a5a50">website</a></p></div></body></html>`;
-
-function calLink(e: Record<string, any>) {
-  const p = new URLSearchParams();
-  if (e.name) p.set("name", e.name);
-  if (e.email) p.set("email", e.email);
-  if (e.phone) { let ph = String(e.phone).replace(/[\s()-]/g, ""); if (/^0\d{9}$/.test(ph)) ph = "+61" + ph.slice(1); p.set("attendeePhoneNumber", ph); }
-  p.set("notes", [e.look_name || e.category_name, e.sub_style, e.event_date && "event " + fmtDate(e.event_date), e.location, "Ref " + String(e.id).slice(0, 8)].filter(Boolean).join(" · "));
-  return `${CAL}?${p}`;
-}
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -121,8 +112,7 @@ Deno.serve(async (req) => {
 
     if (e.email && !e.emailed_client_at) {
       const html = shell(`Thanks ${esc(first(e.name))}, your enquiry is in ✨`,
-        `<p style="font-size:15px;line-height:1.5">Chanel has your details and will be in touch. If you haven't already, choose a time for your free 15-minute phone call so she can confirm your quote and lock in your date.</p>
-<p style="margin:20px 0"><a href="${esc(calLink(e))}" style="display:inline-block;background:#b8846b;color:#fff;text-decoration:none;padding:13px 22px;border-radius:12px;font-weight:bold">Choose a time for your phone call</a></p>
+        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. You do not need to confirm again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
 <p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
       await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html }, `client-${e.id}`);
