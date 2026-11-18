@@ -653,6 +653,8 @@ body.framed header .back{display:inline-block!important}
 
 <div id="dev"></div>
 
+<link rel="stylesheet" href="booking/consultation-calendar.css?v=20261119">
+<script src="booking/consultation-calendar.js?v=20261119"></script>
 <script>
 /* =====================================================================
    CONFIG: the things you'll want to change
@@ -850,12 +852,9 @@ const QUESTIONS = [
   { id:'phone', label:'Mobile', type:'tel', placeholder:'04xx xxx xxx',
     ask:() => "And your mobile? Chanel will call you on this for the consult.",
     validate:v => /^(\+?61|0)4\d{8}$/.test(v.replace(/[\s()-]/g,'')) || /^\+?\d{8,12}$/.test(v.replace(/[\s()-]/g,'')) || 'Please enter a valid phone number' },
-  { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'datetime-local',
+  { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'consult-calendar',
     ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, normally at least three days before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
-    validate:v => { const t = new Date(v + ':00+10:00');
-      if(!Number.isFinite(+t) || t <= new Date()) return 'Please choose a future time';
-      const a = S.answers, event = new Date(a.event_date + 'T' + (a.ready_by || '00:00') + ':00+10:00');
-      return t.getTime() + 15*60000 < +event || 'Your phone consultation must finish before your makeup appointment'; } },
+    validate:v => ConsultationCalendar.valid(v, S.answers.event_date ? S.answers.event_date + 'T' + (S.answers.ready_by || '00:00') + ':00+10:00' : null) },
   { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
     ask:() => 'Anything else Chanel should know?' },
 ];
@@ -967,7 +966,7 @@ function display(q, v){
   if(v === undefined || v === null || v === '') return '';
   if(q.type === 'chips' && q.options) return labelOf(q, v);
   if(q.type === 'index') return CATS.find(c => c.id === v)?.name || v;
-  if(q.type === 'datetime-local') return new Date(v + ':00+10:00').toLocaleString('en-AU',{timeZone:CONFIG.timezone}) + ' Brisbane time (pending)';
+  if(q.type === 'datetime-local' || q.type === 'consult-calendar') return new Date(v + ':00+10:00').toLocaleString('en-AU',{timeZone:CONFIG.timezone}) + ' Brisbane time (pending)';
   if(q.type === 'date') return fmtDate(v);
   if(q.type === 'time') return fmtTime(v);
   if(q.type === 'photo') return v === '__skip' ? 'Skipped' : 'Added ✓';
@@ -1140,6 +1139,11 @@ function renderIndex(q){
   comp.append(search,box,foot);
 }
 function _renderComposer(q){
+  if(q.type === 'consult-calendar'){
+    const host = document.createElement('div'); comp.append(host);
+    ConsultationCalendar.mount(host, {initial:S.prevAnswer?.consult_at, eventAt:S.answers.event_date ? S.answers.event_date+'T'+(S.answers.ready_by||'00:00')+':00+10:00' : null, fetchSlots:(month,signal)=>ConsultationCalendar.fetchSlots(CONFIG,month,signal), onSelect:value=>answer(q,value)});
+    return;
+  }
   if(q.type === 'index') return renderIndex(q);
   if(q.type === 'chips' || q.type === 'multi'){
     const multi = q.type === 'multi', picked = new Set(Array.isArray(S.prevAnswer?.[q.id]) ? S.prevAnswer[q.id] : []);
@@ -1318,6 +1322,7 @@ async function submit(){
     if(S.sent) showSent(saveSent(liveMode()), false);
   }catch(e){
     btn.disabled = false; btn.textContent = 'Try again';
+    if(e.code==='CONSULT_SLOT_UNAVAILABLE'){ toast(e.message); await editAnswer('consult_at'); return; }
     await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
     if(S.sent) showSent(saveSent(liveMode()), false);
     console.error(e);
@@ -1485,7 +1490,7 @@ async function saveToSupabase(row){
       /^sb_/.test(CONFIG.supabaseAnonKey) ? {} : { Authorization:'Bearer '+CONFIG.supabaseAnonKey }),   // new publishable keys go in apikey only
     body: JSON.stringify({ id, ...row })
   });
-  if(!r.ok) throw new Error('Supabase ' + r.status + ': ' + await r.text());
+  if(!r.ok){ const detail=await r.text(); if(/CONSULT_SLOT_UNAVAILABLE|CONSULT_SLOT_INVALID/.test(detail)){ const e=new Error('That consultation time is unavailable. Please choose another.'); e.code='CONSULT_SLOT_UNAVAILABLE'; throw e; } throw new Error('Supabase ' + r.status + ': ' + detail); }
   return { id, simulated:false };
 }
 
