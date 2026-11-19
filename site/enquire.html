@@ -158,18 +158,21 @@ body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:
 .cats button.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
 .team{display:grid;grid-template-columns:repeat(auto-fill,minmax(118px,1fr));gap:18px 12px}
 .aff{display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;animation:rise .5s var(--ease) both}
-.ring{position:relative;width:96px;height:96px}
-.ring a{display:block;width:100%;height:100%;border-radius:50%;overflow:hidden;background:var(--bg2);border:2px solid var(--line);transition:border-color .25s,transform .3s var(--ease)}
-.ring a:hover{transform:scale(1.04)}
-.ring img{width:100%;height:100%;object-fit:cover}
-.aff.added .ring a{border-color:var(--acc);border-width:3px}
-.ring .plus{top:-6px;right:-10px;width:32px;height:32px;font-size:20px}   /* sits top-right, just outside the circle */
-.ring .plus.locked{font-size:13px}
+.artist-photo{position:relative;width:100%;max-width:176px;aspect-ratio:1}
+.artist-photo a,.artist-portrait{display:block;width:100%;aspect-ratio:1;border-radius:16px;overflow:hidden;background:var(--bg2)}
+.artist-photo img,.artist-portrait img{display:block;width:100%;height:100%;object-fit:cover;object-position:center}
+.aff.added .artist-photo a{outline:2px solid var(--acc);outline-offset:2px}
+.artist-photo .plus{top:6px;right:6px;width:32px;height:32px;font-size:20px}
+.artist-photo .plus.locked{font-size:13px}
+.selected-artists{width:100%;min-width:0}
+.artist-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,132px),1fr));gap:12px}
+.artist-tile{display:grid;min-width:0;max-width:236px;align-content:start;gap:6px;padding:8px;border-radius:18px;background:var(--bg2);overflow-wrap:anywhere}
+.artist-tile .book{padding:8px;font-size:12px;text-align:center;animation:none}
 .aff b{font-size:12.5px;font-weight:600;line-height:1.25;max-width:130px}
 .aff small{font-size:11.5px;color:var(--soft)}
 .tray .t.c{border-radius:50%}
 .sec{font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:19px;margin:18px 2px 10px}
-@media (max-height:480px){.ring{width:74px;height:74px}.team{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px 8px}.ring .plus{width:28px;height:28px;font-size:17px}}
+@media (max-height:480px){.team{grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:12px 8px}.artist-photo .plus{width:28px;height:28px;font-size:17px}}
 .chip.pc{display:inline-flex;flex-direction:column;align-items:flex-start;border-radius:14px;line-height:1.2;text-align:left}
 .chip.pc small{font-size:11.5px;font-weight:400;color:var(--soft);margin-top:2px}
 .chip.pc:hover small{color:var(--fg)}
@@ -551,17 +554,17 @@ body.framed #tabs button[data-g="all"]{display:none}
 body.framed #chat::before{background:color-mix(in srgb,var(--bg) 22%,transparent)}
 body.framed header{background:color-mix(in srgb,var(--bg) 70%,transparent)}
 /* ===== beauty team: one window per category ===== */
-.twrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;align-items:start}
+.twrap{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:14px;align-items:start}
 .tw{padding:14px 14px 18px;border-radius:20px;background:color-mix(in srgb,var(--card) 80%,transparent);border:1px solid var(--line);box-shadow:0 8px 26px rgba(30,15,15,.08)}
 .tw h3{margin:0 0 12px;font-family:var(--fh);text-transform:var(--tt);letter-spacing:var(--ls);font-weight:500;font-size:20px}
 .tw h3 small{font-family:var(--ff);font-size:11px;color:var(--soft);margin-left:4px;letter-spacing:0;text-transform:none}
 .tw .team{grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:16px 8px}
 @media (max-height:480px) and (orientation:landscape){
-  .twrap{grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:10px}.tw{padding:10px 10px 12px;border-radius:14px}.tw h3{font-size:16px;margin-bottom:8px}
+  .twrap{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:10px}.tw{padding:10px 10px 12px;border-radius:14px}.tw h3{font-size:16px;margin-bottom:8px}
   .tw .team{grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:10px 6px}
 }
 
-/* beauty team names: Instagram name only, small enough to fit under the circle */
+/* beauty team names: Instagram name only, fit under the portrait tile */
 .aff b{font-size:11.5px;font-weight:600;line-height:1.25;max-width:100%;padding:0 2px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;word-break:break-word}
 .aff{min-width:0}
 @media (max-height:480px) and (orientation:landscape){ .aff b{font-size:10.5px} }
@@ -1373,7 +1376,7 @@ function affiliateTiles(r){
   const list = (r.affiliates || []).filter(x => /^[A-Za-z0-9._]{1,30}$/.test(x.h || ''));
   if(!list.length) return '';
   return `<section class="selected-artists"><h3>Your selected artists</h3><p>Contact each artist to arrange their service and availability.</p><div class="artist-tiles">${list.map(x =>
-    `<article class="artist-tile">${x.avatar ? `<img src="${esc(x.avatar)}" alt="" loading="lazy">` : ''}<b>${esc(x.name || '@'+x.h)}</b><small>@${esc(x.h)}</small><a class="book" href="https://www.instagram.com/${encodeURIComponent(x.h)}/" target="_blank" rel="noopener">View Instagram profile ↗</a></article>`).join('')}</div></section>`;
+    `<article class="artist-tile">${x.avatar ? `<div class="artist-portrait"><img src="${esc(x.avatar)}" alt="" loading="lazy" decoding="async"></div>` : ''}<b>${esc(x.name || '@'+x.h)}</b><small>@${esc(x.h)}</small><a class="book" href="https://www.instagram.com/${encodeURIComponent(x.h)}/" target="_blank" rel="noopener">View Instagram profile ↗</a></article>`).join('')}</div></section>`;
 }
 /* ---------- data shapes ---------- */
 const val = id => { const v = S.answers[id]; return (v === undefined || v === '__skip') ? null : Array.isArray(v) ? v.join(', ') : v };
@@ -1571,7 +1574,7 @@ function affTile(x, i){
   let role = (x.name || x.role || x.h).replace(/\s*[|\/].*$/,'').replace(/\s*•\s*/g,' · ').trim() || x.h;   // their Instagram name, first part only
   if(role === role.toUpperCase()) role = role.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());   // tame ALL CAPS names
   return `<div class="aff${added?' added':''}" style="animation-delay:${Math.min(i,16)*25}ms">
-    <div class="ring"><a href="https://www.instagram.com/${esc(x.h)}/" target="_blank" rel="noopener" title="See @${esc(x.h)} on Instagram"><img loading="lazy" src="${esc(x.avatar)}" alt="" onerror="this.style.visibility='hidden'"></a>
+    <div class="artist-photo"><a href="https://www.instagram.com/${esc(x.h)}/" target="_blank" rel="noopener" title="See @${esc(x.h)} on Instagram"><img loading="lazy" src="${esc(x.avatar)}" alt="" onerror="this.style.visibility='hidden'"></a>
     <button class="plus ${cls}" data-h="${esc(x.h)}" aria-label="${added?'Remove':'Add'} @${esc(x.h)}" title="${S.started?(added?'Remove from enquiry':'Add to your enquiry'):'Start your enquiry to add artists'}">${icon}</button></div>
     <b title="${esc(role)}">${esc(role)}</b></div>`;
 }
