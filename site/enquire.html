@@ -626,6 +626,7 @@ body.framed header .back{display:inline-block!important}
   body.details-top .tile2[data-k="time"],body.details-top .tile2[data-k="price"]{flex-grow:.8}
 }
 </style>
+<link rel="stylesheet" href="booking/consultation-calendar.css?v=2">
 </head>
 <body data-g="glam">
 
@@ -657,6 +658,7 @@ body.framed header .back{display:inline-block!important}
 
 <div id="dev"></div>
 
+<script src="booking/consultation-calendar.js?v=2"></script>
 <script>
 /* =====================================================================
    CONFIG: the things you'll want to change
@@ -813,10 +815,9 @@ const QUESTIONS = [
   { id:'refs', label:'Reference looks', type:'pick', kind:'refs', optional:true,
     ask:a => S.refs.length ? `You've saved ${S.refs.length} look${S.refs.length>1?'s':''}. Add any more?`
       : 'Want to show Chanel some looks you love? Tap Browse looks, then + on any photo.' },
-  { id:'event_date', label:'Date', type:'date',
-    ask:a => ({ bridal:"When's the wedding?", editorial:"When's the shoot?", lesson:'Pick a date for your lesson.' })[a.category] || "When's the event?" },
-  { id:'ready_by', label:'Time', type:'time',
-    ask:a => startMode(a) ? 'What time should Chanel start?' : 'What time do you need to be ready by? Chanel will confirm the timing on your call.' },
+  { id:'event_date', label:'Makeup date', type:'date',
+    ask:a => startMode(a) ? 'Choose an available appointment start.' : 'Choose when you need to be ready. The calendar includes three hours for your service.' },
+  { id:'ready_by', label:'Time', type:'time', ask:() => 'Choose your makeup date and time.' },
   { id:'location', label:'Suburb', type:'chips', options:SUBURBS, other:true, otherLabel:'Another suburb…', placeholder:'Suburb, e.g. Currumbin',
     ask:() => `Which suburb will the makeup be in?\nChanel uses this to check the distance and confirm any travel costs (travel is included within ${PRICES.meta.includedKm} km).` },
   { id:'quantity', label:'How many', type:'chips', when:a => qtyKind(a) !== 'none',
@@ -856,10 +857,7 @@ const QUESTIONS = [
     validate:v => /^(\+?61|0)4\d{8}$/.test(v.replace(/[\s()-]/g,'')) || /^\+?\d{8,12}$/.test(v.replace(/[\s()-]/g,'')) || 'Please enter a valid phone number' },
   { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'datetime-local',
     ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, normally at least three days before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
-    validate:v => { const t = new Date(v + ':00+10:00');
-      if(!Number.isFinite(+t) || t <= new Date()) return 'Please choose a future time';
-      const a = S.answers, event = new Date(a.event_date + 'T' + (a.ready_by || '00:00') + ':00+10:00');
-      return t.getTime() + 15*60000 < +event || 'Your phone consultation must finish before your makeup appointment'; } },
+    validate:v => ConsultationCalendar.valid(v, makeupStart()) },
   { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
     ask:() => 'Anything else Chanel should know?' },
 ];
@@ -914,8 +912,9 @@ function emailFix(v){
 }
 /* answers that only make sense for a particular earlier answer: changing the earlier one clears them */
 const DEPENDS = {
-  category:['look','sub_style','lesson_focus','quantity','bridal_trial','lashes','skin_type','patch_test'],
+  category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','lashes','skin_type','patch_test'],
   look:['quantity','bridal_trial','lashes'],
+  event_date:['ready_by','consult_at'], ready_by:['consult_at'],
   extras:['team'], allergies:['patch_test'], skin_type:['patch_test']
 };
 function clearAnswer(id){
@@ -1143,7 +1142,32 @@ function renderIndex(q){
   count.textContent='Or browse booking types below.';search.append(label,input,count,results);
   comp.append(search,box,foot);
 }
+function makeupStart(){
+  const {event_date,ready_by}=S.answers;
+  if(!event_date||!ready_by)return null;
+  const time=Date.parse(event_date+'T'+ready_by+':00+10:00');
+  return Number.isFinite(time)?new Date(time-(startMode(S.answers)?0:3*3600000)).toISOString():null;
+}
+function renderAppointmentCalendar(q){
+  const phone=q.id==='consult_at';
+  const kind=phone?'phone':startMode(S.answers)?'makeup_start':'makeup_ready';
+  const host=document.createElement('div');
+  comp.append(host);
+  ConsultationCalendar.mount(host,{
+    kind, layout:'minimal', eventAt:phone?makeupStart():null,
+    initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T09:00',
+    fetchSlots:(month,signal)=>ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind),
+    onSelect:value=>{
+      if(phone)return answer(q,value);
+      const [date,time]=value.split('T');
+      S.answers.ready_by=time;
+      delete S.answers.consult_at;
+      return answer(QUESTIONS.find(item=>item.id==='event_date'),date,fmtDate(date)+' · '+fmtTime(time));
+    }
+  });
+}
 function _renderComposer(q){
+  if(['event_date','ready_by','consult_at'].includes(q.id))return renderAppointmentCalendar(q);
   if(q.type === 'index') return renderIndex(q);
   if(q.type === 'chips' || q.type === 'multi'){
     const multi = q.type === 'multi', picked = new Set(Array.isArray(S.prevAnswer?.[q.id]) ? S.prevAnswer[q.id] : []);
@@ -1289,6 +1313,7 @@ async function showSummary(){
 async function editAnswer(id){
   if(S.sent || S.busy) return;
   $('#summary')?.remove();
+  if(id==='ready_by') id='event_date';
   const q = QUESTIONS.find(x => x.id === id);
   S.prevAnswer = { [id]: S.answers[id] };
   clearAnswer(id);
@@ -1323,6 +1348,13 @@ async function submit(){
       "Your preferred phone consultation time is pending Chanel’s approval. You’ll receive a booking confirmation by email once Chanel approves it. There’s nothing else to confirm.");
     if(S.sent) showSent(saveSent(liveMode()), false);
   }catch(e){
+    const slot = e.message.includes('ENQUIRY_MAKEUP_SLOT_UNAVAILABLE') ? 'event_date' :
+      e.message.includes('ENQUIRY_PHONE_SLOT_UNAVAILABLE') ? 'consult_at' : null;
+    if(slot){
+      toast('That time is no longer available. Please choose another.');
+      await editAnswer(slot);
+      return;
+    }
     btn.disabled = false; btn.textContent = 'Try again';
     $('#resetChat').disabled = false;
     await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
@@ -1787,7 +1819,7 @@ function restart(){
 }
 function autofill(){
   const d = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
-  S.answers = { name:'Jess Taylor', category:'bridal', look:'bridal-look', sub_style:'Natural radiant bride', event_date:d, ready_by:'13:30',
+  S.answers = { name:'Jess Taylor', category:'bridal', look:'bridal-look', sub_style:'Natural radiant bride', event_date:d, ready_by:'14:00',
     location:'Burleigh Heads', quantity:'4', bridal_trial:"Yes, I'd like a trial", skin_type:'Combination', allergies:['None'], lashes:'Wispy / fluffy',
     extras:['Hair','Photographer'], email:'jess@example.com', phone:'0400 000 000', notes:'Photographer arrives 12:30', consent:'I agree' };
   S.refs = shuffle((S.byGroup.bridal||[]).slice()).slice(0,3); S.answers.refs = S.refs.length;
