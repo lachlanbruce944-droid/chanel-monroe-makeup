@@ -102,6 +102,7 @@ body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:
 .who{flex:1;min-width:0;line-height:1.15}.who b{font-weight:500;font-size:14px;display:block}.who small{font-size:11px;color:var(--soft)}
 .hbtn{padding:6px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;white-space:nowrap}
 .hbtn:hover{border-color:var(--acc)}
+.chat-tools{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:5px;max-width:48%}.chat-tools .hbtn{font-size:11px;padding:6px 8px}.hbtn:disabled{opacity:.5;cursor:wait}
 .tray{display:flex;gap:6px;padding:8px 12px;border-bottom:1px solid var(--line);overflow-x:auto;align-items:center}
 .tray:empty{display:none}
 .tray .t{position:relative;flex:none;width:40px;height:40px;border-radius:8px;overflow:hidden;background:var(--bg2)}
@@ -640,7 +641,7 @@ body.framed header .back{display:inline-block!important}
   <div class="chd">
     <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
     <div class="who"><b>Chanel Monroe Makeup</b><small id="status">Booking assistant</small></div>
-    <button class="hbtn" id="browseBtn" title="Lift the glass and look through the gallery">Browse looks ↗</button>
+    <div class="chat-tools"><button class="hbtn" id="browseBtn" title="Lift the glass and look through the gallery">Browse looks ↗</button><button class="hbtn" id="resetChat" type="button" title="Testing: start a fresh chat in this browser. Submitted CRM enquiries are kept.">↺ Reset chat</button></div>
   </div>
   <div class="tray" id="tray"></div>
   <div id="msgs" aria-live="polite"></div>
@@ -1298,6 +1299,7 @@ async function submit(){
   const validConsult = consultQuestion.validate(val('consult_at') || '');
   if(validConsult !== true){ toast(validConsult); editAnswer('consult_at'); return; }
   const btn = $('#sendBtn'); btn.disabled = true; btn.textContent = 'Sending…';
+  $('#resetChat').disabled = true;
   document.querySelectorAll('#summary [data-edit]').forEach(b => { b.disabled = true; b.removeAttribute('data-edit') });
   document.querySelector('#summary .cf-f')?.remove();
   document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sent');
@@ -1307,6 +1309,7 @@ async function submit(){
   try{
     const res = await saveToSupabase(row);
     S.sent = true; S.enquiryId = res.id; btn.remove();
+    $('#resetChat').disabled = false;
     if(!res.simulated) saveSent();   // this browser now shows the sent enquiry instead of starting a new one
     if(!res.simulated) fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`, { method:'POST', keepalive:true,
       headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ id: res.id }) }).catch(() => {});   // emails makeup@chanelmonroe.net + the client
@@ -1318,6 +1321,7 @@ async function submit(){
     if(S.sent) showSent(saveSent(liveMode()), false);
   }catch(e){
     btn.disabled = false; btn.textContent = 'Try again';
+    $('#resetChat').disabled = false;
     await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
     if(S.sent) showSent(saveSent(liveMode()), false);
     console.error(e);
@@ -1763,6 +1767,15 @@ function updateDev(){
 }
 $('#devbtn').hidden = !SHOW_TEST_PANEL;
 $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
+// Temporary testing control. Reload also cancels old typing callbacks and clears in-memory picks.
+function resetChatForTesting(){
+  if($('#resetChat').disabled) return;
+  try{ localStorage.removeItem(SENT_KEY) }catch(e){}
+  try{ sessionStorage.removeItem('cmm-intro-seen') }catch(e){}
+  if(FRAMED) parent.postMessage({cmm:'refs',picked:[]}, '*');
+  location.reload();
+}
+$('#resetChat').onclick = resetChatForTesting;
 function restart(){
   try{ localStorage.removeItem(SENT_KEY) }catch(e){} document.body.classList.remove('locked');
   sideSeen = new Set();
