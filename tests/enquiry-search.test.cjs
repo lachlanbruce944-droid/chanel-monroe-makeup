@@ -9,3 +9,23 @@ test('browse decoration does not re-trigger child mutation on unchanged labels',
 test('every configured pricing service prefills a valid booking category, including trial',()=>{ctx.PRICES=JSON.parse(html.match(/const PRICE_FALLBACK = (\{[^\n]+\});/)[1]);const start=html.indexOf('function bookingPrefill(');vm.runInContext(html.slice(start,html.indexOf('const look =',start)),ctx);for(const key of Object.keys(ctx.PRICES.looks)){const selected=ctx.bookingPrefill(key);assert.ok(selected,key);assert.equal(selected.look,key)}assert.equal(ctx.bookingPrefill('trial').category,'bridal');assert.equal(ctx.bookingPrefill('not-a-service'),null);assert.equal(ctx.bookingPrefill('constructor'),null)});
 
 test('pricing and photo overlays close before browsing or opening enquiry',()=>{const page=fs.readFileSync('src/index.html','utf8');let removed=0,bodyCleared=false;const c={document:{querySelectorAll:selector=>{assert.equal(selector,'.po.open,.mod.open,.lb.open');return [{classList:{remove:x=>{assert.equal(x,'open');removed++}}}]},body:{classList:{remove:x=>{assert.equal(x,'pop-open');bodyCleared=true}}}}};vm.createContext(c);const start=page.indexOf('  function releaseSiteOverlays()'),end=page.indexOf('  function open(href)',start);vm.runInContext(page.slice(start,end),c);c.releaseSiteOverlays();assert.equal(removed,1);assert.ok(bodyCleared);assert.ok(page.includes('function startPick(plus,list,target){\n    releaseSiteOverlays();'))});
+
+// Client language and common spelling variants should resolve to real catalogue styles.
+test('expanded everyday phrases find the intended styles',()=>{
+ const examples = [
+ ['Can I get a boho bride style please','Natural radiant bride'],['groomsmen','Groom grooming'],
+ ['neutral glam','Soft glam'],['cut crease','Full glam'],['latte','Bronzed coastal glam'],
+ ['pin up','Old Hollywood'],['fascinator','Race day glam'],['mother of the groom','Mature skin glam'],
+ ['skin tint','No-makeup makeup'],['job interview','Clean polished'],['wide awake','Fresh lift'],
+ ['glazed donut','Dewy glass skin'],['golden hour','Sun-kissed bronze'],['over 60','Mature natural'],
+ ['fragrance free','Sensitive skin'],['baby shower','Maternity glow'],['cosmetics campaign','Beauty close-up'],
+ ['floating liner','Graphic liner'],['high fashion liner','Editorial graphic liner'],['colour pop','Colour block and gloss'],
+ ['ombre lips','Lip art'],['avantgarde','Avant-garde'],['album cover','Music video and album art'],
+ ['ballet','Stage and theatre'],['fake blood','SFX and prosthetics'],['bodyart','Body paint'],
+ ['comiccon','Cosplay recreation'],['hallowen','Halloween character'],['masquerade','Fancy dress'],
+ ['blacklight','UV neon'],['face gems','Glitter bar and gems'],['unicorn','Kids face paint'],
+ ['cheek art','Express designs'],['bunny nose','Easter'],['new years','Christmas and New Year'],
+ ['valentines','Holiday specials'],['own kit','Makeup lesson']
+ ];
+ for(const [query,style] of examples) assert.ok(find(query).some(x=>x.sub===style),query+' → '+style);
+});
