@@ -2,6 +2,12 @@
 
 Scope: public embedded and standalone enquiry interfaces, all seven booking categories, search, gallery selection, artist selection, question logic, estimates, calendar, validation, editing, reset, persistence, submission and notification handoff. This combines live UI observations with source review and automated tests; it is not a claim of exhaustive device or email-client certification.
 
+## Original findings
+
+Remediation: the booking-hours contract, shared CRM timing, group-size ordering, fee notice, reset recovery, tab-local drafts, phone validation, photo upload recovery, email retry/layout, accessible labels and confirmation wording have now been updated. See `chatbot-reliability-fixes.md` for validation and limits.
+
+The table below records the original review.
+
 ## Confirmed findings
 
 | Priority | Area | Finding and evidence | Recommended correction |

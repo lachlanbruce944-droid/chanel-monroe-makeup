@@ -648,10 +648,10 @@ body.framed header .back{display:inline-block!important}
         var html=await response.text();var doc=new DOMParser().parseFromString(html,'text/html');
         doc.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(function(el){
           var attr=el.tagName==='SCRIPT'?'src':'href';var value=el.getAttribute(attr);
-          if(!value||/^(?:https?:)?\\/\\//i.test(value)||value.startsWith('data:'))return;
+          if(!value||/^(?:https?:)?\/\//i.test(value)||value.startsWith('data:'))return;
           var asset=new URL(value,url.href);asset.searchParams.set('_fresh',Date.now().toString());el.setAttribute(attr,asset.href);
         });
-        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\\n'+doc.documentElement.outerHTML);document.close();
+        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close();
       }catch(error){button.disabled=false;button.textContent='↻ Retry refresh';alert('Could not refresh the website. Please try again. '+error.message)}
     });
     document.body.appendChild(button);
@@ -690,7 +690,7 @@ body.framed header .back{display:inline-block!important}
 
 <div id="dev"></div>
 
-<script src="booking/consultation-calendar.js?v=2"></script>
+<script src="booking/consultation-calendar.js?v=4"></script>
 <script>
 /* =====================================================================
    CONFIG: the things you'll want to change
@@ -849,19 +849,19 @@ const QUESTIONS = [
   { id:'refs', label:'Reference looks', type:'pick', kind:'refs', optional:true,
     ask:a => S.refs.length ? `You've saved ${S.refs.length} look${S.refs.length>1?'s':''}. Add any more?`
       : 'Want to show Chanel some looks you love? Tap Browse looks, then + on any photo.' },
-  { id:'start_window', label:'Appointment hours', type:'chips',
-    options:[{v:'standard',l:'Standard hours · 9am–5pm'},{v:'extended',l:'Early / late start · 3am–midnight'}],
-    ask:() => 'Do you need an early or late appointment? Standard hours are 9am–5pm. Early or late appointments may incur an additional fee, which Chanel will confirm before booking.' },
-  { id:'event_date', label:'Makeup date', type:'date',
-    ask:a => startMode(a) ? 'Choose an available appointment start.' : 'Choose when you need to be ready. The calendar includes three hours for your service.' },
-  { id:'ready_by', label:'Time', type:'time', ask:() => 'Choose your makeup date and time.' },
-  { id:'location', label:'Suburb', type:'chips', options:SUBURBS, other:true, otherLabel:'Another suburb…', placeholder:'Suburb, e.g. Currumbin',
-    ask:() => `Which suburb will the makeup be in?\nChanel uses this to check the distance and confirm any travel costs (travel is included within ${PRICES.meta.includedKm} km).` },
   { id:'quantity', label:'How many', type:'chips', when:a => qtyKind(a) !== 'none',
     options:a => ({ group:['10–15','16–25','26–40','40 or more'], looks:['1 look','2 looks','3 looks','4 or more looks'], characters:['1','2','3','4 or more'] })[qtyKind(a)]
       || (a.look === 'bridal-look' ? ['Just the bride','2','3','4','5','6','7 or more'] : a.look === 'bridal-party' ? ['1','2','3','4','5','6','7','8 or more'] : ['Just me','2','3','4','5','6 or more']),
     ask:a => ({ group:'Mini face paint is for groups of 10 or more. Roughly how many people?', looks:'How many different makeup looks will the shoot need?\n(Each change, e.g. day to night, counts as one.)', characters:'How many characters?' })[qtyKind(a)]
       || (a.look === 'bridal-look' ? 'How many people need makeup, including the bride?' : a.look === 'bridal-party' ? 'How many in the bridal party and family need makeup?' : 'How many people need makeup, including you?') },
+  { id:'start_window', label:'Appointment hours', type:'chips',
+    options:[{v:'early_3am_to_noon',l:'I understand · choose a time'}],
+    ask:() => 'Appointment starts are currently available from 3am to noon. Early starts may have an additional fee. Chanel will confirm any fee in your quote before you commit to the booking.' },
+  { id:'event_date', label:'Makeup date', type:'date',
+    ask:a => startMode(a) ? 'Choose an available appointment start.' : 'Choose when you need to be ready. Availability includes the time for your selected service and group size.' },
+  { id:'ready_by', label:'Time', type:'time', ask:() => 'Choose your makeup date and time.' },
+  { id:'location', label:'Suburb', type:'chips', options:SUBURBS, other:true, otherLabel:'Another suburb…', placeholder:'Suburb, e.g. Currumbin',
+    ask:() => `Which suburb will the makeup be in?\nChanel uses this to check the distance and confirm any travel costs (travel is included within ${PRICES.meta.includedKm} km).` },
   { id:'bridal_trial', label:'Trial', type:'chips', options:["Yes, I'd like a trial",'No trial needed','Not sure yet'],
     when:a => a.look === 'bridal-look',
     ask:() => `Would you like a wedding trial (${priceTag('trial')})? It's a full test of your look in daylight, with photos and a written plan.` },
@@ -891,7 +891,7 @@ const QUESTIONS = [
       return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v) || "That email doesn't look quite right" } },
   { id:'phone', label:'Mobile', type:'tel', placeholder:'04xx xxx xxx',
     ask:() => "And your mobile? Chanel will call you on this for the consult.",
-    validate:v => /^(\+?61|0)4\d{8}$/.test(v.replace(/[\s()-]/g,'')) || /^\+?\d{8,12}$/.test(v.replace(/[\s()-]/g,'')) || 'Please enter a valid phone number' },
+    validate:v => validPhone(v) || 'Enter an Australian mobile (04xx xxx xxx) or an international number with +country code' },
   { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'datetime-local',
     ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, normally at least three days before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
     validate:v => ConsultationCalendar.valid(v, makeupStart()) },
@@ -950,11 +950,13 @@ function emailFix(v){
 /* answers that only make sense for a particular earlier answer: changing the earlier one clears them */
 const DEPENDS = {
   category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','lashes','skin_type','patch_test'],
-  look:['quantity','bridal_trial','lashes'],
+  look:['quantity','bridal_trial','lashes','event_date','start_window'],
+  quantity:['event_date'], start_window:['event_date'],
   event_date:['ready_by','consult_at'], ready_by:['consult_at'],
   extras:['team'], allergies:['patch_test'], skin_type:['patch_test']
 };
 function clearAnswer(id){
+  S.submissionId=null;
   delete S.answers[id];
   (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
 }
@@ -978,6 +980,7 @@ function estimate(){
   else if(q && !/^Just/.test(q)){ qty = parseInt(q) || 1; if(/more/.test(q)) open = true }
   let total = L.price * qty;
   const lines = [`${L.name}: ${money(L.price)} × ${qty}`];
+  if(a.look==='bridal-look'&&qty>1&&PRICES.looks['bridal-party']){const party=PRICES.looks['bridal-party'];total=L.price+party.price*(qty-1);lines.splice(0,1,`Bride: ${money(L.price)} + bridal party: ${money(party.price)} × ${qty-1}`)}
   if(a.bridal_trial === "Yes, I'd like a trial" && PRICES.looks.trial){ total += PRICES.looks.trial.price; lines.push(`Wedding trial: ${money(PRICES.looks.trial.price)}`) }
   const tr = travel();
   if(tr && tr.fee){ total += tr.fee; lines.push(`Travel (${tr.km} km): ${money(tr.fee)}`) }
@@ -1017,7 +1020,7 @@ function display(q, v){
   if(v === '__skip') return q.skip || 'Skipped';
   return v;
 }
-const activeQs = () => QUESTIONS.filter(q => q.id !== 'start_window' && (!q.when || q.when(S.answers)));
+const activeQs = () => QUESTIONS.filter(q => (!q.when || q.when(S.answers)));
 const nextQ = () => activeQs().find(q => S.answers[q.id] === undefined);
 
 /* =====================================================================
@@ -1100,8 +1103,10 @@ function introSeen(){ try{ return sessionStorage.getItem('cmm-intro-seen') === '
 
 async function answer(q, value, shown){
   if(S.busy){ S.skip = true; await S.typing }   // answered while it was still typing: finish the line first
+  S.submissionId=null;
   S.answers[q.id] = value;
   S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
+  saveDraft();
   comp.innerHTML = '';
   if(q.type === 'photo' && value !== '__skip' && S.selfie){ const im = document.createElement('img'); im.className = 'b me selfie'; im.src = S.selfie.preview; im.alt = 'Your selfie'; msgs.appendChild(im); scroll() }
   else me(shown ?? display(q, value));
@@ -1179,11 +1184,19 @@ function renderIndex(q){
   count.textContent='Or browse booking types below.';search.append(label,input,count,results);
   comp.append(search,box,foot);
 }
+function bookingService(){return S.answers.category==='lesson'?'lesson':S.answers.look || 'unsure'}
+function bookingQuantity(){return Math.max(1,parseInt(S.answers.quantity)||1)}
+function appointmentMinutes(){return S.timing?.duration_mins || 180}
+function validPhone(value){
+ const v=String(value).replace(/[\s()-]/g,'');
+ if(/^(?:0|\+?61)4\d{8}$/.test(v))return true;
+ return /^\+(?!61)\d{9,15}$/.test(v) && !/^(.)\1+$/.test(v.slice(1));
+}
 function makeupStart(){
   const {event_date,ready_by}=S.answers;
   if(!event_date||!ready_by)return null;
   const time=Date.parse(event_date+'T'+ready_by+':00+10:00');
-  return Number.isFinite(time)?new Date(time-(startMode(S.answers)?0:3*3600000)).toISOString():null;
+  return Number.isFinite(time)?new Date(time-(startMode(S.answers)?0:appointmentMinutes()*60000)).toISOString():null;
 }
 function renderAppointmentCalendar(q){
   const phone=q.id==='consult_at';
@@ -1193,7 +1206,12 @@ function renderAppointmentCalendar(q){
   ConsultationCalendar.mount(host,{
     kind, layout:'glass', eventAt:phone?makeupStart():null,
     initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T06:00',
-    fetchSlots:async(month,signal)=>{const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind); if(phone)return rows; return rows.map(slot=>{const hour=Number(slot.local_start.slice(11,13));const startHour=kind==='makeup_ready'?hour-3:hour;return {...slot,available:slot.available && startHour>=3 && startHour<=12};});},
+    note:()=>`Brisbane time · ${appointmentMinutes()} minutes for your service, plus ${S.timing?.buffer_mins ?? 60} minutes reserved afterwards.`,
+    fetchSlots:async(month,signal)=>{
+      const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind,{service:bookingService(),quantity:bookingQuantity()});
+      if(!phone && rows.length) S.timing={duration_mins:rows[0].duration_mins,buffer_mins:rows[0].buffer_mins};
+      return rows;
+    },
     onSelect:value=>{
       if(phone)return answer(q,value);
       const [date,time]=value.split('T');
@@ -1215,6 +1233,10 @@ function _renderComposer(q){
     if(sug){ const k = list.findIndex(o => o.v === sug); if(k > 0) list.unshift(list.splice(k,1)[0]) }
     list.forEach((o,i) => {
       const c = chip(o.l, o.n ? 'pc' : '', () => {
+        if(q.id==='quantity' && /more|–/.test(o.v)){
+          comp.replaceChildren();const note=document.createElement('p');note.textContent='How many exactly? Enter the number so the calendar can reserve enough time.';comp.append(note);
+          textBox({...q,type:'number',placeholder:'Exact number (1–100)',validate:v=>/^\d+$/.test(v)&&Number(v)>=1&&Number(v)<=100||'Enter a whole number from 1 to 100'},v=>answer(q,v));return;
+        }
         if(!multi) return answer(q, o.v);
         if(o.v === q.none){ return answer(q, [o.v]) }          // "None" answers straight away
         picked.has(o.v) ? picked.delete(o.v) : picked.add(o.v); sync();
@@ -1263,18 +1285,37 @@ async function shrinkImage(file, max = 1200){
     return { blob, preview: c.toDataURL('image/jpeg', .6) };
   } finally { URL.revokeObjectURL(url) }
 }
-async function takeSelfie(q, file){
-  let pic; try{ pic = await shrinkImage(file) }catch(e){ toast("That photo couldn't be opened. Try another one."); return }
-  S.selfie = { preview: pic.preview, path: null };
-  if(liveMode()){
-    const path = crypto.randomUUID() + '.jpg';
-    S.selfie.upload = fetch(`${CONFIG.supabaseUrl}/storage/v1/object/selfies/${path}`, { method:'POST',
-      headers: Object.assign({ apikey: CONFIG.supabaseAnonKey, 'Content-Type':'image/jpeg', 'x-upsert':'false' },
-        /^sb_/.test(CONFIG.supabaseAnonKey) ? {} : { Authorization:'Bearer ' + CONFIG.supabaseAnonKey }), body: pic.blob })
-      .then(r => { if(r.ok) S.selfie && (S.selfie.path = path); else console.warn('selfie upload', r.status) })
-      .catch(e => console.warn('selfie upload', e));
-  } else S.selfie.path = 'local-test';
-  await answer(q, 'added', '');
+async function uploadSelfie(photo){
+ photo.error=null; photo.path=null;
+ if(!liveMode()){photo.path='local-test';return}
+ photo.upload=(async()=>{
+  try{
+   const path=photo.id+'.jpg';
+   const r=await fetch(`${CONFIG.supabaseUrl}/storage/v1/object/selfies/${path}`,{method:'POST',
+    headers:Object.assign({apikey:CONFIG.supabaseAnonKey,'Content-Type':'image/jpeg','x-upsert':'false'},
+    /^sb_/.test(CONFIG.supabaseAnonKey)?{}:{Authorization:'Bearer '+CONFIG.supabaseAnonKey}),body:photo.blob});
+   if(!r.ok)throw Error('Photo upload failed');
+   photo.path=path;
+  }catch(e){photo.error='Your selfie has not uploaded. Retry or continue without it.'}
+  saveDraft();
+ })();
+ return photo.upload;
+}
+async function takeSelfie(q,file){
+ let pic;try{pic=await shrinkImage(file)}catch(e){toast("That photo couldn't be opened. Try another one.");return}
+ const photo={...pic,id:crypto.randomUUID(),path:null,error:null};S.selfie=photo;
+ uploadSelfie(photo);
+ await answer(q,'added','');
+}
+function selfieRetryNotice(){
+ comp.replaceChildren();
+ const note=document.createElement('p');note.setAttribute('role','alert');note.textContent='Your selfie has not uploaded. Your enquiry has not been sent. Retry the photo, or continue without it.';
+ const retry=chip('Retry photo upload','pri',async()=>{
+  if(!S.selfie?.blob){editAnswer('selfie');return}
+  retry.disabled=true;await uploadSelfie(S.selfie);retry.disabled=false;
+  if(S.selfie?.path){comp.replaceChildren();submit()}else toast('Photo upload failed again. Retry or continue without it.');
+ });
+ comp.append(note,retry,chip('Continue without selfie','ghost',()=>{S.selfie=null;S.answers.selfie='__skip';saveDraft();comp.replaceChildren();submit()}));
 }
 function refreshPick(){
   const P = S.pickComposer; if(!P || !P.w.isConnected) return;
@@ -1296,10 +1337,12 @@ function textBox(q, done, append){
   if(q.type === 'tel'){ inp.autocomplete = 'tel'; inp.inputMode = 'tel' }
   if(q.id === 'name') inp.autocomplete = 'name';
   inp.placeholder = q.placeholder || 'Type here…';
+  inp.setAttribute('aria-label',q.label);
+  inp.setAttribute('aria-describedby','answer-error');
   const prev = S.prevAnswer?.[q.id]; if(typeof prev === 'string' && prev !== '__skip' && !(q.options||[]).includes(prev)) inp.value = prev;
   const btn = document.createElement('button'); btn.className = 'send'; btn.type = 'button'; btn.setAttribute('aria-label','Send'); btn.textContent = '↑';
   row.append(inp, btn);
-  const err = document.createElement('div'); err.className = 'err'; err.hidden = true;
+  const err = document.createElement('div'); err.className = 'err'; err.id='answer-error'; err.setAttribute('role','alert'); err.hidden = true;
   const go = () => {
     const v = inp.value.trim();
     if(!v){ err.textContent = q.type==='date' ? 'Please pick a date' : 'Please fill this in'; err.hidden = false; return }
@@ -1359,7 +1402,11 @@ async function editAnswer(id){
   await S.typing;
 }
 async function submit(){
-  if(S.sent) return;
+  if(S.sent || S.submitting) return;
+  if(S.answers.selfie==='added'&&!S.selfie?.path){
+    if(S.selfie?.upload)await Promise.race([S.selfie.upload,wait(15000)]);
+    if(!S.selfie?.path){selfieRetryNotice();return}
+  }
   const consultQuestion = QUESTIONS.find(q => q.id === 'consult_at');
   const validConsult = consultQuestion.validate(val('consult_at') || '');
   if(validConsult !== true){ toast(validConsult); editAnswer('consult_at'); return; }
@@ -1367,24 +1414,27 @@ async function submit(){
   $('#resetChat').disabled = true;
   document.querySelectorAll('#summary [data-edit]').forEach(b => { b.disabled = true; b.removeAttribute('data-edit') });
   document.querySelector('#summary .cf-f')?.remove();
-  document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sent');
+  document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sending…');
   if(S.selfie?.upload) await Promise.race([S.selfie.upload, wait(15000)]);
   const row = buildRow();
+  S.submitting=true;
   if(S.selfie?.path && S.answers.selfie !== '__skip') row.selfie_path = S.selfie.path;
   try{
     const res = await saveToSupabase(row);
-    S.sent = true; S.enquiryId = res.id; btn.remove();
+    S.submitting=false; S.sent = true; S.enquiryId = res.id; clearDraft(); btn.remove();
     $('#resetChat').disabled = false;
     if(!res.simulated) saveSent();   // this browser now shows the sent enquiry instead of starting a new one
-    if(!res.simulated) fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`, { method:'POST', keepalive:true,
-      headers:{ 'Content-Type':'application/json' }, body: JSON.stringify({ id: res.id }) }).catch(() => {});   // emails makeup@chanelmonroe.net + the client
+    S.notificationState=res.simulated?'test':'pending';
     updateDev();
     await say((res.simulated
       ? "All sent ✨ (test mode: saved to the local test database)\n"
       : `All sent ✨ Thanks, ${first(S.answers.name)}!\n`) +
-      "Your preferred phone consultation time is pending Chanel’s approval. You’ll receive a booking confirmation by email once Chanel approves it. There’s nothing else to confirm.");
+      "Your preferred phone consultation time is pending Chanel’s approval. You’ll receive a phone consultation confirmation by email once Chanel approves it. Your makeup booking is not yet confirmed. There’s nothing else to confirm.");
     if(S.sent) showSent(saveSent(liveMode()), false);
+    if(!res.simulated) notifyEnquiry();
   }catch(e){
+    S.submitting=false;
+    $('#resetChat').disabled = false;
     const slot = e.message.includes('ENQUIRY_MAKEUP_SLOT_UNAVAILABLE') ? 'event_date' :
       e.message.includes('ENQUIRY_PHONE_SLOT_UNAVAILABLE') ? 'consult_at' : null;
     if(slot){
@@ -1392,7 +1442,8 @@ async function submit(){
       await editAnswer(slot);
       return;
     }
-    btn.disabled = false; btn.textContent = 'Try again';
+    $('#summary')?.remove();
+    await showSummary();
     $('#resetChat').disabled = false;
     await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
     if(S.sent) showSent(saveSent(liveMode()), false);
@@ -1400,6 +1451,37 @@ async function submit(){
   }
 }
 
+async function notifyEnquiry(){
+ if(S.notifying||!S.enquiryId)return;S.notifying=true;S.notificationState='pending';
+ try{
+  const r=await fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:S.enquiryId}),signal:AbortSignal.timeout(20000)});
+  const data=await r.json();if(!r.ok||!data.ok)throw Error('Email delivery failed');S.notificationState='sent';
+ }catch(e){S.notificationState='failed'}
+ S.notifying=false;
+ try{const rec=sentRecord();if(rec){rec.notificationState=S.notificationState;localStorage.setItem(SENT_KEY,JSON.stringify(rec));showSent(rec,false)}}catch(e){}
+}
+function notificationCard(state){
+ return `<section class="consult-result" aria-live="polite"><b>Enquiry saved</b><p>${state==='sent'?'Confirmation email sent. Your phone consultation still needs Chanel’s approval.':state==='pending'?'Sending your confirmation email…':state==='test'?'Practice mode: no email sent.':'Your enquiry is saved, but email delivery could not be confirmed. Retry the email below; do not submit another enquiry.'}</p>${!['sent','pending','test'].includes(state)?'<button type="button" id="retryEnquiryEmail">Retry confirmation email</button>':''}</section>`;
+}
+const DRAFT_KEY='cmm-enquiry-draft-v2';
+function saveDraft(){
+ if(S.sent)return;
+ try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify({until:Date.now()+24*3600000,answers:S.answers,history:S.history||[],refs:S.refs,affs:S.affs,
+ timing:S.timing,submissionId:S.submissionId,selfie:S.selfie?.path?{path:S.selfie.path,preview:S.selfie.preview}:null}));}catch(e){}
+}
+function clearDraft(){try{sessionStorage.removeItem(DRAFT_KEY)}catch(e){}}
+function restoreDraft(){
+ try{
+  const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');if(!d||d.until<Date.now()){clearDraft();return false}
+  if(!d.answers||typeof d.answers.name!=='string')return false;
+  Object.assign(S,{answers:d.answers,history:d.history||[],refs:d.refs||[],affs:d.affs||[],timing:d.timing,selfie:d.selfie,submissionId:d.submissionId,started:true});
+  if(S.answers.selfie==='added'&&!S.selfie?.path)delete S.answers.selfie;
+  if(S.answers.event_date&&(!makeupStart()||+new Date(makeupStart())<=Date.now()))clearAnswer('event_date');
+  if(S.answers.consult_at&&ConsultationCalendar.valid(S.answers.consult_at,makeupStart())!==true)delete S.answers.consult_at;
+  me('Your draft has been restored in this tab. You can use Back to change details.');renderTray();renderTabs();renderSide();updateFab();return true;
+ }catch(e){clearDraft();return false}
+}
+addEventListener('pagehide',saveDraft);
 /* ---------- after sending: keep a read-only view of the enquiry, and no second enquiry ---------- */
 const SENT_KEY = 'cmm-enquiry-sent';
 function sentRecord(){
@@ -1409,7 +1491,7 @@ function sentRecord(){
 function saveSent(keep = true){   // keep=false in ?localdb practice mode: show the view, don't lock the browser
   const qs = activeQs(), contact = ['name','email','phone'], f = q => ({ l:q.label, v: display(q, S.answers[q.id]) || '-' });
   const est = estimate(), ev = S.answers.event_date, now = Date.now();
-  const rec = { id:S.enquiryId, at:now, name:val('name'),
+  const rec = { id:S.enquiryId, at:now, name:val('name'), notificationState:S.notificationState||'pending',
     until: ev ? Math.max(new Date(ev + 'T23:59:59').getTime(), now + 864e5) : now + 60*864e5,   // locked until the event day has passed (60 days if no date)
     booking: qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(f), contact: qs.filter(q => contact.includes(q.id)).map(f),
     picks: S.refs.map(x => thumb(x.src)), affiliates: S.affs.map(x => ({ h:x.h, name:x.name, avatar:x.avatar })),
@@ -1420,14 +1502,15 @@ function saveSent(keep = true){   // keep=false in ?localdb practice mode: show 
 }
 function showSent(r, booked){
   if(!r) return;
-  S.sent = true; S.enquiryId = r.id; S.started = true; S.busy = false;
+  S.sent = true; S.enquiryId = r.id; S.notificationState=r.notificationState||'failed'; S.started = true; S.busy = false;
   document.body.classList.add('locked'); comp.innerHTML = ''; $('#status').textContent = 'Enquiry sent';
   const grid = xs => `<div class="cf-grid">${xs.map(x => `<div class="fld"><small>${esc(x.l)}</small><b>${esc(x.v)}</b></div>`).join('')}</div>`;
   const when = new Date(r.at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
   msgs.innerHTML = `<div class="card confirm sentview">
     <div class="cf-h"><b>Your enquiry is with Chanel ✨</b><small>Sent ${esc(when)}</small></div>
-    <p class="sv-note">Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel will review your enquiry and approve your phone consultation. Your booking confirmation will arrive by email.</p>
+    <p class="sv-note">Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel will review your enquiry and approve your phone consultation. Your enquiry receipt will arrive by email. Chanel will separately confirm the phone consultation after approval. Your makeup booking is not yet confirmed.</p>
     ${consultationCard(r)}
+    ${notificationCard(S.notificationState)}
     <div class="cf-sec"><span class="cf-l">Your booking</span>${grid(r.booking || [])}</div>
     <div class="cf-sec"><span class="cf-l">Contact</span>${grid(r.contact || [])}</div>
     ${(r.picks || []).length ? `<div class="cf-sec"><span class="cf-l">Your picks</span><div class="refs">${r.picks.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div></div>` : ''}
@@ -1435,6 +1518,7 @@ function showSent(r, booked){
     ${affiliateTiles(r)}
     <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to send another enquiry.</small></div>
   </div>`;
+  $('#retryEnquiryEmail') && ($('#retryEnquiryEmail').onclick=notifyEnquiry);
   const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
   top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
 }
@@ -1474,7 +1558,7 @@ function buildRow(){
     notes: a.notes === "That's everything" ? null : val('notes'),
     refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
     affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
-    viewing: {...Attention.data(), appointment_hours:'early_3am_to_noon', extended_hours_fee_pending:true},
+    viewing: {...Attention.data(), calendar_version:'2', appointment_hours:'early_3am_to_noon', extended_hours_fee_pending:true},
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
     consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted
     calendar_event: calendarEvent(),
@@ -1484,14 +1568,8 @@ function buildRow(){
 function headcount(){ const a = S.answers; if(qtyKind(a) !== 'people') return 1; const q = String(a.quantity || ''); return /^Just/.test(q) || !q ? 1 : parseInt(q) || 6 }
 function calendarEvent(){
   const a = S.answers; if(!a.event_date || !a.ready_by) return null;
-  const L = look(a), n = headcount(), bride = a.look === 'bridal-look' ? 1 : 0;
-  let mins = bride*CONFIG.minsPerBride + (n-bride)*CONFIG.minsPerFace;
-  if(a.look === 'half-day') mins = 240; if(a.look === 'full-day') mins = 480;
-  if(qtyKind(a) === 'looks' || qtyKind(a) === 'characters') mins = (parseInt(a.quantity) || 1) * (qtyKind(a) === 'characters' ? 150 : 75);
-  if(a.look === 'mini-paint') mins = Math.ceil((parseInt(a.quantity) || 10) * 7 / 15) * 15;
-  if(a.category === 'lesson') mins = 120;
-  mins = Math.max(mins, 45);
-  const t = new Date(`${a.event_date}T${a.ready_by}:00`);
+  const L = look(a), mins = appointmentMinutes();
+  const t = new Date(`${a.event_date}T${a.ready_by}:00+10:00`);
   const start = startMode(a) ? t : new Date(t.getTime() - mins*60000);
   const end = startMode(a) ? new Date(t.getTime() + mins*60000) : t;
   const pad = x => String(x).padStart(2,'0');
@@ -1509,7 +1587,7 @@ function calendarEvent(){
     R.extras.length && `Other services: ${R.extras.join(', ')}`,
     S.affs.length && `Beauty team: ${S.affs.map(x => '@'+x.h+' ('+(TEAM_CATS[x.cat]||x.cat)+')').join(', ')}`,
     est && `Estimate: ${est.open ? 'from ' : ''}${money(est.total)} (deposit ~${money(est.deposit)})`,
-    !startMode(a) && (start.getHours() < 5 || start.getDate() !== t.getDate()) && '⚠ Very early start: consider a second artist',
+
     `Phone: ${a.phone || ''} · Email: ${a.email || ''}`, R.notes && `Notes: ${R.notes}`,
     S.refs.length && `\nReference looks:\n` + S.refs.map(r => r.src).join('\n')
   ].filter(Boolean);
@@ -1517,8 +1595,8 @@ function calendarEvent(){
     summary: `💄 ${first(a.name)}: ${L?.name || cat(a).name || 'Enquiry'} (enquiry)`,
     location: a.location || '',
     description: lines.join('\n'),
-    start: { dateTime: local(start), timeZone: CONFIG.timezone },
-    end:   { dateTime: local(end),   timeZone: CONFIG.timezone },
+    start: { dateTime: start.toISOString(), timeZone: CONFIG.timezone },
+    end:   { dateTime: end.toISOString(), timeZone: CONFIG.timezone },
     colorId: a.category === 'bridal' ? '5' : '4'
   };
 }
@@ -1555,14 +1633,14 @@ async function saveToSupabase(row){
     if(row.calendar_event) MockDB.insert('calendar_events', { id:'ev-' + id.slice(0,8), enquiry_id:id, created_at:now, ...row.calendar_event });
     return { id, simulated:true };
   }
-  const id = crypto.randomUUID();
+  const id = S.submissionId ||= crypto.randomUUID();
   const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.supabaseTable}`, {
     method:'POST',
     headers:Object.assign({ apikey:CONFIG.supabaseAnonKey, 'Content-Type':'application/json', Prefer:'return=minimal' },
       /^sb_/.test(CONFIG.supabaseAnonKey) ? {} : { Authorization:'Bearer '+CONFIG.supabaseAnonKey }),   // new publishable keys go in apikey only
     body: JSON.stringify({ id, ...row })
   });
-  if(!r.ok) throw new Error('Supabase ' + r.status + ': ' + await r.text());
+  if(!r.ok){const message=await r.text();if(!(r.status===409&&message.includes('enquiries_pkey')))throw new Error('Supabase '+r.status+': '+message)}
   return { id, simulated:false };
 }
 
@@ -1659,8 +1737,8 @@ function toggleAff(btn){
   if(i >= 0){ S.affs.splice(i,1); toast('Removed from your enquiry') }
   else { if(S.affs.length >= 8){ toast('You can add up to 8 artists'); return } S.affs.push(S.affList.find(a => a.h === h)); toast(`Added @${h} ✓`) }
   const added = i < 0, box = btn.closest('.aff');
-  if(S.tab === 'mine' && !added) box.remove(); else { box.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+' }
-  renderTray(); renderTabs(); updateFab(); updateDev(); refreshPick();
+  if(S.tab === 'mine' && !added) box.remove(); else { box.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+'; btn.setAttribute('aria-label',`${added?'Remove':'Add'} @${h}`) }
+  renderTray(); renderTabs(); updateFab(); updateDev(); saveDraft(); refreshPick();
 }
 function tile(m, i){
   const added = S.refs.some(r => r.src === m.src);
@@ -1683,9 +1761,9 @@ function togglePlus(btn){
   // refresh just this tile + the counters
   const fig = btn.closest('.tile'), added = i < 0;
   if(S.tab === 'mine' && !added){ fig.remove() } else {
-    fig.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+';
+    fig.classList.toggle('added', added); btn.classList.toggle('added', added); btn.textContent = added ? '✓' : '+'; btn.setAttribute('aria-label',added?'Remove from your enquiry':'Add to your enquiry');
   }
-  renderTray(); renderTabs(); updateFab(); updateDev();
+  renderTray(); renderTabs(); updateFab(); updateDev(); saveDraft();
   refreshPick();
 }
 function unlockPlus(){ renderGallery(); renderTabs(); toast('The + buttons are unlocked. Save any looks you love') }
@@ -1843,6 +1921,7 @@ $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
 // Temporary testing control. Reload also cancels old typing callbacks and clears in-memory picks.
 function resetChatForTesting(){
   if($('#resetChat').disabled) return;
+  clearDraft();
   try{ localStorage.removeItem(SENT_KEY) }catch(e){}
   try{ sessionStorage.removeItem('cmm-intro-seen') }catch(e){}
   if(FRAMED) parent.postMessage({cmm:'refs',picked:[]}, '*');
@@ -1895,7 +1974,8 @@ async function loadFirst(sources, key){
   S.byGroup = {};
   await Promise.race([loadPrices(), wait(1500)]);
   const sent = liveMode() ? sentRecord() : null;
-  if(sent){ showSent(sent, false); return }
+  if(sent){if(sent.notificationState==='pending')sent.notificationState='failed';showSent(sent,false);return}
+  restoreDraft();
   askNext();
 })();
 </script>

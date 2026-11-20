@@ -1,6 +1,6 @@
 // enquiry-email: emails Chanel (makeup@chanelmonroe.net) each new chat enquiry, and the client a confirmation.
 // Called by the chat page right after it saves an enquiry (and by the optional database trigger) with { id }.
-// It reads the row itself with the service role, only acts on enquiries less than 30 minutes old, and uses
+// It reads the row itself with the service role, only acts on enquiries less than 24 hours old, and uses
 // Resend idempotency keys (plus emailed_*_at columns when they exist), so each enquiry is emailed once.
 // If the client sent a selfie (private "selfies" bucket), it is attached to Chanel's email and shown inline.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
@@ -69,14 +69,19 @@ function rows(e: Record<string, any>) {
   ].filter(([, v]) => v);
 }
 
-const table = (r: string[][]) => `<table style="border-collapse:collapse;width:100%;font-size:14px">${r.map(([k, v]) =>
-  `<tr><td style="padding:6px 10px 6px 0;color:#7a5a50;white-space:nowrap;vertical-align:top">${esc(k)}</td><td style="padding:6px 0;color:#3a2622">${esc(v)}</td></tr>`).join("")}</table>`;
-
-const shell = (title: string, body: string) => `<!doctype html><html><body style="margin:0;background:#f5e9e1;font-family:Helvetica,Arial,sans-serif;color:#3a2622">
-<div style="max-width:600px;margin:0 auto;padding:24px"><div style="background:#fbf3ee;border-radius:18px;padding:24px;border:1px solid #e2c3b2">
-<div style="font-family:Georgia,serif;font-size:22px;margin-bottom:4px">Chanel Monroe <span style="font-size:11px;letter-spacing:.2em;color:#7a5a50">MAKEUP</span></div>
-<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;margin:14px 0">${title}</h1>${body}</div>
-<p style="font-size:11px;color:#7a5a50;text-align:center">Chanel Monroe Makeup · Gold Coast · <a href="${SITE}" style="color:#7a5a50">website</a></p></div></body></html>`;
+// Stacked rows avoid long labels forcing horizontal scrolling in phone mail apps.
+const table = (r: string[][]) => `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border-collapse:collapse;font-size:14px">${r.map(([k,v])=>
+ `<tr><td style="padding:10px 0;border-bottom:1px solid #e2c3b2;word-wrap:break-word;overflow-wrap:anywhere"><div style="font-size:12px;line-height:18px;color:#7a5a50">${esc(k)}</div><div style="line-height:22px;color:#3a2622;white-space:pre-wrap;word-break:break-word">${esc(v)}</div></td></tr>`).join("")}</table>`;
+const shell = (title: string,body: string) => `<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"></head><body style="margin:0;padding:0;background:#f5e9e1;font-family:Helvetica,Arial,sans-serif;color:#3a2622;-webkit-text-size-adjust:100%">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;background:#f5e9e1"><tr><td align="center" style="padding:12px 8px">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;max-width:600px;table-layout:fixed;background:#fbf3ee;border-radius:18px"><tr><td style="padding:20px 16px;overflow-wrap:anywhere;word-break:break-word">
+<div style="font-family:Georgia,serif;font-size:22px;line-height:30px">Chanel Monroe</div><div style="font-size:11px;letter-spacing:2px;color:#7a5a50">MAKEUP · GOLD COAST</div>
+<h1 style="font-family:Georgia,serif;font-weight:normal;font-size:24px;line-height:32px;margin:18px 0">${title}</h1>${body}
+</td></tr></table><p style="font-size:11px;line-height:18px;color:#7a5a50">Chanel Monroe Makeup · Gold Coast · <a href="${SITE}" style="color:#7a5a50">website</a></p></td></tr></table></body></html>`;
+const mediaURL = (src: unknown) => {
+ try { const u=new URL(/^https?:/.test(String(src||''))?String(src):String(src||'').replace(/^\/+/,''),"https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/");return u.protocol==='https:'?u.href:'' } catch { return '' }
+};
+const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),"Phone consultation pending Chanel's approval. Makeup booking not yet confirmed."].filter(Boolean).join("\n");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -87,7 +92,7 @@ Deno.serve(async (req) => {
     if (!/^[0-9a-f-]{36}$/i.test(id || "")) return reply('"bad id"', 400);
     const [e] = await db(`enquiries?id=eq.${id}&select=*`) as Record<string, any>[];
     if (!e) return reply('"not found"', 404);
-    if (Date.now() - new Date(e.created_at).getTime() > 30 * 60 * 1000) return reply('"too old"', 409);
+    if (Date.now() - new Date(e.created_at).getTime() > 24 * 60 * 60 * 1000) return reply('"too old"', 409);
     if (!RESEND) throw new Error("RESEND_API_KEY is not set");
     const r = rows(e);
     const refs = (e.refs || []).slice(0, 12);
@@ -99,12 +104,12 @@ Deno.serve(async (req) => {
       const safe = first(e.name).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "client";
       const html = shell(`New enquiry from ${esc(e.name)}`,
         (pic ? `<p style="margin:0 0 12px"><img src="cid:selfie" width="160" style="width:160px;border-radius:14px;display:block" alt="Client selfie"></p>` : "") +
-        `<p style="font-size:14px">${esc(e.phone)} · <a href="mailto:${esc(e.email)}" style="color:#b8846b">${esc(e.email)}</a></p>${table(r)}` +
-        (refs.length ? `<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Reference looks</p>${refs.map((x: any) => `<a href="${esc(x.src)}"><img src="${esc(String(x.src).replace(/\.webp$/, ".m.webp"))}" width="88" height="88" style="object-fit:cover;border-radius:10px;margin:0 6px 6px 0" alt=""></a>`).join("")}` : "") +
+        `<p style="font-size:14px;line-height:22px;word-break:break-word">${esc(e.phone)}<br><a href="mailto:${esc(e.email)}" style="color:#b8846b">${esc(e.email)}</a></p>${table(r)}` +
+        (refs.length ? `<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Reference looks</p>${refs.filter((x: any)=>mediaURL(x.src)).map((x: any) => `<a href="${esc(mediaURL(x.src))}"><img src="${esc(mediaURL(x.src))}" width="88" height="88" style="object-fit:cover;border-radius:10px;margin:0 6px 6px 0;max-width:100%" alt="${esc(x.sub_style || x.desc || "Reference look")}"></a>`).join("")}` : "") +
         (artists.length ? `<p style="margin:14px 0 6px;color:#7a5a50;font-size:13px">Beauty team</p><p style="font-size:14px">${artists.map((a: any) => `<a href="${esc(a.instagram)}" style="color:#b8846b">${esc(a.name || "@" + a.handle)}</a> (${esc(a.category)})`).join(", ")}</p>` : "") +
         `<p style="font-size:12px;color:#7a5a50;margin-top:18px">${pic ? "The selfie is attached. " : "No selfie sent. "}Reply to this email to answer ${esc(first(e.name))} directly. Ref ${esc(String(e.id).slice(0, 8))}</p>`);
       await send({ from: FROM, to: [BUSINESS], reply_to: e.email || undefined,
-        subject: `New enquiry: ${e.name}${e.look_name ? " · " + e.look_name : ""}${e.event_date ? " · " + fmtDate(e.event_date) : ""}`, html,
+        subject: `New enquiry: ${e.name}${e.look_name ? " · " + e.look_name : ""}${e.event_date ? " · " + fmtDate(e.event_date) : ""}`, html, text:plainDetails(e,r),
         ...(pic ? { attachments: [{ filename: `selfie-${safe}.jpg`, content: pic, content_type: "image/jpeg", content_id: "selfie" }] } : {}) }, `biz-${e.id}`);
       done.emailed_business_at = new Date().toISOString();
       await save(id, { emailed_business_at: done.emailed_business_at });
@@ -112,10 +117,10 @@ Deno.serve(async (req) => {
 
     if (e.email && !e.emailed_client_at) {
       const html = shell(`Thanks ${esc(first(e.name))}, your enquiry is in ✨`,
-        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. You do not need to confirm again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
+        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
 <p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
-      await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html }, `client-${e.id}`);
+      await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html, text:plainDetails(e,r) }, `client-${e.id}`);
       done.emailed_client_at = new Date().toISOString();
       await save(id, { emailed_client_at: done.emailed_client_at, email_error: null });
     }

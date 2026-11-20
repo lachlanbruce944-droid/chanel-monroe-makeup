@@ -3,7 +3,7 @@
  const zone='Australia/Brisbane',pad=n=>String(n).padStart(2,'0');
  const localNow=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const monthOf=d=>d.slice(0,7), shift=(month,n)=>{const d=new Date(month+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+n);return d.toISOString().slice(0,7)};
- const label=t=>{const h=+t.slice(11,13);return `${h%12||12}:00 ${h<12?'am':'pm'}`};
+ const label=t=>{const h=+t.slice(11,13);return `${h%12||12}:${t.slice(14,16)} ${h<12?'am':'pm'}`};
  function valid(value,eventAt,now=Date.now()){
   if(!/^\d{4}-\d{2}-\d{2}T(09|1[0-6]):00$/.test(value))return 'Choose a time on the hour between 9:00 am and 4:00 pm Brisbane time';
   const at=+new Date(value+':00+10:00');
@@ -12,8 +12,9 @@
   if(eventAt&&at+15*60000>=+new Date(eventAt))return 'Your phone consultation must finish before your makeup appointment';
   return true;
  }
- async function fetchSlots(config,month,signal,kind='phone'){
-  const r=await fetch(config.supabaseUrl+'/rest/v1/rpc/enquiry_calendar_availability',{method:'POST',signal,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(/^sb_/.test(config.supabaseAnonKey)?{}:{Authorization:'Bearer '+config.supabaseAnonKey})},body:JSON.stringify({p_month:month+'-01',p_kind:kind})});
+ async function fetchSlots(config,month,signal,kind='phone',booking){
+  const rpc=booking?'enquiry_calendar_slots':'enquiry_calendar_availability';
+  const r=await fetch(config.supabaseUrl+'/rest/v1/rpc/'+rpc,{method:'POST',signal,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(/^sb_/.test(config.supabaseAnonKey)?{}:{Authorization:'Bearer '+config.supabaseAnonKey})},body:JSON.stringify({p_month:month+'-01',p_kind:kind,...(booking?{p_service:booking.service,p_quantity:booking.quantity}:{})})});
   if(!r.ok)throw Error('Could not check calendar availability. Please retry.');
   const rows=await r.json();if(!Array.isArray(rows))throw Error('Calendar availability is unavailable. Please retry.');
   return rows.filter(x=>typeof x.local_start==='string'&&typeof x.available==='boolean');
@@ -35,7 +36,7 @@
    const intro=document.createElement('p');intro.className='cp-info';intro.textContent='1. Choose a day · 2. Choose a time';
    const body=document.createElement('div');body.className='cp-body';const calendar=document.createElement('div');calendar.className='cp-month';
    const week=document.createElement('div');week.className='cp-week';['M','T','W','T','F','S','S'].forEach((x,i)=>{const el=document.createElement('span');el.textContent=x;el.title=['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'][i];week.append(el)});
-   const grid=document.createElement('div');grid.className='cp-grid';grid.setAttribute('role','group');grid.setAttribute('aria-label','Choose consultation day');
+   const grid=document.createElement('div');grid.className='cp-grid';grid.setAttribute('role','group');grid.setAttribute('aria-label',isPhone?'Choose consultation day':'Choose makeup appointment day');
    const first=new Date(month+'-01T12:00Z'),offset=(first.getUTCDay()+6)%7,count=new Date(Date.UTC(first.getUTCFullYear(),first.getUTCMonth()+1,0)).getUTCDate();
    for(let i=0;i<offset;i++){const blank=document.createElement('span');blank.className='cp-blank';grid.append(blank)}
    for(let n=1;n<=count;n++){
@@ -49,9 +50,9 @@
     const value=slot.local_start,ok=slot.available&&slotValid(value);
     const b=button(label(value),'cp-slot'+(value===selected?' is-selected':''),()=>{selected=value;draw()},!ok||loading||!!error);b.setAttribute('aria-pressed',String(value===selected));b.setAttribute('aria-label',label(value)+(ok?'':', unavailable'));slots.append(b);
    }times.append(slots)}
-   const status=document.createElement('p');status.className='cp-status';status.setAttribute('role','status');status.textContent=loading?'Checking CRM availability…':error||(!rows.some(s=>s.available&&slotValid(s.local_start))?'No available times this month. Try another month.':selected?`${label(selected)} · Brisbane time`:'Unavailable days and times are greyed out.');
+   const status=document.createElement('p');status.className='cp-status';status.setAttribute('role','status');status.textContent=loading?'Checking CRM availability…':error||(!rows.some(s=>s.available&&slotValid(s.local_start))?isPhone&&options.eventAt?'No consultation slots are available before your makeup appointment this month. Go Back to choose a later makeup date or contact Chanel.':'No available times this month. Try another month.':selected?`${label(selected)} · Brisbane time`:'Unavailable days and times are greyed out.');
    if(error)status.append(button('Retry','cp-retry',()=>load(month)));
-   const note=document.createElement('p');note.className='cp-note';note.textContent=isPhone?'Mon–Sun · 9 am–5 pm AEST · Free 15-minute call. Hourly start times. Your request needs Chanel’s approval.':'Brisbane time · Three-hour service with a one-hour buffer reserved after your appointment.';
+   const note=document.createElement('p');note.className='cp-note';note.textContent=isPhone?'Mon–Sun · 9 am–5 pm AEST · Free 15-minute call. Hourly start times. Your request needs Chanel’s approval.':(options.note?options.note():'Brisbane time · Service time and appointment buffer are reserved.');
    if(isPhone&&selected&&options.eventAt&&+new Date(options.eventAt)-+new Date(selected+':00+10:00')<3*86400000)note.textContent+=' Short notice: Chanel must approve an exception.';
    const confirm=button(selected?'Request '+label(selected):'Select a time','cp-confirm',async()=>{confirm.disabled=true;try{const fresh=await options.fetchSlots(month);if(!host.isConnected)return;if(!fresh.some(x=>x.local_start===selected&&x.available)&&!options.demo)throw Error('That time has just become unavailable. Please choose another.');await options.onSelect(selected);if(options.demo)confirm.disabled=false}catch(e){error=e.message;selected='';rows=[];draw()}},!selected||loading||!!error);
    body.append(calendar,times);host.append(intro,top,body,status,confirm,note);

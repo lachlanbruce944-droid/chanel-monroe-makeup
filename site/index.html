@@ -58,10 +58,10 @@
         var html=await response.text();var doc=new DOMParser().parseFromString(html,'text/html');
         doc.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(function(el){
           var attr=el.tagName==='SCRIPT'?'src':'href';var value=el.getAttribute(attr);
-          if(!value||/^(?:https?:)?\\/\\//i.test(value)||value.startsWith('data:'))return;
+          if(!value||/^(?:https?:)?\/\//i.test(value)||value.startsWith('data:'))return;
           var asset=new URL(value,url.href);asset.searchParams.set('_fresh',Date.now().toString());el.setAttribute(attr,asset.href);
         });
-        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\\n'+doc.documentElement.outerHTML);document.close();
+        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close();
       }catch(error){button.disabled=false;button.textContent='↻ Retry refresh';alert('Could not refresh the website. Please try again. '+error.message)}
     });
     document.body.appendChild(button);
