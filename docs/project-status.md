@@ -2,6 +2,12 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Chat keyboard (21 November 2026)
+Text fields wait for a tap. Embedded chat follows the visual viewport; standalone chat reserves keyboard space. While typing, details tiles hide to preserve room for the prompt and composer. Device keyboard verification remains outstanding.
+
+## Refresh button (21 November 2026)
+The website Refresh site button stays at the top left on desktop and mobile, with safe-area spacing.
+
 ## Publication check (19 November 2026)
 GitHub and Supabase connections are verified. CRM consultation migration, owner scheduling service and Apple connector are deployed; Cal synchronization is retired. The enquiry-email update remains blocked by automatic approval review because its existing payload forwards private client selfies and enquiry details to Resend and the business inbox. Explicit user approval is required before updating that function. Its old production version remains, so initial acknowledgement copy/pending time is not fully updated. Apple credentials and live signed-in end-to-end verification remain outstanding.
 

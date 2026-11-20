@@ -841,11 +841,12 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     '#cmmPill button{border:0;border-radius:999px;padding:7px 14px;background:#f5e9e1;color:#2a1c19;font:600 13px Jost,system-ui,sans-serif;cursor:pointer}';
   document.head.appendChild(st);
   function size(){
-    var z=window.UIZ||1, W=innerWidth, H=innerHeight, w, h;
+    var viewport=window.visualViewport;
+    var z=window.UIZ||1, W=viewport?viewport.width:innerWidth, H=viewport?viewport.height:innerHeight, w, h;
     w=Math.round(W*.8); h=Math.round(H*.8)                                   /* 80% of the screen on every device, centred */
-    if(document.body.classList.contains('m')){ w=W-16; h=H-16-(window.visualViewport?0:0) }   /* phones (vertical site): nearly full screen */
+    if(document.body.classList.contains('m')){ w=W-16; h=H-16 }   /* phones (vertical site): nearly full screen */
     if(ov) ov.style.zoom=z===1?'':(1/z);   /* cancel the page zoom so sizes are real pixels */
-    if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((W-w)/2)+'px'; ov.style.top=Math.round((H-h)/2)+'px' }
+    if(ov){ ov.style.width=w+'px'; ov.style.height=h+'px'; ov.style.left=Math.round((viewport?viewport.offsetLeft:0)+(W-w)/2)+'px'; ov.style.top=Math.round((viewport?viewport.offsetTop:0)+(H-h)/2)+'px' }
   }
   function releaseSiteOverlays(){
     document.querySelectorAll('.po.open,.mod.open,.lb.open').forEach(function(el){el.classList.remove('open')});
@@ -853,7 +854,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   }
   function open(href){
     releaseSiteOverlays();
-    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size) }
+    if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size); if(window.visualViewport){window.visualViewport.addEventListener('resize',size);window.visualViewport.addEventListener('scroll',size)} }
     var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
     if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */

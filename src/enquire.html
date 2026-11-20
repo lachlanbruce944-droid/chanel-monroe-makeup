@@ -129,7 +129,7 @@ body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:
 .chip.pri{background:var(--acc);border-color:var(--acc);color:var(--onacc)}
 .chip.ghost{color:var(--soft)}
 .row{display:flex;gap:8px}
-.row input,.row textarea{flex:1;min-width:0;padding:10px 13px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:14px;outline:none;resize:none}
+.row input,.row textarea{flex:1;min-width:0;padding:10px 13px;border-radius:14px;border:1px solid var(--line);background:var(--bg);color:var(--fg);font:inherit;font-size:16px;outline:none;resize:none}
 .row input:focus,.row textarea:focus{border-color:var(--acc)}
 .send{flex:none;width:42px;border-radius:14px;background:var(--acc);color:var(--onacc);font-size:18px}
 .err{color:#c0392b;font-size:12px;margin-top:6px}
@@ -625,7 +625,33 @@ body.framed header .back{display:inline-block!important}
   body.details-top .tile2[data-k="style"],body.details-top .tile2[data-k="place"]{flex-grow:1.6}
   body.details-top .tile2[data-k="time"],body.details-top .tile2[data-k="price"]{flex-grow:.8}
 }
+/* Keep the composer in the visible viewport when the mobile keyboard opens. */
+#msgs{min-height:0}
+#comp{flex-shrink:0}
+body:not(.framed) #chat{bottom:var(--keyboard-inset,0px)}
+body.typing #side{display:none}
+body.typing #chat{grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+body.typing #conv{grid-row:1 / -1}
 </style>
+<script>
+(function(){
+  function fitKeyboard(){
+    var active=document.activeElement;
+    var typing=!!(active && active.matches('#comp input,#comp textarea'));
+    document.body.classList.toggle('typing',typing);
+    var viewport=window.visualViewport;
+    var inset=viewport ? Math.max(0,innerHeight-viewport.height-viewport.offsetTop) : 0;
+    document.documentElement.style.setProperty('--keyboard-inset',inset+'px');
+  }
+  document.addEventListener('focusin',fitKeyboard);
+  document.addEventListener('focusout',function(){requestAnimationFrame(fitKeyboard)});
+  window.addEventListener('resize',fitKeyboard);
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize',fitKeyboard);
+    window.visualViewport.addEventListener('scroll',fitKeyboard);
+  }
+})();
+</script>
 <link rel="stylesheet" href="booking/consultation-calendar.css?v=3">
 
 <style id="site-refresh-style">
@@ -1356,7 +1382,7 @@ function textBox(q, done, append){
   inp.addEventListener('input', () => err.hidden = true);
   comp.append(row, err);
   if(q.optional && !append){ const s = document.createElement('div'); s.className = 'subrow'; s.append(chip(q.skip || 'Skip','ghost', () => answer(q,'__skip'))); comp.append(s) }
-  setTimeout(() => { inp.focus({preventScroll:true}); if(q.type === 'date' && inp.showPicker){ try{ inp.showPicker() }catch(e){} } }, 30);
+  // Let the client tap the field before opening the keyboard or date picker.
 }
 function chip(label, cls, fn){ const c = document.createElement('button'); c.type = 'button'; c.className = 'chip ' + (cls||''); c.textContent = label; c.onclick = fn; return c }
 function pickRow(kind){

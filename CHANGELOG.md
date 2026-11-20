@@ -1,3 +1,9 @@
+### 2026-11-21 (chat keyboard)
+- Open the keyboard only when a client taps a text field. Resize the embedded chat to the visual viewport and keep the composer visible while typing. Use 16px input text to avoid mobile focus zoom.
+
+### 2026-11-21 (refresh button position)
+- Move Refresh site to the top left on desktop and mobile, respecting device safe areas. Preserve existing refresh behaviour.
+
 ### 2026-11-19 (prepare CRM consultation and Apple Calendar rollout)
 - Recovered the unpublished CRM consultation update and reviewed it against current GitHub source. Removed Cal.com booking, embedding and linking from the enquiry page. Clients request a Brisbane phone-call time, pending Chanel’s approval.
 - Retained selected artist Instagram DM tiles. Enquiry emails include the pending phone-call time. Removed the old Google Calendar test-event link.
