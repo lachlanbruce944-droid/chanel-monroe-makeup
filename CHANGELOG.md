@@ -1,3 +1,6 @@
+### 2026-11-21 (chat heading)
+- Show the assistant name and status only at the beginning of the scrollable conversation. Keep chat controls accessible and preserve the heading when restarting or showing confirmation.
+
 ### 2026-11-21 (enquiry refresh control)
 - Remove the duplicate Refresh site button from the enquiry window. The main site's top-left refresh control remains.
 

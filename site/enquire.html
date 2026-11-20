@@ -625,6 +625,9 @@ body.framed header .back{display:inline-block!important}
   body.details-top .tile2[data-k="style"],body.details-top .tile2[data-k="place"]{flex-grow:1.6}
   body.details-top .tile2[data-k="time"],body.details-top .tile2[data-k="price"]{flex-grow:.8}
 }
+/* The assistant identity appears once, at the start of the scrollable conversation. */
+.chat-intro{display:flex;align-items:center;gap:10px;flex-shrink:0;padding:8px 0 14px}
+#msgs > *{flex-shrink:0}
 /* Keep the composer in the visible viewport when the mobile keyboard opens. */
 #msgs{min-height:0}
 #comp{flex-shrink:0}
@@ -670,12 +673,12 @@ body.typing #conv{grid-row:1 / -1}
   <section id="side" aria-label="Your booking so far"></section>
   <div id="conv">
   <div class="chd">
-    <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
-    <div class="who"><b>Chanel Monroe Makeup</b><small id="status">Booking assistant</small></div>
+
     <div class="chat-tools"><button class="hbtn" id="browseBtn" title="Lift the glass and look through the gallery">Browse looks ↗</button><button class="hbtn" id="resetChat" type="button" title="Testing: start a fresh chat in this browser. Submitted CRM enquiries are kept.">↺ Reset chat</button></div>
   </div>
   <div class="tray" id="tray"></div>
-  <div id="msgs" aria-live="polite"></div>
+  <div id="msgs" aria-live="polite"><div class="chat-intro" id="chatIntro">    <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
+    <div class="who"><b>Chanel Monroe Makeup</b><small id="status">Booking assistant</small></div></div></div>
   <div id="comp"></div>
   </div>
 </aside>
@@ -1024,6 +1027,8 @@ const nextQ = () => activeQs().find(q => S.answers[q.id] === undefined);
 /* keep the newest message in view: when the detail tiles above the chat grow, the message area gets shorter,
    so stay pinned to the bottom unless the client has scrolled up to read */
 let pinned = true;
+const chatIntro = document.getElementById('chatIntro');
+function clearMessages(){ msgs.replaceChildren(chatIntro) }
 function scroll(){ pinned = true; msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' }
 msgs.addEventListener('scroll', () => { pinned = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 48 }, { passive:true });
 if('ResizeObserver' in window) new ResizeObserver(() => { if(pinned){ msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' } }).observe(msgs);
@@ -1501,7 +1506,8 @@ function showSent(r, booked){
   document.body.classList.add('locked'); comp.innerHTML = ''; $('#status').textContent = 'Enquiry sent';
   const grid = xs => `<div class="cf-grid">${xs.map(x => `<div class="fld"><small>${esc(x.l)}</small><b>${esc(x.v)}</b></div>`).join('')}</div>`;
   const when = new Date(r.at).toLocaleDateString('en-AU', { day:'numeric', month:'long', year:'numeric' });
-  msgs.innerHTML = `<div class="card confirm sentview">
+  clearMessages();
+  msgs.insertAdjacentHTML('beforeend', `<div class="card confirm sentview">
     <div class="cf-h"><b>Your enquiry is with Chanel ✨</b><small>Sent ${esc(when)}</small></div>
     <p class="sv-note">Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel will review your enquiry and approve your phone consultation. Your enquiry receipt will arrive by email. Chanel will separately confirm the phone consultation after approval. Your makeup booking is not yet confirmed.</p>
     ${consultationCard(r)}
@@ -1512,7 +1518,7 @@ function showSent(r, booked){
     ${r.est ? `<div class="est"><b>Estimate: ${esc(r.est.t)}</b><span>${esc(r.est.lines)}</span><span>Chanel confirms your final quote on your phone call.</span></div>` : ''}
     ${affiliateTiles(r)}
     <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to send another enquiry.</small></div>
-  </div>`;
+  </div>`);
   $('#retryEnquiryEmail') && ($('#retryEnquiryEmail').onclick=notifyEnquiry);
   const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
   top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
@@ -1927,7 +1933,7 @@ function restart(){
   try{ localStorage.removeItem(SENT_KEY) }catch(e){} document.body.classList.remove('locked');
   sideSeen = new Set();
   Object.assign(S, { teamAll:false, forUsed:false, forFilled:false, history:[], answers:{}, refs:[], affs:[], started:false, sent:false, enquiryId:null, busy:false, prevAnswer:null });
-  msgs.innerHTML = ''; comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
+  clearMessages(); comp.innerHTML = ''; renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); updateDev(); askNext();
 }
 function autofill(){
   const d = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
@@ -1936,7 +1942,7 @@ function autofill(){
     extras:['Hair','Photographer'], email:'jess@example.com', phone:'0400 000 000', notes:'Photographer arrives 12:30', consent:'I agree' };
   S.refs = shuffle((S.byGroup.bridal||[]).slice()).slice(0,3); S.answers.refs = S.refs.length;
   S.affs = S.affList.filter(x => x.cat === 'Hair').slice(0,1).concat(S.affList.filter(x => x.cat === 'Photography').slice(0,1)); S.answers.team = S.affs.length;
-  S.started = true; S.sent = false; S.enquiryId = null; msgs.innerHTML = ''; comp.innerHTML = '';
+  S.started = true; S.sent = false; S.enquiryId = null; clearMessages(); comp.innerHTML = '';
   renderTray(); renderTabs(); renderGallery(); updateFab(); minimise(false); showSummary();
 }
 

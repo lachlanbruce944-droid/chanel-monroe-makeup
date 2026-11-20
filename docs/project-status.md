@@ -2,6 +2,9 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Chat heading (21 November 2026)
+The assistant identity scrolls with the conversation instead of staying above every message. Chat controls remain accessible.
+
 ## Enquiry refresh control (21 November 2026)
 Removed the duplicate Refresh site button from the enquiry page; the main site retains its refresh button.
 
