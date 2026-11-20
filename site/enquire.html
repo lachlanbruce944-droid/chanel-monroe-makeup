@@ -1015,7 +1015,7 @@ function display(q, v){
   if(v === '__skip') return q.skip || 'Skipped';
   return v;
 }
-const activeQs = () => QUESTIONS.filter(q => !q.when || q.when(S.answers));
+const activeQs = () => QUESTIONS.filter(q => q.id !== 'start_window' && (!q.when || q.when(S.answers)));
 const nextQ = () => activeQs().find(q => S.answers[q.id] === undefined);
 
 /* =====================================================================
@@ -1190,8 +1190,8 @@ function renderAppointmentCalendar(q){
   comp.append(host);
   ConsultationCalendar.mount(host,{
     kind, layout:'glass', eventAt:phone?makeupStart():null,
-    initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T09:00',
-    fetchSlots:async(month,signal)=>{const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind); if(phone)return rows; return rows.map(slot=>{const hour=Number(slot.local_start.slice(11,13));const extended=S.answers.start_window==='extended';const startHour=kind==='makeup_ready'?hour-3:hour;return {...slot,available:slot.available && (extended ? startHour>=3 && startHour<=20 : startHour>=9 && startHour<=14)};});},
+    initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T06:00',
+    fetchSlots:async(month,signal)=>{const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind); if(phone)return rows; return rows.map(slot=>{const hour=Number(slot.local_start.slice(11,13));const startHour=kind==='makeup_ready'?hour-3:hour;return {...slot,available:slot.available && startHour>=3 && startHour<=12};});},
     onSelect:value=>{
       if(phone)return answer(q,value);
       const [date,time]=value.split('T');
@@ -1472,7 +1472,7 @@ function buildRow(){
     notes: a.notes === "That's everything" ? null : val('notes'),
     refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
     affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
-    viewing: {...Attention.data(), appointment_hours:a.start_window || 'standard', extended_hours_fee_pending:a.start_window==='extended'},
+    viewing: {...Attention.data(), appointment_hours:'early_3am_to_noon', extended_hours_fee_pending:true},
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
     consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted
     calendar_event: calendarEvent(),
@@ -1497,7 +1497,7 @@ function calendarEvent(){
   const R = buildRowLite(), est = estimate();
   const lines = [
     `ENQUIRY (not yet confirmed): ${a.name}`,
-    a.start_window==='extended' && 'Early / late hours requested: additional fee subject to Chanel confirmation',
+    'Early appointment window: 3:00 am–12:00 pm; additional fee subject to Chanel confirmation',
     `${cat(a).name || ''}${L ? ' · ' + L.name : ''}${R.sub_style ? ' · ' + R.sub_style : ''}`,
     `${startMode(a) ? 'Start' : 'Ready by'}: ${fmtTime(a.ready_by)}${R.quantity ? ' · ' + R.quantity : ''}`,
     travel() && `Suburb: ${a.location} (${travel().text})`,
