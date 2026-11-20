@@ -1,3 +1,8 @@
+### 2026-11-21 (associate publication and style definitions)
+- Remove mock associate cards. Hide the public Associates section until CRM returns at least one connected, contacted, explicitly published profile.
+- Add definitions for all 38 gallery styles and display the selected definition on mobile, with definitions on desktop style controls.
+- Check all 964 registry category/style pairs; record the visual audit as pending because image/browser access is unavailable. No unviewed photo has been hidden or reclassified.
+
 ### 2026-11-21 (popup text overflow)
 - Wrap Instagram account names, links, captions and comments within the About / Chanel’s work popup; reserve header/footer space and scroll long text within the window.
 - Keep product and brand descriptions readable with scrolling instead of shrinking text.

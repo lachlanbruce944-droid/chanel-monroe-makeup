@@ -1,0 +1,80 @@
+# Gallery style definitions and review standard
+Updated 21 November 2026.
+
+A style image must make the makeup the subject: clear face/body makeup, clean lighting, visible technique and appropriate context. Hide phone-in-shot images, mirror selfies, casual selfies where makeup is not the subject, product-led images, outfit/hair-only photographs, promotional graphics, collages, watermarks and unrelated content. Do not crop away a phone just to make a rejected image pass.
+
+Use one primary category and style per image. Choose by the visible makeup technique first, then documented event context. Editorial is not a catch-all for unusual styling. Wedding, maternity, lesson, stage and holiday labels require source context; sensitive skin cannot be established visually.
+
+## natural
+
+| Style | Definition and boundary |
+|---|---|
+| No-makeup makeup | Almost invisible complexion correction, softly groomed brows and restrained colour; skin texture remains visible. Exclude dramatic lashes, smoky eyes and strong contour. |
+| Clean polished | An even, tidy base with defined brows, neat lashes and neutral lips; more finished than no-makeup makeup but without dramatic eye work. |
+| Fresh lift | Light, bright makeup with lifted blush placement, soft upward eye definition and an awake-looking finish; avoid heavy dark eye shading. |
+| Dewy glass skin | A hydrated, reflective complexion is the main feature, with controlled glow and understated eye makeup. Bright highlighter alone is not glass skin. |
+| Sun-kissed bronze | Sheer warm bronzer and soft golden tones that mimic a natural sun-kissed finish; sculpted, dramatic bronze looks belong in glam. |
+| Mature natural | Light, softly defining natural makeup documented for a mature client; prioritise skin texture and comfortable finishes. Do not categorise by guessed age. |
+| Sensitive skin | A service approach using client-confirmed sensitivities and suitable preparation; sensitivity cannot be diagnosed or proven from a photograph. |
+| Maternity glow | Soft, radiant makeup for a documented maternity booking; pregnancy must not be inferred from someone's appearance. |
+| Makeup lesson | A clearly documented personal makeup lesson or its finished result; a generic portrait is not evidence of a lesson. |
+
+## glam
+
+| Style | Definition and boundary |
+|---|---|
+| Soft glam | Blended neutral eye definition, a polished base and balanced lashes with soft edges; richer than Natural without the intensity of full glam. |
+| Full glam | Deliberately high-impact eye work, defined lashes, sculpting and a finished complexion; makeup remains the visual focus. |
+| Bronzed coastal glam | Polished bronze and golden tones with defined eyes and sculpted luminous skin; stronger and more finished than natural sun-kissed bronze. |
+| Old Hollywood | A classic red-carpet combination such as precise winged liner, refined sculpting and a red or deep statement lip; vintage styling alone is insufficient. |
+| Race day glam | Documented racing-event makeup with polished, long-wearing definition; a hat or fascinator alone does not establish a makeup style. |
+| Mature skin glam | Documented event glam on mature skin with considered texture and balanced definition; do not assign by an age guess. |
+
+## bridal
+
+| Style | Definition and boundary |
+|---|---|
+| Classic bridal | Documented wedding makeup with timeless neutral definition, balanced lashes and a camera-ready finish; a white top alone is not bridal evidence. |
+| Natural radiant bride | Documented bridal makeup with light coverage, soft eye definition and fresh luminous skin; stronger dramatic wedding looks fit Classic bridal. |
+| Groom grooming | Documented wedding grooming focused on discreet complexion correction, shine control and tidy facial details; ordinary male portraits are not enough. |
+
+## editorial
+
+| Style | Definition and boundary |
+|---|---|
+| Beauty close-up | A deliberate tight crop showing makeup texture, blending and fine beauty detail; exclude filler results, skincare-only images and product swatches. |
+| Graphic liner | Crisp, deliberate geometric, floating or unusual eyeliner shapes are the focal point; a standard wing alone is not editorial graphic work. |
+| Editorial graphic liner | Concept-led graphic eyeliner for a documented editorial, campaign or fashion image; use Graphic liner when the creative shape is clear but context is not documented. |
+| Colour block and gloss | Deliberately placed solid colour areas and/or an intentional glossy editorial eye or lip finish; everyday lipstick alone is insufficient. |
+| Avant-garde | Conceptual, experimental makeup with unusual form, texture or composition; exclude unrelated styling and costume-only portraits. |
+| Music video and album art | Makeup created for a documented music-video or album-art brief; a performer portrait without production context is not enough. |
+| Stage and theatre | Makeup designed for documented live performance, theatrical characters or visibility under stage lighting; ordinary event glam is insufficient. |
+| Lip art | Cosmetic pigment or decorative makeup on lips is the main subject; exclude injections, tattoo procedures, skincare-only lips and product swatches. |
+
+## fx
+
+| Style | Definition and boundary |
+|---|---|
+| SFX and prosthetics | Applied prosthetics, simulated injury, creature effects or other visible special-effects makeup; costume props alone are not SFX. |
+| Body paint | Pigment-based designs clearly painted on skin across the face/body; exclude clothing prints, permanent tattoos and unrelated body portraits. |
+| Cosplay recreation | Makeup visibly recreating a named fictional character, supported by source context; a costume without meaningful makeup is insufficient. |
+| Halloween character | Recognisable Halloween makeup such as skeletons, vampires or horror characters; use SFX when prosthetics or effects dominate. |
+| Fancy dress | Distinctive costume-oriented character makeup outside the more specific cosplay, Halloween and SFX categories. |
+| UV neon | Fluorescent makeup shown reacting to UV/blacklight or explicitly documented as UV makeup; ordinary bright colour is not enough. |
+
+## parties
+
+| Style | Definition and boundary |
+|---|---|
+| Glitter bar and gems | Decorative cosmetic glitter and face gems are the main feature of a festival or party design; exclude jewellery-only images. |
+| Kids face paint | A clearly documented children's face-paint design; keep it age-appropriate and separate from adult glam. |
+| Express designs | Documented quick, simple face-paint motifs or small decorative applications; do not infer appointment duration from a picture alone. |
+| Easter | Makeup/face paint with explicit Easter motifs such as bunny or egg designs; pastel colour alone is not an Easter style. |
+| Christmas and New Year | Clearly festive Christmas or New Year makeup/face paint, supported by motifs or source context; glitter alone can belong in Glitter bar and gems. |
+| Holiday specials | Documented seasonal or holiday designs not better covered by Easter or Christmas and New Year. |
+
+## Review status
+The media registry contains 964 records: 20 Chanel-owned entries, 889 external still images and 55 clips.
+All registry category/style pairs match the configured taxonomy. This is a metadata check, not a visual-quality or phone/selfie check.
+Visual inspection of the full collection has NOT been completed: the execution/image-viewing environment failed and a connected Chrome browser was not exposed.
+No unviewed image has been relabelled or hidden based on an invented visual judgement. Pending review is recorded in docs/gallery-audit.json.

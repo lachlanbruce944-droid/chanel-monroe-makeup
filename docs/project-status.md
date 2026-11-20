@@ -1,3 +1,6 @@
+## Associates and gallery review (21 November 2026)
+Mock Associates removed; public list comes only from connected/contacted/published CRM profiles. 25 researched makeup businesses remain CRM-only. Style definitions are available for all 38 styles. The 964 registry pairs pass metadata validation, but visual inspection is pending because image tooling and Chrome were unavailable. No visual removals/reclassifications are claimed.
+
 ## Popup text (21 November 2026)
 Instagram post popup uses wrapping headers and a bounded scrollable caption/comment panel in desktop, portrait and landscape layouts. Product and brand text panels scroll at normal text size. Browser visual verification remains outstanding.
 

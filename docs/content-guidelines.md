@@ -35,6 +35,7 @@ A look must clearly match its sub-style: a heavy, dramatic look does not belong 
 - One slide per distinct look, pose or angle. Drop near-identical slides from the same post.
 
 **Not suitable**
+- Any image with a visible phone, mirror selfie, or casual selfie where makeup is not the clear subject.
 - Any **text** on the image: captions, titles, prices, quotes, hashtags, "swipe", before/after labels.
 - **Logos, watermarks**, signage, posters, film or TV stills, screenshots, collages and grids.
 - **Product shots** or product-led images (bottles, palettes, swatches) in the style galleries.
@@ -106,3 +107,5 @@ A look must clearly match its sub-style: a heavy, dramatic look does not belong 
 | Brand logo | SVG, or PNG with transparency | as is, with the site |
 
 Storage names are set by `tools/media_names.py`; never name media files by hand.
+
+Detailed classification boundaries: [Gallery style definitions](GALLERY-STYLE-DEFINITIONS.md). The full visual audit remains pending; see [audit status](gallery-audit.json).

@@ -38,6 +38,4 @@ window.REVIEWS = [
 ];
 
 /* About → The team: shown until the CRM has active team members ticked "Show on website" (Supabase site_team()). */
-window.TEAM_PLACEHOLDER = [
-  { role: 'Makeup artist' }, { role: 'Hair stylist' }, { role: 'Assistant artist' }
-];
+/* Associates come only from approved CRM publications; no placeholder profiles. */

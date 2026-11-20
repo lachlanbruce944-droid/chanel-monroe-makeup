@@ -69,6 +69,7 @@ function shuffle(a){a=a.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(M
 function hash(s){var h=0;for(var i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))|0;return Math.abs(h)}
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function items(){return BASE.map(function(x){var m=O.moved[x.src];return m?Object.assign({},x,{g:m.g,s:m.s}):x})}
+function styleDefinition(name){return (window.STYLE_DEFINITIONS||{})[name]||''}
 function desc(it){if(O.captions[it.src])return O.captions[it.src];if(it.d)return it.d;var a=DESC[it.s]||[''];return a[hash(it.src)%a.length]}
 function credit(it){return (it.own?'Chanel Monroe':'Inspiration')+(it.post?' · <a href="'+it.post+'" target="_blank" rel="noopener">'+esc(it.by)+' ↗</a>':'')}
 function hid(it){return O.hidden.indexOf(it.src)>=0}
@@ -123,7 +124,7 @@ function renderNav(){
 }
 function markNav(){[].forEach.call($('nav').querySelectorAll('.gbtn'),function(x){x.setAttribute('aria-current',page?x.dataset.p===page:(x.dataset.g!=null&&+x.dataset.g===cur))})}
 $('nav').addEventListener('click',function(e){var x=e.target.closest('button');if(!x)return;if(x.dataset.p)return openPage(x.dataset.p);if(x.dataset.g!=null)go(+x.dataset.g,x.dataset.s||null)});
-function renderSubs(){var g=GROUPS[cur];$('subs').innerHTML='<button class="chip" data-s="" aria-pressed="'+(!sub)+'">All</button>'+g.subs.map(function(s){return '<button class="chip" data-s="'+esc(s)+'" aria-pressed="'+(sub===s)+'">'+esc(s)+'</button>'}).join('')}
+function renderSubs(){var g=GROUPS[cur];$('subs').innerHTML='<button class="chip" data-s="" aria-pressed="'+(!sub)+'">All</button>'+g.subs.map(function(s){return '<button title="'+esc(styleDefinition(s))+'" class="chip" data-s="'+esc(s)+'" aria-pressed="'+(sub===s)+'">'+esc(s)+'</button>'}).join('')}
 $('subs').addEventListener('click',function(e){var x=e.target.closest('.chip');if(x)go(cur,x.dataset.s||null)});
 
 
@@ -148,7 +149,7 @@ function tileHTML(it,k){
 function go(i,s){
   page=null;$('gallery').hidden=false;$('info').hidden=true;setFab(null);
   cur=i;sub=s||null;var g=GROUPS[i];document.body.dataset.g=g.id;markNav();renderSubs();
-  $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(DESC[sub]||[''])[0]+'.':g.tag;
+  $('gTitle').textContent=sub||g.name;$('gTag').textContent=sub?(styleDefinition(sub).split('. ')[0]||((DESC[sub]||[''])[0]))+'.':g.tag;$('gTag').title=sub?styleDefinition(sub):'';
   shown=(sub||EDIT)?pick(g,sub):bySub(g,SEL[g.id]);if(!EDIT)shown=spreadVideos(shown);
   $('track').innerHTML=shown.map(tileHTML).join('');
   $('gSub').textContent='';$('gSub').classList.remove('on');observeVideos();$('strip').scrollLeft=0;centreIdx=-1;dir=1;setTimeout(findCentre,60);closeDd();
@@ -405,15 +406,21 @@ function reviewsHTML(){
   return '<h1>Reviews</h1><p class="lead">'+(real.length?'Kind words from brides, birthday girls, shoot crews and everyone in between.':'Client reviews are on their way. Booked with Chanel before? She’d love to hear how it went.')+'</p>'+
     carousel((real.length?real:R).map(function(r){return r.placeholder?'<div class="rev soon">'+star(0)+'<p>A client review will appear here soon.</p><b>Coming soon</b></div>':
       '<div class="rev">'+star(r.stars||5)+'<p>“'+esc(r.text)+'”</p><b>'+esc(r.name)+'</b><small>'+esc([r.event,r.source].filter(Boolean).join(' · '))+'</small></div>'}).join(''))}
-/* About → The team: active team members Chanel ticks "Show on website" in the CRM (Supabase site_team()), else placeholders */
+/* Only connected, contacted and explicitly published CRM associates are public. */
 var TEAM=null;
 (function(){var u=window.SUPABASE_URL||'https://qxiugfatpybldluipcyy.supabase.co',k=window.SUPABASE_KEY||'sb_publishable_sGLIpIxvos66FLVI9vPSbg_qXsTT6rt';
-  if(!window.fetch)return;fetch(u+'/rest/v1/rpc/site_team',{method:'POST',headers:{apikey:k,'Content-Type':'application/json'},body:'{}'})
-  .then(function(r){return r.ok?r.json():[]}).then(function(d){if(Array.isArray(d)&&d.length){TEAM=d;if(window.onTeam)window.onTeam()}}).catch(function(){})})();
-function teamHTML(){var T=TEAM||window.TEAM_PLACEHOLDER||[],ph=!TEAM;
-  return '<h3>Associates</h3>'+carousel(T.map(function(t){return '<div class="card tm'+(ph?' soon':'')+'">'+(t.photo_url?'<img class="av" src="'+esc(t.photo_url)+'" alt="">':'<span class="av ph" aria-hidden="true"></span>')+
-    '<b>'+esc(ph?t.role:(t.name||''))+'</b><small>'+esc(ph?'Joining soon':(t.role||''))+'</small></div>'}).join('')+
-    '<a class="card tm join" href="apply.html?type=team" style="text-decoration:none"><span class="av ph plus" aria-hidden="true">+</span><b>Become an associate</b><small>Artists and assistants</small></a>')}
+  if(!window.fetch)return;fetch(u+'/rest/v1/rpc/site_team',{method:'POST',cache:'no-store',headers:{apikey:k,'Content-Type':'application/json'},body:'{}'})
+  .then(function(r){return r.ok?r.json():[]}).then(function(d){TEAM=Array.isArray(d)?d:[];if(window.onTeam)window.onTeam()}).catch(function(){})})();
+function teamHTML(){
+  var T=Array.isArray(TEAM)?TEAM:[];
+  if(!T.length)return '';
+  return '<section aria-label="Connected associates"><h3>Associates</h3>'+carousel(T.map(function(t){
+    var handle=String(t.instagram||'').replace(/^@/,'').replace(/^https?:\/\/(www\.)?instagram\.com\//,'').split(/[/?#]/)[0];
+    var profile=handle?'https://www.instagram.com/'+encodeURIComponent(handle)+'/':'';
+    var photo=t.photo_url&&/^https:\/\//i.test(t.photo_url)?'<img class="av" src="'+esc(t.photo_url)+'" alt="'+esc(t.name||'Associate')+'" loading="lazy">':'';
+    return '<div class="card tm">'+photo+'<b>'+esc(t.name||'')+'</b><small>'+esc(t.role||'')+'</small>'+(profile?'<a href="'+esc(profile)+'" target="_blank" rel="noopener">View Instagram</a>':'')+'</div>';
+  }).join(''))+'</section>';
+}
 window.onTeam=function(){if(page==='about'&&!document.body.classList.contains('m'))openPage('about');if(window.mRenderTeam)window.mRenderTeam()};
 function openLesson(i){var x=(window.LESSONS||[])[i];if(!x)return;
   $('lsBox').innerHTML='<video controls playsinline autoplay src="'+x.src+'" poster="'+x.poster+'"></video><div class="ls-info"><small>'+esc(x.topic)+'</small><h2>'+esc(x.title||x.topic)+'</h2><p>By '+esc(x.by)+'</p><a class="pill" href="'+x.post+'" target="_blank" rel="noopener">Watch on Instagram ↗</a></div>';
@@ -678,6 +685,7 @@ function mInit(){
 var mOwn=null;
 function mGo(id){var el=$(id);if(!el)return;var top=el.getBoundingClientRect().top+scrollY-($('mbar').offsetHeight||0)+1;window.scrollTo({top:top,behavior:'smooth'})}
 function mFill(gi,sb){var g=GROUPS[gi],list=sb?pick(g,sb):spreadVideos(bySub(g,SEL[g.id])),tr=$('mt-'+g.id);if(!tr)return;
+  var definition=tr.closest('.mstyle').querySelector('.mtag');if(definition)definition.textContent=sb?styleDefinition(sb):g.tag;
   mLists[gi]=list;tr.innerHTML=list.map(function(it,k){return tileHTML(it,k).replace(' loading="eager"',' loading="'+(gi===0&&k<3?'eager':'lazy')+'"').replace(' fetchpriority="high"','')}).join('');
   tr.parentNode.scrollLeft=0;
   [].forEach.call(tr.closest('.mstyle').querySelectorAll('.chip'),function(c){c.setAttribute('aria-pressed',(c.dataset.ms||null)===(sb||null))});
