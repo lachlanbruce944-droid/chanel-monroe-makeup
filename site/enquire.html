@@ -847,6 +847,9 @@ const QUESTIONS = [
   { id:'refs', label:'Reference looks', type:'pick', kind:'refs', optional:true,
     ask:a => S.refs.length ? `You've saved ${S.refs.length} look${S.refs.length>1?'s':''}. Add any more?`
       : 'Want to show Chanel some looks you love? Tap Browse looks, then + on any photo.' },
+  { id:'start_window', label:'Appointment hours', type:'chips',
+    options:[{v:'standard',l:'Standard hours · 9am–5pm'},{v:'extended',l:'Early / late start · 3am–midnight'}],
+    ask:() => 'Do you need an early or late appointment? Standard hours are 9am–5pm. Early or late appointments may incur an additional fee, which Chanel will confirm before booking.' },
   { id:'event_date', label:'Makeup date', type:'date',
     ask:a => startMode(a) ? 'Choose an available appointment start.' : 'Choose when you need to be ready. The calendar includes three hours for your service.' },
   { id:'ready_by', label:'Time', type:'time', ask:() => 'Choose your makeup date and time.' },
@@ -1188,7 +1191,7 @@ function renderAppointmentCalendar(q){
   ConsultationCalendar.mount(host,{
     kind, layout:'glass', eventAt:phone?makeupStart():null,
     initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T09:00',
-    fetchSlots:(month,signal)=>ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind),
+    fetchSlots:async(month,signal)=>{const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind); if(phone)return rows; return rows.map(slot=>{const hour=Number(slot.local_start.slice(11,13));const extended=S.answers.start_window==='extended';const startHour=kind==='makeup_ready'?hour-3:hour;return {...slot,available:slot.available && (extended ? startHour>=3 && startHour<=20 : startHour>=9 && startHour<=14)};});},
     onSelect:value=>{
       if(phone)return answer(q,value);
       const [date,time]=value.split('T');
@@ -1469,7 +1472,7 @@ function buildRow(){
     notes: a.notes === "That's everything" ? null : val('notes'),
     refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
     affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
-    viewing: Attention.data(),
+    viewing: {...Attention.data(), appointment_hours:a.start_window || 'standard', extended_hours_fee_pending:a.start_window==='extended'},
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
     consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted
     calendar_event: calendarEvent(),
@@ -1494,6 +1497,7 @@ function calendarEvent(){
   const R = buildRowLite(), est = estimate();
   const lines = [
     `ENQUIRY (not yet confirmed): ${a.name}`,
+    a.start_window==='extended' && 'Early / late hours requested: additional fee subject to Chanel confirmation',
     `${cat(a).name || ''}${L ? ' · ' + L.name : ''}${R.sub_style ? ' · ' + R.sub_style : ''}`,
     `${startMode(a) ? 'Start' : 'Ready by'}: ${fmtTime(a.ready_by)}${R.quantity ? ' · ' + R.quantity : ''}`,
     travel() && `Suburb: ${a.location} (${travel().text})`,
