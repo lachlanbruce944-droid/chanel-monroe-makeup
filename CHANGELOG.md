@@ -1,3 +1,7 @@
+### 2026-11-21 (popup text overflow)
+- Wrap Instagram account names, links, captions and comments within the About / Chanel’s work popup; reserve header/footer space and scroll long text within the window.
+- Keep product and brand descriptions readable with scrolling instead of shrinking text.
+
 ### 2026-11-21 (chat heading)
 - Show the assistant name and status only at the beginning of the scrollable conversation. Keep chat controls accessible and preserve the heading when restarting or showing confirmation.
 

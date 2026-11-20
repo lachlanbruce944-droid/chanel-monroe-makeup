@@ -446,9 +446,7 @@ function fitAff(){
 }
 if(document.fonts)document.fonts.ready.then(function(){if($('affMod').classList.contains('open'))fitAff()});
 if(window.visualViewport)window.visualViewport.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff()});
-function fitPanel(sd){var w=sd&&sd.querySelector('.sin');if(!w)return;w.style.zoom=1;
-  var cs=getComputedStyle(sd),room=sd.clientHeight-parseFloat(cs.paddingTop)-parseFloat(cs.paddingBottom),z=1;
-  while(z>0.55&&w.getBoundingClientRect().height>room+1){z-=0.03;w.style.zoom=z}}
+function fitPanel(sd){var w=sd&&sd.querySelector('.sin');if(w)w.style.zoom=1}
 window.addEventListener('resize',function(){if($('affMod').classList.contains('open'))fitAff();
   if($('prodMod').classList.contains('open'))fitPanel($('pmBox').querySelector('.pm-info'));if($('brandMod').classList.contains('open'))fitPanel($('bmBox').querySelector('.bm-head'))});
 

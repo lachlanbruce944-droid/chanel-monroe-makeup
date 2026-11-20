@@ -1,3 +1,6 @@
+## Popup text (21 November 2026)
+Instagram post popup uses wrapping headers and a bounded scrollable caption/comment panel in desktop, portrait and landscape layouts. Product and brand text panels scroll at normal text size. Browser visual verification remains outstanding.
+
 # Project status
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
