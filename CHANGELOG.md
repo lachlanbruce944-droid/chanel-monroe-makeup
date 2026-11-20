@@ -1,3 +1,6 @@
+### 2026-11-21 (enquiry refresh control)
+- Remove the duplicate Refresh site button from the enquiry window. The main site's top-left refresh control remains.
+
 ### 2026-11-21 (chat keyboard)
 - Open the keyboard only when a client taps a text field. Resize the embedded chat to the visual viewport and keep the composer visible while typing. Use 16px input text to avoid mobile focus zoom.
 

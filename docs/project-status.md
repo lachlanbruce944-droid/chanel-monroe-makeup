@@ -2,6 +2,9 @@
 
 The current state of the site and the open items. Update it in the same commit as any change it describes.
 
+## Enquiry refresh control (21 November 2026)
+Removed the duplicate Refresh site button from the enquiry page; the main site retains its refresh button.
+
 ## Chat keyboard (21 November 2026)
 Text fields wait for a tap. Embedded chat follows the visual viewport; standalone chat reserves keyboard space. While typing, details tiles hide to preserve room for the prompt and composer. Device keyboard verification remains outstanding.
 
