@@ -1,3 +1,6 @@
+## About work gallery (21 November 2026)
+Portrait and work gallery retained. The catalogued glam-selfie post CJil6Ijg8aP is excluded from About only. Style galleries are unchanged. Remaining photos are not labelled by subject; no complete person-specific audit is claimed.
+
 ## About portrait retained (21 November 2026)
 Chanel’s portrait remains in About. Only the work photo grid is removed pending archived Instagram replacements.
 
