@@ -1,3 +1,6 @@
+### 2026-11-21 (retain About portrait)
+- Restore Chanel’s portrait in About; keep the work photo grid removed pending archived Instagram images.
+
 ### 2026-11-21 (About images)
 - Remove Chanel’s portrait and work photo grid from About on mobile and desktop, pending archived Instagram replacements.
 - Preserve biography, timeline, associates and Instagram link; keep existing media files available.

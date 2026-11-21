@@ -1,3 +1,6 @@
+## About portrait retained (21 November 2026)
+Chanel’s portrait remains in About. Only the work photo grid is removed pending archived Instagram replacements.
+
 ## About images (21 November 2026)
 Chanel’s portrait and work photo grid are removed from About on mobile and desktop pending archived Instagram replacements. Biography, timeline and Instagram link remain.
 
