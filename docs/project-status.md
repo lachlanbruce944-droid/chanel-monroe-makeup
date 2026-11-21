@@ -1,3 +1,6 @@
+## About images (21 November 2026)
+Chanel’s portrait and work photo grid are removed from About on mobile and desktop pending archived Instagram replacements. Biography, timeline and Instagram link remain.
+
 ## Associates and gallery review (21 November 2026)
 Mock Associates removed; public list comes only from connected/contacted/published CRM profiles. 25 researched makeup businesses remain CRM-only. Style definitions are available for all 38 styles. The 964 registry pairs pass metadata validation, but visual inspection is pending because image tooling and Chrome were unavailable. No visual removals/reclassifications are claimed.
 

@@ -1,3 +1,7 @@
+### 2026-11-21 (About images)
+- Remove Chanel’s portrait and work photo grid from About on mobile and desktop, pending archived Instagram replacements.
+- Preserve biography, timeline, associates and Instagram link; keep existing media files available.
+
 ### 2026-11-21 (associate publication and style definitions)
 - Remove mock associate cards. Hide the public Associates section until CRM returns at least one connected, contacted, explicitly published profile.
 - Add definitions for all 38 gallery styles and display the selected definition on mobile, with definitions on desktop style controls.
