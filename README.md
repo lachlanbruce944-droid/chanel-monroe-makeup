@@ -76,3 +76,7 @@ The site is designed for landscape. On touch devices an entry screen asks visito
 ## Ownership and credits
 
 Photos in the style galleries are inspiration from other artists and are credited on every image; they are not Chanel's work. Chanel's own work appears only in About. Affiliates must be contacted before the site launches.
+
+## Webpage Scene Clips
+
+[Open Webpage Scene Clips](docs/webpage-scene-clips.md) for the Google Drive collection, selection board, scene trackers, source credits and ChatGPT clipping instructions. Includes 78 research references; video files and final cut points remain pending.

@@ -1,3 +1,6 @@
+## Webpage Scene Clips (24 November 2026)
+Added [Webpage Scene Clips](webpage-scene-clips.md) with links to the Drive collection, 60-candidate expansion, original 18-reference list, selection board and ChatGPT clipping instructions. This is documentation only: no video files downloaded or published. Nineteen new chapter-based windows are provisional; 41 require timing selection, and all need visual/rights review.
+
 ## About work gallery (21 November 2026)
 Portrait and work gallery retained. The catalogued glam-selfie post CJil6Ijg8aP is excluded from About only. Style galleries are unchanged. Remaining photos are not labelled by subject; no complete person-specific audit is claimed.
 

@@ -1,3 +1,7 @@
+### 2026-11-24 (Webpage Scene Clips)
+- Add a repository reference page linking the Drive collection, scene selection board, CSV/JSON trackers, source credits and ChatGPT clipping instructions.
+- Link it from the repository README and record the remaining visual/timing review; no production media or website behaviour changes.
+
 ### 2026-11-21 (About work gallery restored)
 - Keep Chanel’s portrait and restore the About work grid, excluding the catalogued glam-selfie post CJil6Ijg8aP from About only.
 - Leave all style galleries unchanged. Other subjects are not identified by available metadata; further person-specific removals require post links.
