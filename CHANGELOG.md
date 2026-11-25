@@ -1,3 +1,7 @@
+### 2026-11-25 (About: bio lines)
+- Replaced the placeholder ABOUT_LINES with six short bio lines drawn from Chanel's timeline (Huxley School of Makeup 2017, character and SFX, editorial since 2018, Trace Cosmetic Tattoo Academy, mobile on the Gold Coast); they rotate under her name on About.
+- Removed the "Bio lines still to write" note. Same edits made in `site/` (no full rebuild); `site-content.js` and `app.js` version strings bumped.
+
 ### 2026-11-25 (About: what this site is for)
 - About page gains an "About this site" passage: the site is for exploring makeup styles; the gallery looks are by credited creators from around the world and are inspiration for your occasion (not Chanel's own work), and can be added to an enquiry. Chanel's own work follows below.
 - Edited `src/index.html` and, to avoid a full rebuild, the same lines in `site/js/app.js` and `site/css/site.css`; version strings in `site/index.html` bumped to `20261125-about-site`.

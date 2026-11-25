@@ -12,15 +12,12 @@
 
   /* ---------- ABOUT: photos of you. The lines below rotate under the gallery as these photos pass. ---------- */
   var ABOUT_LINES = [
-    "Hi, I'm [your name]",
-    '[One line: who you are and the kind of makeup you love doing.]',
-    '[Two or three sentences: how you started, what you specialise in, and what clients say it feels like to work with you.]',
-    'Training: [Qualification, school, year]',
-    'Training: [Course or certificate]',
-    'Insured: [public liability, provider]',
-    'Hygiene: [clean brushes and disposables for every client]',
-    'Where I work: [studio, mobile, areas covered]',
-    '[What makes your service different]'
+    'Makeup for every kind of day, from barely there to full character.',
+    'Trained at the Huxley School of Makeup in 2017.',
+    'From soft bridal glow to Halloween characters and SFX creatures.',
+    'Editorial shoots with Gold Coast photographers since 2018.',
+    'Cosmetic tattoo training with Trace Cosmetic Tattoo Academy.',
+    'Mobile across the Gold Coast: bridal, glam, events, shoots and parties. I come to you.'
   ];
 
   /* ---------- STYLES: the looks come from LOOK_PRICES. Add photos for each look here by its key. ----------
