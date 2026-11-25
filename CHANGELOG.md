@@ -1,3 +1,7 @@
+## 26 November 2026 — Compact gallery return bar
+- Applied approved design 4: frosted bottom bar, picture symbol and live pick count, curved return arrow and Enquiry button. Counts styles and beauty team selections; returns to the existing enquiry. Applied to embedded and standalone browsing.
+- Website automated suite: 45 checks passing.
+
 ## 26 November 2026 — Edit enquiry answers from the conversation
 - Added one curved return arrow to the left of the answered message nearest the chat viewport centre, fading with scroll position. Hidden outside the centre region, while typing or submitting, and after sending.
 - Reopens the selected step using the existing enquiry dependency rules; invalidates affected booking times, retains unrelated answers and picks, and saves the draft. Restored drafts show editable answers.

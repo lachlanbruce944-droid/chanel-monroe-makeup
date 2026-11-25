@@ -1,3 +1,6 @@
+## 26 November 2026 — Gallery return bar
+Approved design 4 implemented for gallery browsing: live total pick count and short Enquiry return button, retaining current enquiry selections and progress.
+
 ## 26 November 2026 — Enquiry return arrow
 Implemented the selected Option 1: one fading curved arrow beside the answer nearest the middle of the chat. Uses existing answer editing and dependency clearing; draft answers remain editable on reload. Automated suite: 44 passing checks. Visual browser verification remains outstanding (Chromium executable unavailable in this workspace).
 

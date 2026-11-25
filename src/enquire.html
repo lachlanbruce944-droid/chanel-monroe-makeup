@@ -190,8 +190,10 @@ body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:
 .est{margin-top:10px;padding:10px;border-radius:12px;background:var(--bg2);display:flex;flex-direction:column;gap:3px}
 .est b{font-weight:600;font-size:14px}.est span{font-size:12px;color:var(--soft)}
 /* floating "continue" button */
-#fab{position:fixed;right:16px;bottom:16px;z-index:7;display:flex;align-items:center;gap:9px;padding:9px 16px 9px 9px;border-radius:999px;background:var(--fg);color:var(--bg);box-shadow:0 10px 30px rgba(0,0,0,.25);transform:translateY(140%);transition:transform .45s var(--ease)}
-body.min #fab{transform:none}
+#fab{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom));z-index:7;display:flex;align-items:center;justify-content:space-between;gap:20px;width:min(360px,calc(100vw - 32px));box-sizing:border-box;padding:8px 9px 8px 16px;border-radius:20px;background:color-mix(in srgb,var(--bg) 88%,transparent);color:var(--fg);backdrop-filter:blur(18px);box-shadow:0 6px 24px rgba(30,15,15,.18);transform:translate(-50%,160%);transition:transform .45s var(--ease)}
+#fab .pick-summary{display:flex;align-items:center;gap:9px;white-space:nowrap}#fab svg{width:23px;height:23px;flex:none}
+#fab .return-label{display:flex;align-items:center;gap:8px;min-height:44px;box-sizing:border-box;padding:8px 16px;border-radius:999px;background:var(--fg);color:var(--bg)}
+body.min #fab{transform:translateX(-50%)}
 #fab .av{width:30px;height:30px;font-size:14px}
 #fab .n{background:var(--acc);color:var(--onacc);border-radius:9px;padding:0 6px;font-size:11px;line-height:18px}
 #toast{pointer-events:none;position:fixed;left:50%;bottom:18px;transform:translate(-50%,160%);background:var(--fg);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:13px;z-index:9;transition:transform .4s var(--ease);max-width:90vw;text-align:center}
@@ -265,7 +267,7 @@ body.min #toast{bottom:76px}
   .row input{padding:7px 10px;font-size:14px}.send{width:38px}
   .card{padding:9px;font-size:12px}.card dl{gap:3px 8px}
   .book{padding:10px 12px;font-size:14px}
-  #fab{bottom:max(8px,env(safe-area-inset-bottom));right:max(8px,env(safe-area-inset-right))}
+  #fab{bottom:max(8px,env(safe-area-inset-bottom));left:50%;right:auto}
   #gallery{padding-left:max(10px,env(safe-area-inset-left))}
 }
 @media (max-width:640px) and (orientation:portrait){
@@ -693,7 +695,7 @@ body.typing #conv{grid-row:1 / -1}
   </div>
 </aside>
 
-<button id="fab" aria-label="Continue your enquiry"><span class="orb idle" aria-hidden="true"></span><span id="fabTxt">Continue enquiry</span><span class="n" id="fabN" hidden>0</span></button>
+<button id="fab" aria-label="Return to your enquiry"><span class="pick-summary"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="3" width="16" height="15" rx="2"/><path d="M18 21H4a2 2 0 0 1-2-2V7m5 8 4-4 3 3 3-4 4 5"/><circle cx="11" cy="7" r="1"/></svg><span id="fabN" aria-live="polite">0 picks</span></span><span class="return-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 4-5 5 5 5M4 9h9a7 7 0 0 1 0 14" transform="translate(0 -2)"/></svg><span id="fabTxt">Enquiry</span></span></button>
 <div id="toast" role="status"></div>
 
 <div id="dev"></div>
@@ -1894,9 +1896,9 @@ function minimise(on){
   }
 }
 function updateFab(){
-  $('#fabTxt').textContent = S.sent ? 'Back to booking' : S.started ? 'Continue enquiry' : 'Start enquiry';
+  $('#fabTxt').textContent = S.sent ? 'Booking' : 'Enquiry';
   const n = S.refs.length + S.affs.length;
-  $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
+  $('#fabN').hidden = false; $('#fabN').textContent = n + ' pick' + (n===1?'':'s');
 }
 const FRAMED = window.self !== window.top;
 /* ---------- inside the site (framed): the site's carousel is the gallery ---------- */
