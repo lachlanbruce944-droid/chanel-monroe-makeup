@@ -1,3 +1,6 @@
+### 2026-11-25 (Pages workflow: separate build and deploy jobs)
+- Deploys kept failing with "No artifacts named github-pages… were found". The workflow now uses GitHub's standard two-job layout (build uploads, deploy runs after), and queued deploys are no longer cancelled mid-way.
+
 ### 2026-11-25 (Phones: no page zoom; zoom inside the photo viewer)
 - On touch devices the site, enquiry chat and application form no longer zoom: viewport `maximum-scale=1,user-scalable=no` (also stops iOS zooming in when a text box is tapped), `touch-action: manipulation` (no double-tap zoom) and a small script that blocks pinch gestures (iOS ignores user-scalable=no).
 - The photo viewer (`#lb`) has its own zoom: pinch, drag to pan, double-tap or double-click to zoom 2.5× / back, Ctrl+wheel on desktop; up to 4×. Resets on next/previous and close; caption and arrows hide while zoomed. Desktop browser zoom is unchanged.

@@ -1,5 +1,7 @@
 # Publishes the lightweight site (the site/ folder) to GitHub Pages on every push to main.
 # Photos and clips are not in this repo: they are served from Supabase Storage (bucket "media").
+# Two jobs (GitHub's recommended layout): the upload finishes and registers before the deploy job looks for it,
+# which avoids the intermittent "No artifacts named github-pages were found" failures seen on 25 Nov 2026.
 name: Deploy site to GitHub Pages
 on:
   push:
@@ -12,21 +14,22 @@ permissions:
   id-token: write
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
-  deploy:
+  build:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
-          name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
       - id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          artifact_name: github-pages-${{ github.run_id }}-${{ github.run_attempt }}
