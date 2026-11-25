@@ -1,3 +1,8 @@
+### 2026-11-25 (Phones: no page zoom; zoom inside the photo viewer)
+- On touch devices the site, enquiry chat and application form no longer zoom: viewport `maximum-scale=1,user-scalable=no` (also stops iOS zooming in when a text box is tapped), `touch-action: manipulation` (no double-tap zoom) and a small script that blocks pinch gestures (iOS ignores user-scalable=no).
+- The photo viewer (`#lb`) has its own zoom: pinch, drag to pan, double-tap or double-click to zoom 2.5× / back, Ctrl+wheel on desktop; up to 4×. Resets on next/previous and close; caption and arrows hide while zoomed. Desktop browser zoom is unchanged.
+- Same edits in `site/` (no full rebuild); `site.css` and `app.js` versions bumped to `20261125-zoom`.
+
 ## Pre-enquiry beauty team selection (25 November 2026)
 - Unlocked beauty team and reference selections before entering a name; incomplete drafts retain picks. My picks remains inside the enquiry only; removed the site-wide button.
 

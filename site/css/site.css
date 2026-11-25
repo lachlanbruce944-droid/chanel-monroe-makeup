@@ -129,6 +129,12 @@ body[data-cap="b"] .capbar{visibility:hidden}
 /* ===== LIGHTBOX ===== */
 .lb{position:fixed;inset:0;z-index:60;background:rgba(0,0,0,.86);display:none;align-items:center;justify-content:center;padding:calc(4 * var(--uvh)) calc(4 * var(--uvw));color:#fff}
 .lb.open{display:flex}
+.lb{overflow:hidden}
+#lbMedia img{touch-action:none;cursor:zoom-in;will-change:transform;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+.lb.zoomed #lbMedia img{cursor:grab}
+.lb.zoomed figcaption,.lb.zoomed .arw{opacity:0;pointer-events:none;transition:opacity .2s}
+.lb.zoomed #lbMedia{position:relative;z-index:2}
+
 .lb figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;max-height:100%}
 .lb img{max-width:min(calc(88 * var(--uvw)),900px);max-height:calc(78 * var(--uvh));object-fit:contain;border-radius:4px}
 .lb figcaption{text-align:center;font-size:14px;max-width:60ch}

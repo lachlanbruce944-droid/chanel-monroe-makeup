@@ -221,9 +221,32 @@ $('remix').onclick=function(){if(!sub)SEL[GROUPS[cur].id]=pick(GROUPS[cur]);go(c
 var lbk=0;
 function lbShow(k){lbk=(k+shown.length)%shown.length;var it=shown[lbk];
   $('lbMedia').innerHTML=it.type==='video'?'<div class="vwrap"><video src="'+it.src+'" muted loop playsinline autoplay disablepictureinpicture controlslist="nodownload nofullscreen noremoteplayback"></video><button class="vpp" aria-label="Pause"></button></div>':'<img src="'+it.src+'" alt="'+esc(desc(it))+'">';
-  $('lbCap').innerHTML='<b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it)}
+  $('lbCap').innerHTML='<b>'+esc(it.s)+'</b>'+esc(desc(it))+'<br>'+credit(it);if(window.lbZoomReset)lbZoomReset()}
 $('track').addEventListener('click',function(e){if(EDIT||moved>6||e.target.closest('a'))return;var t=e.target.closest('.tile');if(!t)return;lbShow(+t.dataset.k);$('lb').classList.add('open')});
-function lbClose(){$('lb').classList.remove('open');$('lbMedia').innerHTML=''}
+function lbClose(){$('lb').classList.remove('open');$('lbMedia').innerHTML='';if(window.lbZoomReset)lbZoomReset()}
+/* ---- photo viewer zoom: pinch, drag and double-tap (or double-click) on the open photo; page zoom itself is off on phones ---- */
+(function(){
+  var lb=$('lb'),box=$('lbMedia'),z=1,x=0,y=0,img=null,P={},pinch=null,drag=null,tap={t:0,x:0,y:0},moved=0;
+  function apply(anim){if(!img)return;img.style.transition=anim?'transform .22s ease':'none';img.style.transform='translate('+x+'px,'+y+'px) scale('+z+')';lb.classList.toggle('zoomed',z>1.01)}
+  function clamp(){if(!img)return;var mx=img.offsetWidth*(z-1)/2+40,my=img.offsetHeight*(z-1)/2+40;if(z<=1.01){x=0;y=0;return}x=Math.max(-mx,Math.min(mx,x));y=Math.max(-my,Math.min(my,y))}
+  function zoomAt(nz,cx,cy){nz=Math.max(1,Math.min(4,nz));var r=img.getBoundingClientRect(),k=nz/z;x+=(cx-(r.left+r.width/2))*(1-k);y+=(cy-(r.top+r.height/2))*(1-k);z=nz}
+  window.lbZoomReset=function(){z=1;x=0;y=0;P={};pinch=drag=null;img=box.querySelector('img');if(img){img.style.transform='';img.style.transition='';img.draggable=false}lb.classList.remove('zoomed')};
+  function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+  box.addEventListener('pointerdown',function(e){if(!img||e.target!==img)return;e.preventDefault();try{img.setPointerCapture(e.pointerId)}catch(_){}P[e.pointerId]={x:e.clientX,y:e.clientY};moved=0;
+    var ids=Object.keys(P);if(ids.length===2){var a=P[ids[0]],b=P[ids[1]];pinch={d:dist(a,b),z:z,mx:(a.x+b.x)/2,my:(a.y+b.y)/2};drag=null}
+    else if(ids.length===1){drag={x:e.clientX,y:e.clientY}}});
+  box.addEventListener('pointermove',function(e){if(!P[e.pointerId])return;var p=P[e.pointerId];moved=Math.max(moved,Math.abs(e.clientX-p.x)+Math.abs(e.clientY-p.y));p.x=e.clientX;p.y=e.clientY;
+    var ids=Object.keys(P);
+    if(pinch&&ids.length>=2){var a=P[ids[0]],b=P[ids[1]],mx=(a.x+b.x)/2,my=(a.y+b.y)/2;zoomAt(pinch.z*dist(a,b)/pinch.d,mx,my);x+=mx-pinch.mx;y+=my-pinch.my;pinch.mx=mx;pinch.my=my;clamp();apply()}
+    else if(drag&&z>1.01){x+=e.clientX-drag.x;y+=e.clientY-drag.y;drag.x=e.clientX;drag.y=e.clientY;clamp();apply()}});
+  function up(e){if(!P[e.pointerId])return;var p=P[e.pointerId];delete P[e.pointerId];var left=Object.keys(P).length;
+    if(left<2)pinch=null;if(left===1){var q=P[Object.keys(P)[0]];drag={x:q.x,y:q.y}}
+    if(left===0){drag=null;if(z<1.05){z=1;x=0;y=0;apply(true)}
+      if(moved<10&&e.type==='pointerup'){var now=Date.now();if(now-tap.t<320&&Math.abs(p.x-tap.x)<30&&Math.abs(p.y-tap.y)<30){if(z>1.01){z=1;x=0;y=0}else zoomAt(2.5,p.x,p.y);clamp();apply(true);tap.t=0}else tap={t:now,x:p.x,y:p.y}}}}
+  box.addEventListener('pointerup',up);box.addEventListener('pointercancel',up);
+  box.addEventListener('wheel',function(e){if(!img||e.target!==img||!(e.ctrlKey||z>1.01))return;e.preventDefault();zoomAt(z*Math.exp(-e.deltaY*0.01),e.clientX,e.clientY);clamp();apply()},{passive:false});
+})();
+
 $('lbX').onclick=lbClose;
 /* clips: autoplay and loop with no player controls; tap to pause, tap again to play */
 $('lbMedia').addEventListener('click',function(e){var w=e.target.closest('.vwrap');if(!w)return;var v=w.querySelector('video');
