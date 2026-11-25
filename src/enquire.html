@@ -46,8 +46,8 @@ document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length
     create policy "public can submit enquiries" on public.enquiries
       for insert to anon with check (consent = true);
 
-  CALENDAR: Chanel schedules and approves phone consultations in the CRM.
-  The server optionally checks and exports approved times to Apple iCloud.
+  CALENDAR: Phone consultations automatically confirm for 30 minutes.
+  Calendar exports use the confirmed consultation time.
   No calendar credentials are stored in this page.
   =====================================================================
 -->
@@ -1573,7 +1573,7 @@ function showSent(r, booked){
   clearMessages();
   msgs.insertAdjacentHTML('beforeend', `<div class="card confirm sentview">
     <div class="cf-h"><b>Your enquiry is with Chanel ✨</b><small>Sent ${esc(when)}</small></div>
-    <p class="sv-note">Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Chanel will review your enquiry and approve your phone consultation. Your enquiry receipt will arrive by email. Chanel will separately confirm the phone consultation after approval. Your makeup booking is not yet confirmed.</p>
+    <p class="sv-note">Thanks${r.name ? ', ' + esc(first(r.name)) : ''}! Your 30-minute phone consultation is confirmed. Your enquiry email includes the call details. Chanel will review your makeup enquiry and prepare the next steps; the makeup booking still requires a quote and deposit.</p>
     ${consultationCard(r)}
     ${notificationCard(S.notificationState)}
     <div class="cf-sec"><span class="cf-l">Your booking</span>${grid(r.booking || [])}</div>
@@ -1590,7 +1590,7 @@ function showSent(r, booked){
 function consultationCard(r){
   const c = r.consultation; if(!c) return '';
   const when = new Date(c.startTime).toLocaleString('en-AU', {timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'});
-  return `<section class="consult-result" aria-live="polite"><b>Phone consultation request submitted</b><p>${esc(when)} · Brisbane time</p>
+  return `<section class="consult-result" aria-live="polite"><b>Phone consultation confirmed</b><p>${esc(when)} · Brisbane time</p>
     <p>Your 30-minute phone consultation is confirmed. The details are included in your enquiry email.</p></section>`;
 }
 function affiliateTiles(r){
