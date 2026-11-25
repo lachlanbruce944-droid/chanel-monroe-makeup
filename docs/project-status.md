@@ -1,3 +1,7 @@
+## Enquiry picks (25 November 2026)
+- Removed header Browse looks; retained Reset chat. Added pre-enquiry beauty team selection and My picks browsing from the first (Natural) gallery, with tab persistence and enquiry prefill.
+- Verified live Supabase refs/affiliates JSONB columns and CRM booking sync function; no schema migration required.
+
 ## Enquiry operating hours (25 November 2026)
 - Makeup appointments: within operating hours 6:00 am – 5:00 pm, or outside hours (3:00 am – 8:00 pm starts) by the client's choice, enforced on the server. Spray tan and the lashes question removed from the enquiry chat.
 - Suggestions not yet built: let Chanel edit the hours in CRM Settings; show the outside-hours fee amount; half-hour start times.

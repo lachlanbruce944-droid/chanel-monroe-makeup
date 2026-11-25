@@ -674,7 +674,7 @@ body.typing #conv{grid-row:1 / -1}
   <div id="conv">
   <div class="chd">
 
-    <div class="chat-tools"><button class="hbtn" id="browseBtn" title="Lift the glass and look through the gallery">Browse looks ↗</button><button class="hbtn" id="resetChat" type="button" title="Testing: start a fresh chat in this browser. Submitted CRM enquiries are kept.">↺ Reset chat</button></div>
+    <div class="chat-tools"><button class="hbtn" id="resetChat" type="button" title="Testing: start a fresh chat in this browser. Submitted CRM enquiries are kept.">↺ Reset chat</button></div>
   </div>
   <div class="tray" id="tray"></div>
   <div id="msgs" aria-live="polite"><div class="chat-intro" id="chatIntro">    <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
@@ -1469,6 +1469,7 @@ function notificationCard(state){
 const DRAFT_KEY='cmm-enquiry-draft-v2';
 function saveDraft(){
  if(S.sent)return;
+ if(FRAMED) parent.postMessage({cmm:'selection-state',refs:S.refs,affs:S.affs},location.origin);
  try{sessionStorage.setItem(DRAFT_KEY,JSON.stringify({until:Date.now()+24*3600000,answers:S.answers,history:S.history||[],refs:S.refs,affs:S.affs,
  timing:S.timing,submissionId:S.submissionId,selfie:S.selfie?.path?{path:S.selfie.path,preview:S.selfie.preview}:null}));}catch(e){}
 }
@@ -1704,6 +1705,7 @@ function renderGallery(){
       });
     }
   } else if(S.tab === 'mine'){
+    h += `<button class="more" id="browsePicks" type="button">Browse site and add styles</button>`;
     h += S.refs.length ? `<div class="sec">Looks</div><div class="grid">${S.refs.map(tile).join('')}</div>` : '';
     h += S.affs.length ? `<div class="sec">Beauty team</div><div class="team">${S.affs.map(affTile).join('')}</div>` : '';
     if(!S.refs.length && !S.affs.length) h += `<div class="empty">Nothing added yet. Tap + on any photo or artist.</div>`;
@@ -1713,6 +1715,8 @@ function renderGallery(){
     if(list.length > n) h += `<button class="more" id="more">Show more</button>`;
   }
   g.innerHTML = h;
+  const browsePicks = g.querySelector('#browsePicks');
+  if(browsePicks) browsePicks.onclick = browseMyPicks;
   Attention.watch(g);
   g.querySelectorAll('.plus').forEach(b => b.onclick = e => { e.preventDefault(); e.stopPropagation(); b.dataset.h ? toggleAff(b) : togglePlus(b) });
   g.querySelectorAll('.cats button').forEach(b => b.onclick = () => { S.teamCat = b.dataset.c; renderGallery() });
@@ -1840,8 +1844,11 @@ function updateFab(){
   $('#fabN').hidden = !n; $('#fabN').textContent = n + ' pick' + (n>1?'s':'');
 }
 const FRAMED = window.self !== window.top;
-$('#browseBtn').onclick = () => S.pickComposer?.refs && S.pickComposer.w.isConnected ? browseReferenceLooks() : FRAMED ? goSite(false) : minimise(true);
 /* ---------- inside the site (framed): the site's carousel is the gallery ---------- */
+function browseMyPicks(){
+  if(FRAMED) return goSite(true, true);
+  S.tab='all'; renderTabs(); renderGallery(); minimise(true); $('#gallery').scrollTo({top:0,behavior:'smooth'});
+}
 function referenceTarget(){
   const category = S.answers.category === 'lesson' ? 'natural' : S.answers.category;
   const selected = CATS.find(c => c.id === S.answers.category);
@@ -1856,13 +1863,12 @@ function browseReferenceLooks(){
   const section = target.category && (gallery.querySelector('#cat-' + target.category + ' .subcat.mine') || gallery.querySelector('#cat-' + target.category));
   gallery.scrollTo({top:section ? section.offsetTop - 50 : 0, behavior:'smooth'});
 }
-function goSite(plus){
+function goSite(plus, first){
   lastRefCount = S.refs.length;
-  const target = referenceTarget();
-  parent.postMessage({ cmm:'browse', plus: plus && S.started && !S.sent, picked: S.refs.map(r => r.src), category:target.category, style:target.style }, '*');
+  const target = first ? {category:'natural',style:null} : referenceTarget();
+  parent.postMessage({ cmm:'browse', plus: plus && !S.sent, picked: S.refs.map(r => r.src), category:target.category, style:target.style }, '*');
 }
 function toggleRefFromSite(d){
-  if(!S.started){ return }
   if(S.sent) return;
   const i = S.refs.findIndex(r => r.src === d.src);
   if(i >= 0) S.refs.splice(i,1);
@@ -1871,12 +1877,17 @@ function toggleRefFromSite(d){
     const m = S.media.find(x => x.src === d.src) || { src:d.src, s:d.s, d:d.d, g:d.g, type:'img' };
     S.refs.push(m); Attention.bonus(m, 12);
   }
-  renderSide(); renderTabs(); updateFab(); updateDev(); refreshPick();
+  renderSide(); renderTabs(); updateFab(); updateDev(); refreshPick(); saveDraft();
   parent.postMessage({ cmm:'refs', picked: S.refs.map(r => r.src) }, '*');
 }
 addEventListener('message', e => {
-  if(!FRAMED || e.source !== parent) return;
+  if(!FRAMED || e.source !== parent || e.origin !== location.origin) return;
   const d = e.data || {};
+  if(d.cmm === 'sync-picks' && !S.sent){
+    S.refs=(d.refs||[]).filter(x=>x && typeof x.src==='string').slice(0,CONFIG.maxRefs);
+    S.affs=(d.affs||[]).filter(x=>x && /^[A-Za-z0-9._]{1,30}$/.test(x.h||'')).slice(0,8);
+    renderSide(); renderTabs(); updateFab(); refreshPick(); saveDraft();
+  }
   if(d.cmm === 'toggle-ref') toggleRefFromSite(d);
   if(d.cmm === 'browse-done'){ const n = S.refs.length - lastRefCount; if(n > 0) toast(`${n} new look${n>1?'s':''} added`); refreshPick() }
 });
@@ -1929,7 +1940,7 @@ function resetChatForTesting(){
   clearDraft();
   try{ localStorage.removeItem(SENT_KEY) }catch(e){}
   try{ sessionStorage.removeItem('cmm-intro-seen') }catch(e){}
-  if(FRAMED) parent.postMessage({cmm:'refs',picked:[]}, '*');
+  if(FRAMED) parent.postMessage({cmm:'clear-picks'}, location.origin);
   location.reload();
 }
 $('#resetChat').onclick = resetChatForTesting;
@@ -1981,6 +1992,7 @@ async function loadFirst(sources, key){
   const sent = liveMode() ? sentRecord() : null;
   if(sent){if(sent.notificationState==='pending')sent.notificationState='failed';showSent(sent,false);return}
   restoreDraft();
+  if(FRAMED) parent.postMessage({cmm:'picks-ready',refs:S.refs,affs:S.affs},location.origin);
   askNext();
 })();
 </script>

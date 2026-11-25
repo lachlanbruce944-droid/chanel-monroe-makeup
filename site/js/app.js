@@ -1,3 +1,27 @@
+(function(){
+  function addButton(){
+    if(document.getElementById('site-refresh-btn'))return;
+    var button=document.createElement('button');button.id='site-refresh-btn';button.type='button';button.textContent='↻ Refresh site';button.title='Load the newest published website without clearing browser history';
+    button.addEventListener('click',async function(){
+      button.disabled=true;button.textContent='Refreshing…';
+      try{
+        if('caches' in window){var keys=await caches.keys();await Promise.all(keys.map(function(key){return caches.delete(key)}))}
+        if('serviceWorker' in navigator){var regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(function(reg){return reg.unregister()}))}
+        var url=new URL(location.href);url.searchParams.set('_fresh',Date.now().toString());
+        var response=await fetch(url.href,{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);
+        var html=await response.text();var doc=new DOMParser().parseFromString(html,'text/html');
+        doc.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(function(el){
+          var attr=el.tagName==='SCRIPT'?'src':'href';var value=el.getAttribute(attr);
+          if(!value||/^(?:https?:)?\/\//i.test(value)||value.startsWith('data:'))return;
+          var asset=new URL(value,url.href);asset.searchParams.set('_fresh',Date.now().toString());el.setAttribute(attr,asset.href);
+        });
+        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close();
+      }catch(error){button.disabled=false;button.textContent='↻ Retry refresh';alert('Could not refresh the website. Please try again. '+error.message)}
+    });
+    document.body.appendChild(button);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addButton);else addButton();
+})();;
 var GROUPS = [
   {id:'natural',  name:'Natural',           tag:'Fresh skin, natural light, nothing to hide.',
    subs:['No-makeup makeup','Clean polished','Fresh lift','Dewy glass skin','Sun-kissed bronze','Mature natural','Sensitive skin','Maternity glow','Makeup lesson'], looks:['natural','headshot','portrait','sensitive','lesson']},
@@ -432,10 +456,11 @@ new MutationObserver(function(){if(!$('lessonMod').classList.contains('open')){v
 /* ---- affiliate popup: avatar, bio, 3 x 3 of their latest work ---- */
 function fmtN(n){return n==null?'':n>=1000?(n/1000).toFixed(n>=10000?0:1).replace(/\.0$/,'')+'k':String(n)}
 document.addEventListener('click',function(e){var c=e.target.closest('[data-aff]');if(!c)return;var a=(window.AFFILIATES||[])[+c.dataset.aff];if(!a)return;
+  var chosen=false;try{chosen=(JSON.parse(sessionStorage.getItem('cmm-site-picks')||'{}').affs||[]).some(function(x){return x.h===a.h})}catch(e){}
   var ig='https://www.instagram.com/'+a.h+'/';
   $('affBox').innerHTML='<div class="side"><div class="sin"><img class="av" src="'+a.avatar+'" alt=""><h2>'+esc(a.role)+'</h2><p class="role">'+esc(a.cat)+' · @'+esc(a.h)+'</p>'+
     (a.posts!=null?'<div class="stats"><span><b>'+fmtN(a.posts)+'</b>posts</span><span><b>'+fmtN(a.followers)+'</b>followers</span></div>':'')+
-    '<p class="bio">'+esc(a.bio||'')+'</p><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div></div>'+
+    '<p class="bio">'+esc(a.bio||'')+'</p><button type="button" class="pill solid" data-pick-artist="'+esc(a.h)+'" aria-pressed="'+chosen+'">'+(chosen?'Selected — remove':'Select for enquiry')+'</button><a class="pill solid" href="'+ig+'" target="_blank" rel="noopener">View on Instagram</a>'+(a.site?'<a class="pill" href="'+esc(a.site)+'" target="_blank" rel="noopener">Website</a>':'')+'</div></div>'+
     '<div class="g9" style="grid-template-rows:repeat('+Math.max(1,Math.ceil(Math.min(9,a.imgs.length)/3))+',minmax(0,1fr))">'+(a.imgs.length?a.imgs.slice(0,9).map(function(m){return '<a href="'+m.post+'" target="_blank" rel="noopener"'+(m.video?' class="v"':'')+'><img loading="lazy" src="'+m.src+'" alt=""></a>'}).join(''):'<p class="note-small" style="padding:20px">This account is private, so no photos are shown.</p>')+'</div>';
   $('affMod').classList.add('open');fitAff();var av=$('affBox').querySelector('.side img.av');if(av&&!av.complete)av.addEventListener('load',fitAff,{once:true})});
 /* the profile panel never scrolls: its content scales down until it fits */
@@ -900,6 +925,19 @@ if(/[?&]edit/.test(location.search))setEdit(true);
    The overlay cancels the page zoom (js/config.js scales the landscape design) so the chat renders at its own size. */
 (function(){
   var ov=null, fr=null, pill=null, mini=null, pickMode=false, picked={}, mo=null;
+  var selections={refs:[],affs:[]};
+  try{var saved=JSON.parse(sessionStorage.getItem('cmm-site-picks')||'null');if(saved&&Array.isArray(saved.refs)&&Array.isArray(saved.affs))selections=saved}catch(e){}
+  function persistPicks(){try{sessionStorage.setItem('cmm-site-picks',JSON.stringify(selections))}catch(e){}}
+  function syncPicks(){send({cmm:'sync-picks',refs:selections.refs,affs:selections.affs})}
+  var picksButton=document.createElement('button');picksButton.type='button';picksButton.className='pill';picksButton.textContent='My picks';picksButton.id='myPicks';
+  document.getElementById('enquire').before(picksButton);
+  picksButton.onclick=function(){startPick(true,selections.refs.map(function(x){return x.src}),{category:'natural',style:null})};
+  document.addEventListener('click',function(e){var b=e.target.closest('[data-pick-artist]');if(!b)return;
+    var a=(window.AFFILIATES||[]).find(function(x){return x.h===b.dataset.pickArtist});if(!a)return;
+    var i=selections.affs.findIndex(function(x){return x.h===a.h});
+    if(i>=0)selections.affs.splice(i,1);else if(selections.affs.length<8)selections.affs.push(a);else return;
+    b.textContent=i>=0?'Select for enquiry':'Selected — remove';b.setAttribute('aria-pressed',String(i<0));persistPicks();syncPicks();
+  });
   var st=document.createElement('style');
   st.textContent='#enqOverlay{position:fixed;z-index:2147483000;opacity:0;transform:translateY(16px) scale(.98);transition:opacity .35s,transform .35s;overflow:hidden;'+
     'border-radius:22px;box-shadow:0 24px 60px rgba(0,0,0,.35),0 0 0 1px rgba(255,255,255,.35);'+
@@ -932,6 +970,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     releaseSiteOverlays();
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size); if(window.visualViewport){window.visualViewport.addEventListener('resize',size);window.visualViewport.addEventListener('scroll',size)} }
     var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
+    if(pickMode)endPick(false);
     if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */
     if(ver) href+=(href.indexOf('?')<0?'?':'&')+'v='+ver;
@@ -949,7 +988,9 @@ if(/[?&]edit/.test(location.search))setEdit(true);
       if(!b){ b=document.createElement('button'); b.type='button'; b.className='cmm-plus'; b.setAttribute('aria-label','Add this look to your enquiry');
         b.addEventListener('click',function(e){ e.preventDefault(); e.stopPropagation();
           var cap=t.querySelector('figcaption b');
-          send({cmm:'toggle-ref',src:src,s:cap?cap.textContent:'',d:img.alt||'',g:document.body.dataset.g||''}) });
+          var i=selections.refs.findIndex(function(x){return x.src===src});
+          if(i>=0)selections.refs.splice(i,1);else if(selections.refs.length<12)selections.refs.push({src:src,s:cap?cap.textContent:'',d:img.alt||'',g:document.body.dataset.g||'',type:'img'});
+          persistPicks();setPicked(selections.refs.map(function(x){return x.src}));syncPicks(); });
         t.appendChild(b) }
       var on=!!picked[src],label=on?'✓':'+'; if(b.textContent!==label)b.textContent=label; b.classList.toggle('on',on); t.classList.toggle('cmm-on',on);
     });
@@ -961,7 +1002,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     releaseSiteOverlays();
     pickMode=!!plus;
     if(!pill){ pill=document.createElement('div'); pill.id='cmmPill'; pill.innerHTML='<span></span><button type="button">Back to your enquiry</button>';
-      pill.lastChild.onclick=function(){ endPick(true) }; document.body.appendChild(pill) }
+      pill.lastChild.onclick=function(){ if(!fr){endPick(false);open('enquire.html')}else endPick(true) }; document.body.appendChild(pill) }
     pill.style.display='flex'; if(ov) ov.classList.add('away'); document.body.classList.toggle('cmm-picking',pickMode);
     if(target && window.cmmBrowseReference) window.cmmBrowseReference(target.category,target.style);
     setPicked(list);
@@ -983,9 +1024,16 @@ if(/[?&]edit/.test(location.search))setEdit(true);
     e.preventDefault(); e.stopPropagation(); open(a.getAttribute('href'));
   },true);
   addEventListener('message',function(e){
-    var d=e.data||{}; if(!fr||e.source!==fr.contentWindow) return;
+    var d=e.data||{}; if(e.origin!==location.origin||!fr||e.source!==fr.contentWindow) return;
+    if(d.cmm==='picks-ready'){
+      (d.refs||[]).forEach(function(x){if(!selections.refs.some(function(r){return r.src===x.src}))selections.refs.push(x)});
+      (d.affs||[]).forEach(function(x){if(!selections.affs.some(function(a){return a.h===x.h}))selections.affs.push(x)});
+      selections.refs=selections.refs.slice(0,12);selections.affs=selections.affs.slice(0,8);persistPicks();syncPicks();
+    }
+    if(d.cmm==='selection-state'){selections={refs:d.refs||[],affs:d.affs||[]};persistPicks();setPicked(selections.refs.map(function(x){return x.src}))}
+    if(d.cmm==='clear-picks'){selections={refs:[],affs:[]};persistPicks();setPicked([])}
     if(d.cmm==='close-enquiry') close();
-    else if(d.cmm==='browse') startPick(d.plus,d.picked,d);
+    else if(d.cmm==='browse'){selections.refs=(d.picked||[]).map(function(src){return selections.refs.find(function(x){return x.src===src})||{src:src,type:'img'}});persistPicks();startPick(d.plus,d.picked,d);}
     else if(d.cmm==='refs') setPicked(d.picked);
   });
   addEventListener('keydown',function(e){ if(e.key==='Escape'&&pill&&pill.style.display==='flex') endPick(true) });

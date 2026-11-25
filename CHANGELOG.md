@@ -1,3 +1,7 @@
+## Enquiry picks (25 November 2026)
+- Removed header Browse looks; retained Reset chat. Added pre-enquiry beauty team selection and My picks browsing from the first (Natural) gallery, with tab persistence and enquiry prefill.
+- Verified live Supabase refs/affiliates JSONB columns and CRM booking sync function; no schema migration required.
+
 ### 2026-11-25 (About: interactive "About this site" tour)
 - Replaced the static About this site text with a short tour: text types out in a frosted card in the centre over a floating collage of the site's own photos, in six chapters with progress tabs (Explore styles, worldwide Inspiration, Affiliates, Lessons, Chanel's work, Enquire). Each chapter has buttons to that part of the site (the six style buttons, Browse the galleries, Meet the affiliates, See lessons, See Chanel's work, Start an enquiry), on desktop and the phone one-page site.
 - Starts when scrolled into view, auto-advances, hover or focus pauses the auto-advance; respects reduced motion (no typing or floating). Screen readers get each chapter as one announcement.

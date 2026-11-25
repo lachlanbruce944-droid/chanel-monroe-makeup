@@ -38,37 +38,12 @@
 <link rel="preconnect" href="https://qxiugfatpybldluipcyy.supabase.co" crossorigin>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,wght@0,500;0,700;1,500&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Jost:wght@300;400;500;600&family=Pinyon+Script&family=DM+Serif+Display:ital@0;1&family=Syne:wght@600;700;800&display=swap">
-<link rel="stylesheet" href="css/site.css?v=20261125-about-tour2"><style id="site-refresh-style">
+<link rel="stylesheet" href="css/site.css?v=4313b3f7">
+<style id="site-refresh-style">
 #site-refresh-btn{position:fixed;top:max(8px,env(safe-area-inset-top));left:max(10px,env(safe-area-inset-left));z-index:2147483000;border:1px solid rgba(60,55,50,.18);border-radius:999px;padding:9px 13px;background:#fffaf5;color:#342d2b;box-shadow:0 3px 14px rgba(0,0,0,.13);font:600 12px/1.2 system-ui,sans-serif;cursor:pointer}
 #site-refresh-btn:hover{background:#e9dfd8}#site-refresh-btn:focus-visible{outline:3px solid #315f85;outline-offset:2px}
 @media(max-width:640px){#site-refresh-btn{padding:10px 12px}}
 </style>
-<script>
-(function(){
-  function addButton(){
-    if(document.getElementById('site-refresh-btn'))return;
-    var button=document.createElement('button');button.id='site-refresh-btn';button.type='button';button.textContent='↻ Refresh site';button.title='Load the newest published website without clearing browser history';
-    button.addEventListener('click',async function(){
-      button.disabled=true;button.textContent='Refreshing…';
-      try{
-        if('caches' in window){var keys=await caches.keys();await Promise.all(keys.map(function(key){return caches.delete(key)}))}
-        if('serviceWorker' in navigator){var regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(function(reg){return reg.unregister()}))}
-        var url=new URL(location.href);url.searchParams.set('_fresh',Date.now().toString());
-        var response=await fetch(url.href,{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);
-        var html=await response.text();var doc=new DOMParser().parseFromString(html,'text/html');
-        doc.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(function(el){
-          var attr=el.tagName==='SCRIPT'?'src':'href';var value=el.getAttribute(attr);
-          if(!value||/^(?:https?:)?\/\//i.test(value)||value.startsWith('data:'))return;
-          var asset=new URL(value,url.href);asset.searchParams.set('_fresh',Date.now().toString());el.setAttribute(attr,asset.href);
-        });
-        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close();
-      }catch(error){button.disabled=false;button.textContent='↻ Retry refresh';alert('Could not refresh the website. Please try again. '+error.message)}
-    });
-    document.body.appendChild(button);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addButton);else addButton();
-})();
-</script>
 </head>
 <body data-g="natural">
 <noscript><h1>Chanel Monroe Makeup: mobile makeup artist on the Gold Coast</h1><p>Bridal and wedding makeup, formal and event glam, editorial and photoshoot makeup, SFX and Halloween characters, and party face paint across the Gold Coast, from Coolangatta to Coomera. Trained at the Huxley School of Makeup. Mobile: I come to you. <a href="https://www.instagram.com/chanelmonroemakeup/">Instagram @chanelmonroemakeup</a></p></noscript>
@@ -167,7 +142,7 @@
 <script src="settings/site-settings.js"></script>
 <script src="settings/pricing-settings.js"></script>
 <script src="settings/design-settings.js"></script>
-<script src="data/site-content.js?v=20261125-about-bio"></script>
+<script src="data/site-content.js"></script>
 <script src="data/media.js"></script>
 <script src="data/style-definitions.js?v=20261121"></script>
 <script src="data/overrides.js"></script>
@@ -179,8 +154,9 @@
 <script src="data/brands-info.js"></script>
 <script src="data/lessons.js"></script>
 <script src="data/pages-content.js"></script>
-<script src="js/config.js?v=20261121-gallery-associates"></script>
-<script src="js/app.js?v=20261125-about-tour2"></script>
 
+
+<script src="js/config.js?v=4313b3f7"></script>
+<script src="js/app.js?v=4313b3f7"></script>
 </body>
 </html>

@@ -40,12 +40,9 @@ def style_sub(m):
     return ''
 html = re.sub(r'<style>.*?</style>\n?', style_sub, html, flags=re.S)
 scripts = re.findall(r'<script>(.*?)</script>', html, re.S)          # inline app code (not JSON-LD, not src=)
-first = True
-def script_sub(m):
-    global first
-    if first: first = False; return '<script src="js/config.js?v=' + V + '"></script>\n<script src="js/app.js?v=' + V + '"></script>'
-    return ''
-html = re.sub(r'<script>.*?</script>\n?', script_sub, html, flags=re.S)
+# App code needs the DOM and the external data scripts at the end of the page.
+html = re.sub(r'<script>.*?</script>\n?', '', html, flags=re.S)
+html = html.replace('</body>', '<script src="js/config.js?v=' + V + '"></script>\n<script src="js/app.js?v=' + V + '"></script>\n</body>')
 html = html.replace('<link rel="preconnect" href="https://fonts.googleapis.com">',
                     '<link rel="preconnect" href="https://qxiugfatpybldluipcyy.supabase.co" crossorigin>\n<link rel="preconnect" href="https://fonts.googleapis.com">', 1)
 open(os.path.join(OUT, 'index.html'), 'w', encoding='utf-8').write(html)
