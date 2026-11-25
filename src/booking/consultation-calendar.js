@@ -6,7 +6,7 @@
  const monthOf=d=>d.slice(0,7), shift=(month,n)=>{const d=new Date(month+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+n);return d.toISOString().slice(0,7)};
  const label=t=>{const h=+t.slice(11,13);return `${h%12||12}:${t.slice(14,16)} ${h<12?'am':'pm'}`};
  function valid(value,eventAt,now=Date.now()){
-  if(!/^\d{4}-\d{2}-\d{2}T(09|1[0-6]):00$/.test(value))return 'Choose a time on the hour between 9:00 am and 4:00 pm Brisbane time';
+  if(!/^\d{4}-\d{2}-\d{2}T(09|1[0-6]):(00|30)$/.test(value))return 'Choose a half-hour time between 9:00 am and 4:30 pm Brisbane time';
   const at=+new Date(value+':00+10:00');
   if(!Number.isFinite(at)||at<=now)return 'Choose a future consultation time';
   if(new Date(at+10*3600000).toISOString().slice(0,16)!==value)return 'Choose a valid date';
@@ -56,7 +56,7 @@
    }times.append(slots)}
    const status=document.createElement('p');status.className='cp-status';status.setAttribute('role','status');status.textContent=loading?'Checking CRM availability…':error||(!rows.some(s=>s.available&&slotValid(s.local_start))?isPhone&&options.eventAt?'No consultation slots are available at least 24 hours before your makeup appointment this month. Go Back to choose a later makeup date or contact Chanel.':'No available times this month. Try another month.':selected?`${label(selected)} · Brisbane time`:'Unavailable days and times are greyed out.');
    if(error)status.append(button('Retry','cp-retry',()=>load(month)));
-   const note=document.createElement('p');note.className='cp-note';note.textContent=isPhone?'Mon–Sun · 9 am–5 pm AEST · Free 15-minute call. Hourly start times. Your request needs Chanel’s approval.':(options.note?options.note():'Brisbane time · Service time and appointment buffer are reserved.');
+   const note=document.createElement('p');note.className='cp-note';note.textContent=isPhone?'Mon–Sun · 9 am–5 pm AEST · Free 30-minute call. Half-hour start times. Confirmed when you submit your enquiry.':(options.note?options.note():'Brisbane time · Service time and appointment buffer are reserved.');
    const confirm=button(selected?'Request '+label(selected):'Select a time','cp-confirm',async()=>{confirm.disabled=true;try{const fresh=await options.fetchSlots(month);if(!host.isConnected)return;if(!slotValid(selected)||(!fresh.some(x=>x.local_start===selected&&x.available)&&!options.demo))throw Error('That time has just become unavailable. Please choose another.');await options.onSelect(selected);if(options.demo)confirm.disabled=false}catch(e){error=e.message;selected='';rows=[];draw()}},!selected||loading||!!error);
    body.append(calendar,times);host.append(intro,top,body,status,confirm,note);
   }

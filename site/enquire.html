@@ -905,7 +905,7 @@ const QUESTIONS = [
     ask:() => "And your mobile? Chanel will call you on this for the consult.",
     validate:v => validPhone(v) || 'Enter an Australian mobile (04xx xxx xxx) or an international number with +country code' },
   { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'datetime-local',
-    ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, at least 24 hours before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
+    ask:() => 'When would you prefer your free 30-minute phone consultation? Choose Brisbane time, at least 24 hours before your makeup appointment. Your call is confirmed when you submit your enquiry; the details are included in your enquiry email.',
     validate:v => ConsultationCalendar.valid(v, makeupStart()) },
   { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
     ask:() => 'Anything else Chanel should know?' },
@@ -1389,8 +1389,8 @@ function textBox(q, done, append){
   const inp = document.createElement('input');
   inp.type = { date:'date', time:'time', 'datetime-local':'datetime-local', email:'email', tel:'tel' }[q.type] || 'text';
   if(q.type === 'date') inp.min = new Date().toISOString().slice(0,10);
-  if(q.type === 'datetime-local'){ inp.step = 900; inp.min = new Intl.DateTimeFormat('sv-SE',{timeZone:'Australia/Brisbane',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()).replace(' ','T'); }
-  if(q.type === 'time'){ inp.step = 900; inp.value = '09:00' }
+  if(q.type === 'datetime-local'){ inp.step = 1800; inp.min = new Intl.DateTimeFormat('sv-SE',{timeZone:'Australia/Brisbane',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).format(new Date()).replace(' ','T'); }
+  if(q.type === 'time'){ inp.step = 1800; inp.value = '09:00' }
   if(q.type === 'email') inp.autocomplete = 'email';
   if(q.type === 'tel'){ inp.autocomplete = 'tel'; inp.inputMode = 'tel' }
   if(q.id === 'name') inp.autocomplete = 'name';
@@ -1490,7 +1490,7 @@ async function submit(){
     await say((res.simulated
       ? "All sent ✨ (test mode: saved to the local test database)\n"
       : `All sent ✨ Thanks, ${first(S.answers.name)}!\n`) +
-      "Your preferred phone consultation time is pending Chanel’s approval. You’ll receive a phone consultation confirmation by email once Chanel approves it. Your makeup booking is not yet confirmed. There’s nothing else to confirm.");
+      "Your 30-minute phone consultation is confirmed. The details are included in your enquiry email. Your makeup booking still requires a quote and deposit.");
     if(S.sent) showSent(saveSent(liveMode()), false);
     if(!res.simulated) notifyEnquiry();
   }catch(e){
@@ -1522,7 +1522,7 @@ async function notifyEnquiry(){
  try{const rec=sentRecord();if(rec){rec.notificationState=S.notificationState;localStorage.setItem(SENT_KEY,JSON.stringify(rec));showSent(rec,false)}}catch(e){}
 }
 function notificationCard(state){
- return `<section class="consult-result" aria-live="polite"><b>Enquiry saved</b><p>${state==='sent'?'Confirmation email sent. Your phone consultation still needs Chanel’s approval.':state==='pending'?'Sending your confirmation email…':state==='test'?'Practice mode: no email sent.':'Your enquiry is saved, but email delivery could not be confirmed. Retry the email below; do not submit another enquiry.'}</p>${!['sent','pending','test'].includes(state)?'<button type="button" id="retryEnquiryEmail">Retry confirmation email</button>':''}</section>`;
+ return `<section class="consult-result" aria-live="polite"><b>Enquiry saved</b><p>${state==='sent'?'Enquiry email sent with your confirmed 30-minute phone consultation.':state==='pending'?'Sending your confirmation email…':state==='test'?'Practice mode: no email sent.':'Your enquiry is saved, but email delivery could not be confirmed. Retry the email below; do not submit another enquiry.'}</p>${!['sent','pending','test'].includes(state)?'<button type="button" id="retryEnquiryEmail">Retry confirmation email</button>':''}</section>`;
 }
 const DRAFT_KEY='cmm-enquiry-draft-v2';
 function saveDraft(){
@@ -1559,7 +1559,7 @@ function saveSent(keep = true){   // keep=false in ?localdb practice mode: show 
     until: ev ? Math.max(new Date(ev + 'T23:59:59').getTime(), now + 864e5) : now + 60*864e5,   // locked until the event day has passed (60 days if no date)
     booking: qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(f), contact: qs.filter(q => contact.includes(q.id)).map(f),
     picks: S.refs.map(x => thumb(x.src)), affiliates: S.affs.map(x => ({ h:x.h, name:x.name, avatar:x.avatar })),
-    consultation: val('consult_at') ? {startTime:new Date(val('consult_at') + ':00+10:00').toISOString(),status:'pending'} : null,
+    consultation: val('consult_at') ? {startTime:new Date(val('consult_at') + ':00+10:00').toISOString(),status:'confirmed',durationMins:30} : null,
     est: est ? { t:(est.open ? 'from ' : '') + money(est.total), lines:est.lines.join(' · ') } : null };
   if(keep) try{ localStorage.setItem(SENT_KEY, JSON.stringify(rec)) }catch(e){}
   return rec;
@@ -1591,7 +1591,7 @@ function consultationCard(r){
   const c = r.consultation; if(!c) return '';
   const when = new Date(c.startTime).toLocaleString('en-AU', {timeZone:CONFIG.timezone,weekday:'long',day:'numeric',month:'long',year:'numeric',hour:'numeric',minute:'2-digit'});
   return `<section class="consult-result" aria-live="polite"><b>Phone consultation request submitted</b><p>${esc(when)} · Brisbane time</p>
-    <p>Your request needs to be approved. A confirmation will be sent to you by email.</p></section>`;
+    <p>Your 30-minute phone consultation is confirmed. The details are included in your enquiry email.</p></section>`;
 }
 function affiliateTiles(r){
   if(!r.id) return '';
@@ -1978,7 +1978,7 @@ function updateDev(){
     <h4>Next question</h4><pre>${esc(nextQ()?.id || '(none: summary)')}</pre>
     <h4>Supabase row (${esc(CONFIG.supabaseTable)})</h4><pre>${esc(JSON.stringify(row,null,2))}</pre>
     <h4>Event details · unconfirmed</h4><pre>${esc(JSON.stringify(row.calendar_event,null,2))}</pre>
-    <h4>Phone consultation</h4><p>${esc(val("consult_at") || "Not selected")} · pending Chanel’s approval</p>
+    <h4>Phone consultation</h4><p>${esc(val("consult_at") || "Not selected")} · 30 minutes · confirmed</p>
     <h4>Local test database · enquiries (${MockDB.all('enquiries').length}) · calendar_events (${MockDB.all('calendar_events').length})</h4>
     <pre>${esc(MockDB.all('enquiries').slice(0,8).map(e => `${e.created_at.slice(0,16).replace('T',' ')}  ${e.name}  ·  ${e.service}  ·  ${e.event_date} ${e.ready_by}  ·  ${(e.refs||[]).length} looks, ${(e.affiliates||[]).length} artists`).join('\n') || '(empty)')}</pre>
     <div class="db" style="margin-top:6px"><button id="dvExport">⬇ Export JSON</button><button id="dvClear">🗑 Clear test database</button></div>`;

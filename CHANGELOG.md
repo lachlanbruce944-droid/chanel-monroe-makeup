@@ -1,3 +1,8 @@
+## 26 November 2026 — Phone consultations
+
+- Confirm calls automatically without a separate approval email.
+- Offer 30-minute windows and include confirmation in the enquiry email.
+
 ## 26 November 2026 — Compact gallery return bar
 - Applied approved design 4: frosted bottom bar, picture symbol and live pick count, curved return arrow and Enquiry button. Counts styles and beauty team selections; returns to the existing enquiry. Applied to embedded and standalone browsing.
 - Website automated suite: 45 checks passing.

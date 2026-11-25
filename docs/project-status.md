@@ -137,3 +137,6 @@ Prices live only in `settings/pricing-settings.js` (LOOK_PRICES). Do not copy pr
 ## Verification (17 November 2026)
 
 Six automated enquiry/search/navigation checks passed. Live checks: all 26 pricing rows have booking buttons below the price with clear description columns; booking opens the matching service form; pricing closes before the enquiry; Browse looks allows desktop section navigation and return without losing answers. Mobile menu opened and navigated while browsing at 390 × 844. Desktop affiliate popup filled available space at 1440 × 900 with centred profile and equal-height photo rows. No test enquiry was submitted.
+
+
+26 November 2026: Phone consultations automatically confirm for 30 minutes, with half-hour availability and confirmation in the enquiry email.

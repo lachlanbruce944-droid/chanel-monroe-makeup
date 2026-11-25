@@ -61,7 +61,7 @@ function rows(e: Record<string, any>) {
     ["Style", e.sub_style || (e.lesson_focus?.length ? e.lesson_focus.join(", ") : "")],
     ["Date", when],
     ["Appointment hours", hoursLabel(e.viewing?.appointment_hours)],
-    ["Phone consultation · pending Chanel’s approval", e.consult_requested_at ? new Date(e.consult_requested_at).toLocaleString("en-AU", {timeZone:"Australia/Brisbane", dateStyle:"full", timeStyle:"short"}) + " · Brisbane time" : "Chanel will arrange a time"],
+    ["Phone consultation · confirmed · 30 minutes", e.consult_requested_at ? new Date(e.consult_requested_at).toLocaleString("en-AU", {timeZone:"Australia/Brisbane", dateStyle:"full", timeStyle:"short"}) + " · Brisbane time" : "Chanel will arrange a time"],
     ["Suburb", e.location ? e.location + travel : ""],
     ["How many", e.quantity],
     ["Trial", e.bridal_trial],
@@ -131,7 +131,7 @@ async function tiles(e: Record<string, any>, forClient: boolean) {
   return (refCells.length ? label(forClient ? "The looks you saved" : "Reference looks") + grid(refCells, 3) : "") +
     (teamCells.length ? label(forClient ? "Beauty team you picked · contact each artist to book their service" : "Beauty team the client picked") + grid(teamCells, 2) : "");
 }
-const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),"Phone consultation pending Chanel's approval. Makeup booking not yet confirmed."].filter(Boolean).join("\n");
+const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),"Phone consultation confirmed for 30 minutes. Makeup booking still requires a quote and deposit."].filter(Boolean).join("\n");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });
@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
 
     if (e.email && !e.emailed_client_at) {
       const html = shell(`Thanks ${esc(first(e.name))}, your enquiry is in ✨`,
-        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations must be at least 24 hours before the makeup appointment.</p>
+        `<p style="font-size:15px;line-height:1.5">Your 30-minute phone consultation is confirmed for the date and time shown above. Chanel will call your supplied phone number. Your makeup appointment still requires a quote and deposit. Consultations must be at least 24 hours before the makeup appointment.</p>
 <p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}${await tiles(e, true)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
       await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html, text:plainDetails(e,r) }, `client-${e.id}`);
