@@ -164,7 +164,7 @@ Deno.serve(async (req) => {
 
     if (e.email && !e.emailed_client_at) {
       const html = shell(`Thanks ${esc(first(e.name))}, your enquiry is in ✨`,
-        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
+        `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations must be at least 24 hours before the makeup appointment.</p>
 <p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}${await tiles(e, true)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
       await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html, text:plainDetails(e,r) }, `client-${e.id}`);

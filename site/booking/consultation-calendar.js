@@ -1,5 +1,6 @@
 /* Brisbane consultation picker: slots contain availability only, never client records. */
 (function(root){
+ const minimumLeadMs=24*60*60*1000;
  const zone='Australia/Brisbane',pad=n=>String(n).padStart(2,'0');
  const localNow=()=>new Intl.DateTimeFormat('sv-SE',{timeZone:zone,year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
  const monthOf=d=>d.slice(0,7), shift=(month,n)=>{const d=new Date(month+'-01T12:00:00Z');d.setUTCMonth(d.getUTCMonth()+n);return d.toISOString().slice(0,7)};
@@ -9,7 +10,7 @@
   const at=+new Date(value+':00+10:00');
   if(!Number.isFinite(at)||at<=now)return 'Choose a future consultation time';
   if(new Date(at+10*3600000).toISOString().slice(0,16)!==value)return 'Choose a valid date';
-  if(eventAt&&at+15*60000>=+new Date(eventAt))return 'Your phone consultation must finish before your makeup appointment';
+  if(eventAt&&+new Date(eventAt)-at<minimumLeadMs)return 'Choose a phone consultation at least 24 hours before your makeup appointment';
   return true;
  }
  async function fetchSlots(config,month,signal,kind='phone',booking){
@@ -22,8 +23,11 @@
  function mount(host,options){
   const isPhone=!options.kind||options.kind==='phone';
   const slotValid=value=>isPhone?valid(value,options.eventAt)===true:true;
-  const today=localNow(),lastMonth=monthOf(new Date(Date.now()+365*86400000).toLocaleDateString('sv-SE',{timeZone:zone}));
+  const today=localNow();
+  const cutoff=isPhone&&options.eventAt?+new Date(options.eventAt)-minimumLeadMs:null;
+  const lastMonth=cutoff===null?monthOf(new Date(Date.now()+365*86400000).toLocaleDateString('sv-SE',{timeZone:zone})):monthOf(new Date(cutoff).toLocaleDateString('sv-SE',{timeZone:zone}));
   let month=monthOf(/^\d{4}-\d{2}-\d{2}T/.test(options.initial||'')?options.initial:today),day='',selected='',rows=[],loading=false,error='',seq=0,controller;
+  if(month>lastMonth)month=lastMonth;
   if(month<monthOf(today))month=monthOf(today);
   host.classList.add('consult-picker');host.dataset.layout=options.layout||'tiles';
   function button(text,cls,fn,disabled=false){const b=document.createElement('button');b.type='button';b.className=cls;b.textContent=text;b.disabled=disabled;b.onclick=fn;return b}
@@ -46,15 +50,14 @@
     if(available){const dot=document.createElement('i');dot.setAttribute('aria-hidden','true');b.append(dot)}grid.append(b);
    }
    calendar.append(week,grid);const times=document.createElement('section');times.className='cp-times';const heading=document.createElement('strong');heading.textContent=day?new Date(day+'T12:00Z').toLocaleDateString('en-AU',{weekday:'short',day:'numeric',month:'short'}):'Choose a day above';times.append(heading);
-   if(day){const slots=document.createElement('div');slots.className='cp-slots';for(const slot of rows.filter(s=>s.local_start.startsWith(day))){
+   if(day){const slots=document.createElement('div');slots.className='cp-slots';for(const slot of rows.filter(s=>s.local_start.startsWith(day)&&slotValid(s.local_start))){
     const value=slot.local_start,ok=slot.available&&slotValid(value);
     const b=button(label(value),'cp-slot'+(value===selected?' is-selected':''),()=>{selected=value;draw()},!ok||loading||!!error);b.setAttribute('aria-pressed',String(value===selected));b.setAttribute('aria-label',label(value)+(ok?'':', unavailable'));slots.append(b);
    }times.append(slots)}
-   const status=document.createElement('p');status.className='cp-status';status.setAttribute('role','status');status.textContent=loading?'Checking CRM availability…':error||(!rows.some(s=>s.available&&slotValid(s.local_start))?isPhone&&options.eventAt?'No consultation slots are available before your makeup appointment this month. Go Back to choose a later makeup date or contact Chanel.':'No available times this month. Try another month.':selected?`${label(selected)} · Brisbane time`:'Unavailable days and times are greyed out.');
+   const status=document.createElement('p');status.className='cp-status';status.setAttribute('role','status');status.textContent=loading?'Checking CRM availability…':error||(!rows.some(s=>s.available&&slotValid(s.local_start))?isPhone&&options.eventAt?'No consultation slots are available at least 24 hours before your makeup appointment this month. Go Back to choose a later makeup date or contact Chanel.':'No available times this month. Try another month.':selected?`${label(selected)} · Brisbane time`:'Unavailable days and times are greyed out.');
    if(error)status.append(button('Retry','cp-retry',()=>load(month)));
    const note=document.createElement('p');note.className='cp-note';note.textContent=isPhone?'Mon–Sun · 9 am–5 pm AEST · Free 15-minute call. Hourly start times. Your request needs Chanel’s approval.':(options.note?options.note():'Brisbane time · Service time and appointment buffer are reserved.');
-   if(isPhone&&selected&&options.eventAt&&+new Date(options.eventAt)-+new Date(selected+':00+10:00')<3*86400000)note.textContent+=' Short notice: Chanel must approve an exception.';
-   const confirm=button(selected?'Request '+label(selected):'Select a time','cp-confirm',async()=>{confirm.disabled=true;try{const fresh=await options.fetchSlots(month);if(!host.isConnected)return;if(!fresh.some(x=>x.local_start===selected&&x.available)&&!options.demo)throw Error('That time has just become unavailable. Please choose another.');await options.onSelect(selected);if(options.demo)confirm.disabled=false}catch(e){error=e.message;selected='';rows=[];draw()}},!selected||loading||!!error);
+   const confirm=button(selected?'Request '+label(selected):'Select a time','cp-confirm',async()=>{confirm.disabled=true;try{const fresh=await options.fetchSlots(month);if(!host.isConnected)return;if(!slotValid(selected)||(!fresh.some(x=>x.local_start===selected&&x.available)&&!options.demo))throw Error('That time has just become unavailable. Please choose another.');await options.onSelect(selected);if(options.demo)confirm.disabled=false}catch(e){error=e.message;selected='';rows=[];draw()}},!selected||loading||!!error);
    body.append(calendar,times);host.append(intro,top,body,status,confirm,note);
   }
   async function load(value){month=value;day='';selected='';rows=[];error='';loading=true;controller?.abort();controller=new AbortController();const token=++seq;draw();try{const data=await options.fetchSlots(month,controller.signal);if(token!==seq||!host.isConnected)return;rows=data;loading=false;draw()}catch(e){if(token!==seq||e.name==='AbortError')return;loading=false;error=e.message;draw()}}

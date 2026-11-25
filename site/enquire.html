@@ -692,7 +692,7 @@ body.typing #conv{grid-row:1 / -1}
 
 <div id="dev"></div>
 
-<script src="booking/consultation-calendar.js?v=4"></script>
+<script src="booking/consultation-calendar.js?v=5"></script>
 <script>
 /* =====================================================================
    CONFIG: the things you'll want to change
@@ -897,7 +897,7 @@ const QUESTIONS = [
     ask:() => "And your mobile? Chanel will call you on this for the consult.",
     validate:v => validPhone(v) || 'Enter an Australian mobile (04xx xxx xxx) or an international number with +country code' },
   { id:'consult_at', label:'Preferred phone consultation · Brisbane time', type:'datetime-local',
-    ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, normally at least three days before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
+    ask:() => 'When would you prefer your free 15-minute phone consultation? Choose Brisbane time, at least 24 hours before your makeup appointment. This is a request only; Chanel approves the time and emails your confirmation.',
     validate:v => ConsultationCalendar.valid(v, makeupStart()) },
   { id:'notes', label:'Notes', type:'chips', options:["That's everything"], other:true, otherLabel:'Add a note…', placeholder:'Hair, timings, a theme…',
     ask:() => 'Anything else Chanel should know?' },
