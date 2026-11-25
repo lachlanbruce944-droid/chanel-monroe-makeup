@@ -1423,15 +1423,14 @@ async function submit(){
     const res = await saveToSupabase(row);
     S.submitting=false; S.sent = true; S.enquiryId = res.id; clearDraft(); btn.remove();
     $('#resetChat').disabled = false;
-    if(!res.simulated) saveSent();   // this browser now shows the sent enquiry instead of starting a new one
     S.notificationState=res.simulated?'test':'pending';
+    if(!res.simulated) void notifyEnquiry();
     updateDev();
     await say((res.simulated
       ? "All sent ✨ (test mode: saved to the local test database)\n"
       : `All sent ✨ Thanks, ${first(S.answers.name)}!\n`) +
       "Your preferred phone consultation time is pending Chanel’s approval. You’ll receive a phone consultation confirmation by email once Chanel approves it. Your makeup booking is not yet confirmed. There’s nothing else to confirm.");
-    if(S.sent) showSent(saveSent(liveMode()), false);
-    if(!res.simulated) notifyEnquiry();
+    if(S.sent) showSent(saveSent(), false);
   }catch(e){
     S.submitting=false;
     $('#resetChat').disabled = false;
@@ -1445,20 +1444,20 @@ async function submit(){
     $('#summary')?.remove();
     await showSummary();
     $('#resetChat').disabled = false;
-    await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
-    if(S.sent) showSent(saveSent(liveMode()), false);
+    await say("We couldn’t confirm receipt. Check your connection and retry this same enquiry.");
+    if(S.sent) showSent(saveSent(), false);
     console.error(e);
   }
 }
 
 async function notifyEnquiry(){
- if(S.notifying||!S.enquiryId)return;S.notifying=true;S.notificationState='pending';
+ if(S.notifying||!S.enquiryId)return;const id=S.enquiryId;S.notifying=true;S.notificationState='pending';
  try{
-  const r=await fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:S.enquiryId}),signal:AbortSignal.timeout(20000)});
+  const r=await fetch(`${CONFIG.supabaseUrl}/functions/v1/enquiry-email`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id}),signal:AbortSignal.timeout(20000)});
   const data=await r.json();if(!r.ok||!data.ok)throw Error('Email delivery failed');S.notificationState='sent';
  }catch(e){S.notificationState='failed'}
  S.notifying=false;
- try{const rec=sentRecord();if(rec){rec.notificationState=S.notificationState;localStorage.setItem(SENT_KEY,JSON.stringify(rec));showSent(rec,false)}}catch(e){}
+ try{if(S.sent && S.enquiryId===id) showSent(saveSent(),false)}catch(e){}
 }
 function notificationCard(state){
  return `<section class="consult-result" aria-live="polite"><b>Enquiry saved</b><p>${state==='sent'?'Confirmation email sent. Your phone consultation still needs Chanel’s approval.':state==='pending'?'Sending your confirmation email…':state==='test'?'Practice mode: no email sent.':'Your enquiry is saved, but email delivery could not be confirmed. Retry the email below; do not submit another enquiry.'}</p>${!['sent','pending','test'].includes(state)?'<button type="button" id="retryEnquiryEmail">Retry confirmation email</button>':''}</section>`;
@@ -1482,22 +1481,20 @@ function restoreDraft(){
  }catch(e){clearDraft();return false}
 }
 addEventListener('pagehide',saveDraft);
-/* ---------- after sending: keep a read-only view of the enquiry, and no second enquiry ---------- */
+/* ---------- after sending: keep the recap in memory only ---------- */
 const SENT_KEY = 'cmm-enquiry-sent';
 function sentRecord(){
-  try{ const r = JSON.parse(localStorage.getItem(SENT_KEY)); if(r && r.until > Date.now()) return r; if(r) localStorage.removeItem(SENT_KEY) }catch(e){}
+  try{ localStorage.removeItem(SENT_KEY) }catch(e){}
   return null;
 }
-function saveSent(keep = true){   // keep=false in ?localdb practice mode: show the view, don't lock the browser
+function saveSent(){
   const qs = activeQs(), contact = ['name','email','phone'], f = q => ({ l:q.label, v: display(q, S.answers[q.id]) || '-' });
-  const est = estimate(), ev = S.answers.event_date, now = Date.now();
+  const est = estimate(), now = Date.now();
   const rec = { id:S.enquiryId, at:now, name:val('name'), notificationState:S.notificationState||'pending',
-    until: ev ? Math.max(new Date(ev + 'T23:59:59').getTime(), now + 864e5) : now + 60*864e5,   // locked until the event day has passed (60 days if no date)
     booking: qs.filter(q => !contact.includes(q.id) && q.type !== 'pick').map(f), contact: qs.filter(q => contact.includes(q.id)).map(f),
     picks: S.refs.map(x => thumb(x.src)), affiliates: S.affs.map(x => ({ h:x.h, name:x.name, avatar:x.avatar })),
     consultation: val('consult_at') ? {startTime:new Date(val('consult_at') + ':00+10:00').toISOString(),status:'pending'} : null,
     est: est ? { t:(est.open ? 'from ' : '') + money(est.total), lines:est.lines.join(' · ') } : null };
-  if(keep) try{ localStorage.setItem(SENT_KEY, JSON.stringify(rec)) }catch(e){}
   return rec;
 }
 function showSent(r, booked){
@@ -1517,8 +1514,9 @@ function showSent(r, booked){
     ${(r.picks || []).length ? `<div class="cf-sec"><span class="cf-l">Your picks</span><div class="refs">${r.picks.map(u => `<img src="${esc(u)}" alt="">`).join('')}</div></div>` : ''}
     ${r.est ? `<div class="est"><b>Estimate: ${esc(r.est.t)}</b><span>${esc(r.est.lines)}</span><span>Chanel confirms your final quote on your phone call.</span></div>` : ''}
     ${affiliateTiles(r)}
-    <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to send another enquiry.</small></div>
+    <div class="cf-f"><small>Need to change something? Just reply to your confirmation email. There's no need to resend this enquiry.</small><button type="button" id="startNewEnquiry">Start another enquiry</button></div>
   </div>`);
+  $('#startNewEnquiry').onclick = () => location.reload();
   $('#retryEnquiryEmail') && ($('#retryEnquiryEmail').onclick=notifyEnquiry);
   const top = () => { const ch = $('#chat'); ch.scrollTop = ch.scrollLeft = 0; msgs.scrollTop = 0 };
   top(); requestAnimationFrame(top); setTimeout(top, 400); updateFab();
@@ -1635,6 +1633,7 @@ async function saveToSupabase(row){
     return { id, simulated:true };
   }
   const id = S.submissionId ||= crypto.randomUUID();
+  saveDraft();
   const r = await fetch(`${CONFIG.supabaseUrl}/rest/v1/${CONFIG.supabaseTable}`, {
     method:'POST',
     headers:Object.assign({ apikey:CONFIG.supabaseAnonKey, 'Content-Type':'application/json', Prefer:'return=minimal' },
