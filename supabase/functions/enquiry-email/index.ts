@@ -2,7 +2,7 @@
 // Called by the chat page right after it saves an enquiry (and by the optional database trigger) with { id }.
 // It reads the row itself with the service role, only acts on enquiries less than 24 hours old, and uses
 // Resend idempotency keys (plus emailed_*_at columns when they exist), so each enquiry is emailed once.
-// If the client sent a selfie (private "selfies" bucket), it is attached to Chanel's email and shown inline.
+// Private photos and sensitivities stay in the CRM.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 
 const SB_URL = Deno.env.get("SUPABASE_URL")!;
@@ -21,23 +21,11 @@ const fmtTime = (t?: string) => { if (!t) return ""; const [h, m] = t.split(":")
 
 async function db(path: string, init: RequestInit = {}) {
   const r = await fetch(`${SB_URL}/rest/v1/${path}`, { ...init, headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}`, "Content-Type": "application/json", ...(init.headers || {}) } });
-  if (!r.ok) throw new Error(`db ${r.status}: ${await r.text()}`);
+  if (!r.ok) throw new Error(`db ${r.status}: ${r.statusText}`);
   return r.status === 204 ? null : r.json();
 }
 // recording the send is best effort: the columns are optional (docs/enquiry-emails.sql)
 const save = (id: string, fields: Record<string, unknown>) => db(`enquiries?id=eq.${id}`, { method: "PATCH", body: JSON.stringify(fields), headers: { Prefer: "return=minimal" } }).catch(() => null);
-
-// the client's selfie from the private bucket, as base64 for an email attachment (null if missing)
-async function selfie(path?: string) {
-  if (!path || !/^[0-9a-f-]{36}\.jpg$/i.test(path)) return null;
-  try {
-    const r = await fetch(`${SB_URL}/storage/v1/object/selfies/${path}`, { headers: { apikey: SB_KEY, Authorization: `Bearer ${SB_KEY}` } });
-    if (!r.ok) return null;
-    const bytes = new Uint8Array(await r.arrayBuffer());
-    let bin = ""; for (let i = 0; i < bytes.length; i += 0x8000) bin += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    return btoa(bin);
-  } catch { return null; }
-}
 
 async function send(msg: Record<string, unknown>, key: string) {
   const r = await fetch("https://api.resend.com/emails", {
@@ -45,7 +33,7 @@ async function send(msg: Record<string, unknown>, key: string) {
     headers: { Authorization: `Bearer ${RESEND}`, "Content-Type": "application/json", "Idempotency-Key": key },
     body: JSON.stringify(msg),
   });
-  if (!r.ok) throw new Error(`resend ${r.status}: ${await r.text()}`);
+  if (!r.ok) throw new Error(`resend ${r.status}: ${r.statusText}`);
   return r.json();
 }
 
@@ -60,11 +48,8 @@ function rows(e: Record<string, any>) {
     ["Suburb", e.location ? e.location + travel : ""],
     ["How many", e.quantity],
     ["Trial", e.bridal_trial],
-    ["Skin", e.skin_type],
-    ["Allergies", e.allergies && e.allergies + (e.patch_test ? " · patch test requested" : "")],
     ["Lashes", e.lashes],
     ["Also booking", (e.extra_services || []).join(", ")],
-    ["Notes", e.notes],
     ["Estimate", e.estimate_total != null ? `${e.estimate_is_from ? "from " : ""}${money(e.estimate_total)}` : ""],
   ].filter(([, v]) => v);
 }
@@ -100,17 +85,13 @@ Deno.serve(async (req) => {
     const done: Record<string, string> = {};
 
     if (!e.emailed_business_at) {
-      const pic = await selfie(e.selfie_path);
-      const safe = first(e.name).replace(/[^a-z0-9]+/gi, "-").toLowerCase() || "client";
       const html = shell(`New enquiry from ${esc(e.name)}`,
-        (pic ? `<p style="margin:0 0 12px"><img src="cid:selfie" width="160" style="width:160px;border-radius:14px;display:block" alt="Client selfie"></p>` : "") +
         `<p style="font-size:14px;line-height:22px;word-break:break-word">${esc(e.phone)}<br><a href="mailto:${esc(e.email)}" style="color:#b8846b">${esc(e.email)}</a></p>${table(r)}` +
         (refs.length ? `<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Reference looks</p>${refs.filter((x: any)=>mediaURL(x.src)).map((x: any) => `<a href="${esc(mediaURL(x.src))}"><img src="${esc(mediaURL(x.src))}" width="88" height="88" style="object-fit:cover;border-radius:10px;margin:0 6px 6px 0;max-width:100%" alt="${esc(x.sub_style || x.desc || "Reference look")}"></a>`).join("")}` : "") +
         (artists.length ? `<p style="margin:14px 0 6px;color:#7a5a50;font-size:13px">Beauty team</p><p style="font-size:14px">${artists.map((a: any) => `<a href="${esc(a.instagram)}" style="color:#b8846b">${esc(a.name || "@" + a.handle)}</a> (${esc(a.category)})`).join(", ")}</p>` : "") +
-        `<p style="font-size:12px;color:#7a5a50;margin-top:18px">${pic ? "The selfie is attached. " : "No selfie sent. "}Reply to this email to answer ${esc(first(e.name))} directly. Ref ${esc(String(e.id).slice(0, 8))}</p>`);
+        `<p style="font-size:12px;color:#7a5a50;margin-top:18px"><a href="https://lachlanbruce944-droid.github.io/chanel-monroe-crm/">Open CRM for private details.</a> Reply to this email to answer ${esc(first(e.name))} directly. Ref ${esc(String(e.id).slice(0, 8))}</p>`);
       await send({ from: FROM, to: [BUSINESS], reply_to: e.email || undefined,
-        subject: `New enquiry: ${e.name}${e.look_name ? " · " + e.look_name : ""}${e.event_date ? " · " + fmtDate(e.event_date) : ""}`, html, text:plainDetails(e,r),
-        ...(pic ? { attachments: [{ filename: `selfie-${safe}.jpg`, content: pic, content_type: "image/jpeg", content_id: "selfie" }] } : {}) }, `biz-${e.id}`);
+        subject: `New enquiry: ${e.name}${e.look_name ? " · " + e.look_name : ""}${e.event_date ? " · " + fmtDate(e.event_date) : ""}`, html, text:plainDetails(e,r) }, `biz-${e.id}`);
       done.emailed_business_at = new Date().toISOString();
       await save(id, { emailed_business_at: done.emailed_business_at });
     }
@@ -120,15 +101,15 @@ Deno.serve(async (req) => {
         `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
 <p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
-      await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html, text:plainDetails(e,r) }, `client-${e.id}`);
+      await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: `Your enquiry with Chanel Monroe Makeup · Ref ${String(e.id).slice(0, 8)}`, html, text:plainDetails(e,r) }, `client-${e.id}`);
       done.emailed_client_at = new Date().toISOString();
       await save(id, { emailed_client_at: done.emailed_client_at, email_error: null });
     }
     return reply(JSON.stringify({ ok: true, ...done }));
   } catch (err) {
     const msg = String((err as Error).message || err).slice(0, 500);
-    if (/^[0-9a-f-]{36}$/i.test(id)) await save(id, { email_error: msg });
+    if (/^[0-9a-f-]{36}$/i.test(id)) await save(id, { email_error: "Could not send the enquiry receipt" });
     console.error(msg);
-    return reply(JSON.stringify({ ok: false, error: msg }), 500);
+    return reply(JSON.stringify({ ok: false, error: "Could not send the enquiry receipt" }), 500);
   }
 });
