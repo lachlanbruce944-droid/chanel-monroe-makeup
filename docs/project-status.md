@@ -1,3 +1,6 @@
+## 26 November 2026 — Enquiry return arrow
+Implemented the selected Option 1: one fading curved arrow beside the answer nearest the middle of the chat. Uses existing answer editing and dependency clearing; draft answers remain editable on reload. Automated suite: 44 passing checks. Visual browser verification remains outstanding (Chromium executable unavailable in this workspace).
+
 ## Pre-enquiry beauty team selection (25 November 2026)
 - Unlocked beauty team and reference selections before entering a name; incomplete drafts retain picks. My picks remains inside the enquiry only; removed the site-wide button.
 

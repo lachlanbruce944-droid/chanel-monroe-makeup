@@ -1,3 +1,8 @@
+## 26 November 2026 — Edit enquiry answers from the conversation
+- Added one curved return arrow to the left of the answered message nearest the chat viewport centre, fading with scroll position. Hidden outside the centre region, while typing or submitting, and after sending.
+- Reopens the selected step using the existing enquiry dependency rules; invalidates affected booking times, retains unrelated answers and picks, and saves the draft. Restored drafts show editable answers.
+- Added regression checks for arrow selection and date/consult dependency clearing; all 44 automated tests pass. Browser preview unavailable because the installed Chromium executable is missing.
+
 ### 2026-11-25 (Pages workflow: separate build and deploy jobs)
 - Deploys kept failing with "No artifacts named github-pages… were found". The workflow now uses GitHub's standard two-job layout (build uploads, deploy runs after), and queued deploys are no longer cancelled mid-way.
 

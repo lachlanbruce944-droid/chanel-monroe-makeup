@@ -119,6 +119,12 @@ body.min #chat{transform:translateX(calc(100% + 30px));opacity:0;pointer-events:
 .b.bot{align-self:flex-start;background:var(--bg2);border-bottom-left-radius:5px}
 .b.me{align-self:flex-end;background:var(--fg);color:var(--bg);border-bottom-right-radius:5px}
 .b.me.edit{cursor:default}
+.b.me[data-answer]{max-width:calc(100% - 58px)}
+.answer-return{position:fixed;z-index:30;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--bg2);color:var(--fg);box-shadow:0 3px 12px rgba(30,15,15,.1);opacity:0;pointer-events:none;transition:opacity .18s ease; padding:0}
+.answer-return.visible{pointer-events:auto}
+.answer-return:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.answer-return svg{width:23px;height:23px}
+@media(prefers-reduced-motion:reduce){.answer-return{transition:none}}
 .b .caret{display:inline-block;width:2px;height:1em;background:currentColor;vertical-align:-2px;margin-left:1px;animation:blink .8s steps(1) infinite}
 .dots{align-self:flex-start;background:var(--bg2);padding:11px 14px;border-radius:16px;border-bottom-left-radius:5px;display:flex;gap:4px}
 .dots i{width:6px;height:6px;border-radius:50%;background:var(--soft);animation:bob 1s infinite}.dots i:nth-child(2){animation-delay:.15s}.dots i:nth-child(3){animation-delay:.3s}
@@ -962,6 +968,8 @@ const DEPENDS = {
 function clearAnswer(id){
   S.submissionId=null;
   delete S.answers[id];
+  msgs.querySelectorAll('[data-answer]').forEach(b => { if(b.dataset.answer === id) b.removeAttribute('data-answer') });
+  scheduleAnswerReturn();
   (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
 }
 async function goBack(){
@@ -1038,6 +1046,47 @@ function clearMessages(){ msgs.replaceChildren(chatIntro) }
 function scroll(){ pinned = true; msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' }
 msgs.addEventListener('scroll', () => { pinned = msgs.scrollHeight - msgs.scrollTop - msgs.clientHeight < 48 }, { passive:true });
 if('ResizeObserver' in window) new ResizeObserver(() => { if(pinned){ msgs.style.scrollBehavior = 'auto'; msgs.scrollTop = msgs.scrollHeight; msgs.style.scrollBehavior = '' } }).observe(msgs);
+/* One shared control: only the answer nearest the chat centre can expose it. */
+const answerReturn = document.createElement('button');
+answerReturn.type = 'button'; answerReturn.className = 'answer-return';
+answerReturn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 4 4 9l5 5M4 9h9a7 7 0 0 1 0 14" transform="translate(0 -2)"/></svg>';
+answerReturn.setAttribute('aria-label','Change answer'); answerReturn.tabIndex = -1;
+document.body.appendChild(answerReturn);
+let answerReturnFrame = 0;
+function scheduleAnswerReturn(){
+  if(!answerReturnFrame) answerReturnFrame = requestAnimationFrame(updateAnswerReturn);
+}
+function updateAnswerReturn(){
+  answerReturnFrame = 0;
+  const area = msgs.getBoundingClientRect(), centre = (area.top + area.bottom) / 2;
+  const band = Math.min(110, area.height * .32);
+  let target = null, distance = Infinity;
+  if(!S.sent && !S.submitting && !S.busy && area.height > 0){
+    msgs.querySelectorAll('[data-answer]').forEach(b => {
+      if(S.answers[b.dataset.answer] === undefined || !activeQs().some(q => q.id === b.dataset.answer)) return;
+      const r = b.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - centre);
+      if(r.bottom > area.top && r.top < area.bottom && d < distance){ target = b; distance = d }
+    });
+  }
+  const visible = !!target && distance < band;
+  answerReturn.classList.toggle('visible', visible);
+  answerReturn.style.opacity = visible ? String(Math.min(1, (1 - distance / band) * 2)) : '0';
+  answerReturn.tabIndex = visible ? 0 : -1;
+  answerReturn.setAttribute('aria-hidden', String(!visible));
+  answerReturn.dataset.answer = visible ? target.dataset.answer : '';
+  if(visible){
+    const r = target.getBoundingClientRect();
+    answerReturn.style.left = Math.max(area.left + 4, r.left - 50) + 'px';
+    answerReturn.style.top = Math.max(area.top, Math.min(area.bottom - 44, (r.top + r.bottom) / 2 - 22)) + 'px';
+    const q = QUESTIONS.find(q => q.id === target.dataset.answer);
+    answerReturn.setAttribute('aria-label', 'Change ' + q.label.toLowerCase());
+  }
+}
+answerReturn.onclick = () => { const id = answerReturn.dataset.answer; if(id) editAnswer(id) };
+msgs.addEventListener('scroll', scheduleAnswerReturn, {passive:true});
+addEventListener('resize', scheduleAnswerReturn);
+if('ResizeObserver' in window) new ResizeObserver(scheduleAnswerReturn).observe(msgs);
+new MutationObserver(scheduleAnswerReturn).observe(msgs, {childList:true,subtree:true,attributes:true,attributeFilter:['data-answer']});
 function setStatus(t){ $('#status').textContent = t }
 
 async function say(text, onStart, instant){   // instant: no thinking dots or typing (the intro once it has been seen)
@@ -1062,7 +1111,7 @@ async function say(text, onStart, instant){   // instant: no thinking dots or ty
     }
     b.textContent = text;
   }
-  orbState(orb, 'idle'); scroll(); setStatus('Booking assistant'); S.busy = false;
+  orbState(orb, 'idle'); scroll(); setStatus('Booking assistant'); S.busy = false; scheduleAnswerReturn();
   return b;
 }
 /* one row per bot message: [orb][bubble]. Like a messaging app, only the last
@@ -1114,8 +1163,8 @@ async function answer(q, value, shown){
   S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
   saveDraft();
   comp.innerHTML = '';
-  if(q.type === 'photo' && value !== '__skip' && S.selfie){ const im = document.createElement('img'); im.className = 'b me selfie'; im.src = S.selfie.preview; im.alt = 'Your selfie'; msgs.appendChild(im); scroll() }
-  else me(shown ?? display(q, value));
+  if(q.type === 'photo' && value !== '__skip' && S.selfie){ const im = document.createElement('img'); im.className = 'b me selfie'; im.src = S.selfie.preview; im.alt = 'Your selfie'; im.dataset.answer = q.id; msgs.appendChild(im); scroll() }
+  else { const bubble = me(shown ?? display(q, value)); bubble.dataset.answer = q.id; }
   if(q.type === 'pick') pickRow(q.kind);
   if(q.id === 'name' && !S.started){ S.started = true; unlockPlus() }
   if(['category','sub_style'].includes(q.id) && S.tab === 'all') renderGallery();
@@ -1398,12 +1447,15 @@ async function showSummary(){
   updateDev();
 }
 async function editAnswer(id){
-  if(S.sent || S.busy) return;
+  if(S.sent || S.submitting || S.busy) return;
   $('#summary')?.remove();
   if(id==='ready_by') id='event_date';
   const q = QUESTIONS.find(x => x.id === id);
   S.prevAnswer = { [id]: S.answers[id] };
   clearAnswer(id);
+  S.history = (S.history || []).filter(key => S.answers[key] !== undefined);
+  saveDraft();
+  comp.innerHTML = '';
   me(`Change ${q.label.toLowerCase()}`);
   S.typing = say(q.ask(S.answers), () => renderComposer(q));
   await S.typing;
@@ -1487,7 +1539,8 @@ function restoreDraft(){
   if(S.answers.start_window&&!['standard','extended'].includes(S.answers.start_window)){clearAnswer('start_window');S.history=S.history.filter(id=>S.answers[id]!==undefined)}
   if(S.answers.event_date&&(!makeupStart()||+new Date(makeupStart())<=Date.now()))clearAnswer('event_date');
   if(S.answers.consult_at&&ConsultationCalendar.valid(S.answers.consult_at,makeupStart())!==true)delete S.answers.consult_at;
-  me('Your draft has been restored in this tab. You can use Back to change details.');renderTray();renderTabs();renderSide();updateFab();return true;
+  me('Your draft has been restored in this tab.');
+  activeQs().filter(q => S.answers[q.id] !== undefined).forEach(q => { const b = me(display(q, S.answers[q.id])); b.dataset.answer = q.id });renderTray();renderTabs();renderSide();updateFab();return true;
  }catch(e){clearDraft();return false}
 }
 addEventListener('pagehide',saveDraft);
