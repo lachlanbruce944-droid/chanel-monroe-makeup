@@ -1,3 +1,7 @@
+### 2026-11-25 (About: what this site is for)
+- About page gains an "About this site" passage: the site is for exploring makeup styles; the gallery looks are by credited creators from around the world and are inspiration for your occasion (not Chanel's own work), and can be added to an enquiry. Chanel's own work follows below.
+- Edited `src/index.html` and, to avoid a full rebuild, the same lines in `site/js/app.js` and `site/css/site.css`; version strings in `site/index.html` bumped to `20261125-about-site`.
+
 ### 2026-11-25 (Enquiry emails: image tiles)
 - Chanel's enquiry email and the client's confirmation now show the saved reference looks as small tiles (three per row) with the style name and the credited artist's @handle linked to the post, and the chosen beauty-team artists as tiles with their photo, @handle (linked to Instagram), service category, profile title and website.
 - Both emails show an "Appointment hours" row (within / outside operating hours, extra fee to be confirmed).
