@@ -394,7 +394,47 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
 }
 @media (max-width:380px){.fbrand{display:none}}  /* very small phones: keep the buttons, drop the wordmark */
 /* About timeline: one row, a line with a dot per milestone; scrolls sideways on narrow screens, never stacks */
-.about-site{margin:6px 0 26px;max-width:64ch}.about-site h3{margin:0 0 8px}.about-site p{margin:0 0 10px;line-height:1.6}
+.atour{margin:8px 0 30px}
+.atour-stage{position:relative;min-height:clamp(330px,54vh,470px);border-radius:22px;overflow:hidden;background:var(--bg2);display:grid;place-items:center;isolation:isolate}
+.atour-pics{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .45s ease}
+.atour-pics.in{opacity:1}
+.atour-pics figure{position:absolute;margin:0;width:clamp(92px,14%,168px);aspect-ratio:4/5;border-radius:14px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.18);animation:atourFloat 9s ease-in-out infinite alternate;animation-delay:calc(var(--k) * -1.3s)}
+.atour-pics figure img{width:100%;height:100%;object-fit:cover;display:block}
+.atour-pics figcaption{position:absolute;left:7px;right:7px;bottom:6px;font-size:10px;line-height:1.3;color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.75);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.atour-pics figure:nth-child(1){left:3%;top:7%;rotate:-6deg}
+.atour-pics figure:nth-child(2){left:13%;bottom:5%;rotate:4deg}
+.atour-pics figure:nth-child(3){right:3%;top:9%;rotate:5deg}
+.atour-pics figure:nth-child(4){right:13%;bottom:4%;rotate:-4deg}
+.atour-pics figure:nth-child(5){left:34%;top:-9%;rotate:3deg}
+.atour-pics figure:nth-child(6){right:33%;bottom:-11%;rotate:-3deg}
+.atour-pics figure:nth-child(7){left:-2%;top:48%;rotate:2deg}
+.atour-pics figure:nth-child(8){right:-2%;top:50%;rotate:-2deg}
+.atour-pics.av figure{aspect-ratio:1;border-radius:50%;width:clamp(64px,9%,108px);border:3px solid var(--card)}
+.atour-pics.av figcaption{display:none}
+.atour-card{position:relative;z-index:1;max-width:min(570px,84%);margin:26px;padding:22px 26px 20px;border-radius:18px;background:var(--card);background:color-mix(in srgb,var(--card) 80%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);box-shadow:0 14px 40px rgba(0,0,0,.12);text-align:center}
+.atour-k{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--soft);margin:0 0 6px}
+.atour-t{font-family:var(--fh,Georgia,serif);font-weight:400;font-size:clamp(22px,3vw,32px);line-height:1.15;margin:0 0 10px}
+.atour-x{min-height:5em;line-height:1.6;margin:0 0 14px;color:var(--fg)}
+.atour-x::after{content:"";display:inline-block;width:1px;height:1em;background:currentColor;margin-left:2px;vertical-align:-2px;animation:atourCaret 1s steps(1) infinite}
+.atour-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
+.atour-cta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s;pointer-events:none}
+.atour-cta.on{opacity:1;transform:none;pointer-events:auto}
+.atour-cta .pill{cursor:pointer}
+.atour-tabs{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
+.atour-tabs::-webkit-scrollbar{display:none}
+.atour-tabs button{flex:1 0 auto;min-width:92px;background:none;border:0;padding:6px 4px 2px;font:inherit;font-size:12px;color:var(--soft);cursor:pointer;text-align:left}
+.atour-tabs button[aria-selected="true"]{color:var(--fg)}
+.atour-bar{display:block;height:2px;background:var(--line);border-radius:2px;overflow:hidden;margin-bottom:6px}
+.atour-bar i{display:block;height:100%;width:0;background:var(--acc)}
+.atour-tabs button.done .atour-bar i{width:100%}
+.atour-tabs button.run .atour-bar i{animation:atourBar var(--dur,9s) linear forwards}
+.atour.paused .atour-tabs button.run .atour-bar i{animation-play-state:paused}
+@keyframes atourBar{to{width:100%}}
+@keyframes atourFloat{from{transform:translateY(-6px)}to{transform:translateY(8px)}}
+@keyframes atourCaret{50%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.atour-pics figure{animation:none}.atour-x::after{display:none}.atour-tabs button[aria-selected="true"] .atour-bar i{width:100%}}
+@media (max-height:500px){.atour-stage{min-height:300px}.atour-card{margin:14px;padding:14px 18px}.atour-x{min-height:4.2em;font-size:14px;margin-bottom:10px}.atour-t{font-size:22px;margin-bottom:6px}.atour-pics figure{width:clamp(70px,12%,118px)}}
+@media (max-width:600px){.atour-pics figure:nth-child(n+5){display:none}.atour-card{max-width:92%;padding:16px}}
 .tline{list-style:none;margin:8px 0 28px;padding:0 0 6px;display:flex;overflow-x:auto;scrollbar-width:none;scroll-snap-type:x mandatory}
 .tline::-webkit-scrollbar{display:none}
 .tline li{position:relative;flex:1 0 190px;padding:34px 18px 0 0;scroll-snap-align:start}
@@ -1550,7 +1590,7 @@ function pageHTML(id){
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      '<section class="about-site"><h3>About this site</h3>'+'<p>This site is a place to explore makeup styles, from barely-there natural looks to bridal, glam, editorial, character &amp; FX, and party and seasonal looks. Browse each style and its sub-styles to find what suits your occasion.</p>'+'<p>The looks in the style galleries are by makeup artists and creators from all over the world. Each one is credited to its artist with a link to the original post. They are here as inspiration for your occasion, not as Chanel’s own work: save the ones you love, add them to your enquiry, and Chanel will talk through how to create a look like it for you.</p>'+'<p>Chanel’s own work is shown below.</p></section>'+'<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
+      tourHTML()+'<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
@@ -1759,7 +1799,76 @@ $('igBox').addEventListener('click',function(e){var b=e.target.closest('[data-ig
 [$('affMod'),$('igMod'),$('prodMod'),$('brandMod'),$('lessonMod')].forEach(function(m){m.addEventListener('click',function(e){if(e.target===m||e.target.hasAttribute('data-close'))m.classList.remove('open')})});
 /* About grid: each of Chanel's photos once, fresh order on every visit; two tiles trade places every few seconds */
 var gridTimer=0;
+/* ---- About: interactive "About this site" tour. Typed text in the centre over a collage of the site's own photos.
+   Chapters: styles, worldwide inspiration, affiliates, lessons, Chanel's work, enquire. Starts when scrolled into view,
+   pauses the auto-advance on hover or focus, tabs jump between chapters, buttons go to that part of the site (desktop and phone). ---- */
+function tourPics(f,n){return shuffle(items().filter(function(x){return x.type!=='video'&&!hid(x)&&f(x)})).slice(0,n)}
+function tourChapters(){
+  var AF=(window.AFFILIATES||[]).filter(function(a){return a.avatar});
+  var one=GROUPS.map(function(g){return tourPics(function(x){return x.g===g.id&&!x.own},1)[0]}).filter(Boolean);
+  var lesson=tourPics(function(x){return x.s==='Makeup lesson'},5);if(lesson.length<4)lesson=lesson.concat(tourPics(function(x){return x.g==='natural'&&!x.own},5-lesson.length));
+  return [
+   {k:'Explore',t:'Six styles to explore',x:'Natural, Glam, Bridal, Editorial, Character & FX, and Parties & Seasons. Each style has its own sub-styles, so you can find the look that suits your occasion.',pics:one,styles:true},
+   {k:'Inspiration',t:'Looks from creators worldwide',x:'The photos in the style galleries are by makeup artists and creators from all over the world, each credited with a link to the original post. Use them as inspiration for your occasion: save the ones you love to your enquiry, and Chanel will talk through creating a look like it for you.',pics:tourPics(function(x){return !x.own&&x.by},6),cred:true,cta:['Browse the galleries',{g:0}]},
+   {k:'Affiliates',t:'Build your beauty team',x:'Affiliates are trusted Gold Coast artists for hair, nails, lashes and brows, tattoo and photography. Planning a big day? Find your whole glam team here and add them to your enquiry, so everyone is on the same page.',av:shuffle(AF).slice(0,8),cta:['Meet the affiliates',{p:'affiliates'}]},
+   {k:'Lessons',t:'Learn it yourself',x:'Lessons with Chanel teach you a look on your own face, with your own kit: one to one or with friends, at your place anywhere on the Gold Coast. Video tutorials are on the way.',pics:lesson,cta:['See lessons',{p:'lessons'}]},
+   {k:'Chanel’s work',t:'Chanel’s own work',x:'Everything Chanel has created herself is in the gallery below, from soft bridal glow to full character.',pics:tourPics(function(x){return x.own},6),cta:['See Chanel’s work',{work:1}]},
+   {k:'Enquire',t:'Ready when you are',x:'Tell Chanel about your occasion in a short chat, add the looks and artists you saved, and pick a time for a free phone consultation.',pics:tourPics(function(x){return x.own},5),cta:['Start an enquiry',{enq:1}]}
+  ];
+}
+function tourHTML(){return '<section class="atour" aria-label="About this site"><div class="atour-tabs" role="tablist" aria-label="About this site"></div><div class="atour-stage"><div class="atour-pics" aria-hidden="true"></div>'+
+  '<div class="atour-card"><p class="atour-k">About this site</p><h3 class="atour-t"></h3><p class="atour-x" aria-hidden="true"></p><p class="atour-sr" aria-live="polite"></p><div class="atour-cta"></div></div></div></section>'}
+function initTours(){[].forEach.call(document.querySelectorAll('.atour:not([data-on])'),tourStart)}
+function tourStart(el){
+  el.dataset.on=1;
+  var C=tourChapters(),cur=-1,tm=0,typ=0,swap=0,paused=false,started=false,
+      still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,
+      tabs=el.querySelector('.atour-tabs'),pics=el.querySelector('.atour-pics'),T=el.querySelector('.atour-t'),
+      X=el.querySelector('.atour-x'),SR=el.querySelector('.atour-sr'),A=el.querySelector('.atour-cta');
+  tabs.innerHTML=C.map(function(c,i){return '<button role="tab" aria-selected="false" data-i="'+i+'"><span class="atour-bar"><i></i></span>'+esc(c.k)+'</button>'}).join('');
+  function alive(){return document.body.contains(el)}
+  function stop(){clearTimeout(tm);clearInterval(typ);clearTimeout(swap)}
+  function gname(id){return (GROUPS.filter(function(g){return g.id===id})[0]||{}).name||''}
+  function show(i){
+    if(!alive())return stop();stop();cur=(i+C.length)%C.length;var c=C[cur];
+    [].forEach.call(tabs.children,function(b,k){b.setAttribute('aria-selected',k===cur?'true':'false');b.classList.toggle('done',k<cur);b.classList.remove('run')});
+    var list=c.av?c.av.map(function(a){return {src:a.avatar,cap:'@'+a.h}}):(c.pics||[]).map(function(x){return {src:small(x.src),cap:c.cred?(x.by||''):(c.styles?gname(x.g):'')}});
+    pics.classList.remove('in');
+    swap=setTimeout(function(){
+      pics.className='atour-pics'+(c.av?' av':'');
+      pics.innerHTML=list.slice(0,8).map(function(p,k){return '<figure style="--k:'+k+'"><img src="'+esc(p.src)+'" alt="" decoding="async" onerror="this.closest(\'figure\').remove()">'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'}).join('');
+      requestAnimationFrame(function(){pics.classList.add('in')})},still?0:260);
+    A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
+      (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
+       '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');
+    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;
+    if(still){X.textContent=c.x;A.classList.add('on');return}
+    A.classList.remove('on');X.textContent='';
+    var n=0,s=c.x;el.style.setProperty('--dur',(Math.ceil(s.length/2)*22+5200)+'ms');
+    var b=tabs.children[cur];void b.offsetWidth;b.classList.add('run');
+    typ=setInterval(function(){if(!alive())return stop();n+=2;X.textContent=s.slice(0,n);
+      if(n>=s.length){clearInterval(typ);A.classList.add('on');next()}},22);
+  }
+  function next(){clearTimeout(tm);tm=setTimeout(function(){if(!alive())return;if(paused)return next();show(cur+1)},5200)}
+  tabs.onclick=function(e){var b=e.target.closest('button[data-i]');if(b){started=true;show(+b.dataset.i)}};
+  A.onclick=function(e){var b=e.target.closest('[data-go]');if(b)tourGo(JSON.parse(b.dataset.go))};
+  el.onmouseenter=function(){paused=true;el.classList.add('paused')};
+  el.onmouseleave=function(){paused=false;el.classList.remove('paused')};
+  el.addEventListener('focusin',function(){paused=true;el.classList.add('paused')});
+  el.addEventListener('focusout',function(){paused=false;el.classList.remove('paused')});
+  if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){
+      if(!alive())return io.disconnect();
+      es.forEach(function(e){if(e.isIntersecting&&!started){started=true;show(0);io.disconnect()}})},{threshold:.3});io.observe(el)}
+  else{started=true;show(0)}
+}
+function tourGo(t){
+  var m=document.body.classList.contains('m');
+  if(t.g!=null){if(m)mGo('m-'+GROUPS[t.g].id);else go(t.g);return}
+  if(t.p){if(m)mGo('m-'+t.p);else openPage(t.p);return}
+  if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
+}
 function buildAboutGrid(own){
+  initTours();
   clearInterval(gridTimer);var grid=$('agrid');if(!grid||!own.length)return;
   /* every photo appears exactly once; columns chosen so the rows come out even (21 photos = 7 x 3) */
   var N=own.length,COLS=[9,8,7,6,5].filter(function(c){return N%c===0})[0]||Math.min(9,N),cells=shuffle(own);

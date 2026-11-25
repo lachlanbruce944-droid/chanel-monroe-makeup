@@ -1,3 +1,8 @@
+### 2026-11-25 (About: interactive "About this site" tour)
+- Replaced the static About this site text with a short tour: text types out in a frosted card in the centre over a floating collage of the site's own photos, in six chapters with progress tabs (Explore styles, worldwide Inspiration, Affiliates, Lessons, Chanel's work, Enquire). Each chapter has buttons to that part of the site (the six style buttons, Browse the galleries, Meet the affiliates, See lessons, See Chanel's work, Start an enquiry), on desktop and the phone one-page site.
+- Starts when scrolled into view, auto-advances, hover or focus pauses the auto-advance; respects reduced motion (no typing or floating). Screen readers get each chapter as one announcement.
+- Code: tourChapters/tourHTML/initTours/tourGo next to buildAboutGrid (which starts the tour). Same edits in `site/js/app.js` and `site/css/site.css` (no full rebuild); versions bumped to `20261125-about-tour`.
+
 ### 2026-11-25 (About: bio lines)
 - Replaced the placeholder ABOUT_LINES with six short bio lines drawn from Chanel's timeline (Huxley School of Makeup 2017, character and SFX, editorial since 2018, Trace Cosmetic Tattoo Academy, mobile on the Gold Coast); they rotate under her name on About.
 - Removed the "Bio lines still to write" note. Same edits made in `site/` (no full rebuild); `site-content.js` and `app.js` version strings bumped.

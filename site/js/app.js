@@ -267,7 +267,7 @@ function pageHTML(id){
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      '<section class="about-site"><h3>About this site</h3>'+'<p>This site is a place to explore makeup styles, from barely-there natural looks to bridal, glam, editorial, character &amp; FX, and party and seasonal looks. Browse each style and its sub-styles to find what suits your occasion.</p>'+'<p>The looks in the style galleries are by makeup artists and creators from all over the world. Each one is credited to its artist with a link to the original post. They are here as inspiration for your occasion, not as Chanel’s own work: save the ones you love, add them to your enquiry, and Chanel will talk through how to create a look like it for you.</p>'+'<p>Chanel’s own work is shown below.</p></section>'+'<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
+      tourHTML()+'<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
@@ -476,7 +476,76 @@ $('igBox').addEventListener('click',function(e){var b=e.target.closest('[data-ig
 [$('affMod'),$('igMod'),$('prodMod'),$('brandMod'),$('lessonMod')].forEach(function(m){m.addEventListener('click',function(e){if(e.target===m||e.target.hasAttribute('data-close'))m.classList.remove('open')})});
 /* About grid: each of Chanel's photos once, fresh order on every visit; two tiles trade places every few seconds */
 var gridTimer=0;
+/* ---- About: interactive "About this site" tour. Typed text in the centre over a collage of the site's own photos.
+   Chapters: styles, worldwide inspiration, affiliates, lessons, Chanel's work, enquire. Starts when scrolled into view,
+   pauses the auto-advance on hover or focus, tabs jump between chapters, buttons go to that part of the site (desktop and phone). ---- */
+function tourPics(f,n){return shuffle(items().filter(function(x){return x.type!=='video'&&!hid(x)&&f(x)})).slice(0,n)}
+function tourChapters(){
+  var AF=(window.AFFILIATES||[]).filter(function(a){return a.avatar});
+  var one=GROUPS.map(function(g){return tourPics(function(x){return x.g===g.id&&!x.own},1)[0]}).filter(Boolean);
+  var lesson=tourPics(function(x){return x.s==='Makeup lesson'},5);if(lesson.length<4)lesson=lesson.concat(tourPics(function(x){return x.g==='natural'&&!x.own},5-lesson.length));
+  return [
+   {k:'Explore',t:'Six styles to explore',x:'Natural, Glam, Bridal, Editorial, Character & FX, and Parties & Seasons. Each style has its own sub-styles, so you can find the look that suits your occasion.',pics:one,styles:true},
+   {k:'Inspiration',t:'Looks from creators worldwide',x:'The photos in the style galleries are by makeup artists and creators from all over the world, each credited with a link to the original post. Use them as inspiration for your occasion: save the ones you love to your enquiry, and Chanel will talk through creating a look like it for you.',pics:tourPics(function(x){return !x.own&&x.by},6),cred:true,cta:['Browse the galleries',{g:0}]},
+   {k:'Affiliates',t:'Build your beauty team',x:'Affiliates are trusted Gold Coast artists for hair, nails, lashes and brows, tattoo and photography. Planning a big day? Find your whole glam team here and add them to your enquiry, so everyone is on the same page.',av:shuffle(AF).slice(0,8),cta:['Meet the affiliates',{p:'affiliates'}]},
+   {k:'Lessons',t:'Learn it yourself',x:'Lessons with Chanel teach you a look on your own face, with your own kit: one to one or with friends, at your place anywhere on the Gold Coast. Video tutorials are on the way.',pics:lesson,cta:['See lessons',{p:'lessons'}]},
+   {k:'Chanel’s work',t:'Chanel’s own work',x:'Everything Chanel has created herself is in the gallery below, from soft bridal glow to full character.',pics:tourPics(function(x){return x.own},6),cta:['See Chanel’s work',{work:1}]},
+   {k:'Enquire',t:'Ready when you are',x:'Tell Chanel about your occasion in a short chat, add the looks and artists you saved, and pick a time for a free phone consultation.',pics:tourPics(function(x){return x.own},5),cta:['Start an enquiry',{enq:1}]}
+  ];
+}
+function tourHTML(){return '<section class="atour" aria-label="About this site"><div class="atour-tabs" role="tablist" aria-label="About this site"></div><div class="atour-stage"><div class="atour-pics" aria-hidden="true"></div>'+
+  '<div class="atour-card"><p class="atour-k">About this site</p><h3 class="atour-t"></h3><p class="atour-x" aria-hidden="true"></p><p class="atour-sr" aria-live="polite"></p><div class="atour-cta"></div></div></div></section>'}
+function initTours(){[].forEach.call(document.querySelectorAll('.atour:not([data-on])'),tourStart)}
+function tourStart(el){
+  el.dataset.on=1;
+  var C=tourChapters(),cur=-1,tm=0,typ=0,swap=0,paused=false,started=false,
+      still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,
+      tabs=el.querySelector('.atour-tabs'),pics=el.querySelector('.atour-pics'),T=el.querySelector('.atour-t'),
+      X=el.querySelector('.atour-x'),SR=el.querySelector('.atour-sr'),A=el.querySelector('.atour-cta');
+  tabs.innerHTML=C.map(function(c,i){return '<button role="tab" aria-selected="false" data-i="'+i+'"><span class="atour-bar"><i></i></span>'+esc(c.k)+'</button>'}).join('');
+  function alive(){return document.body.contains(el)}
+  function stop(){clearTimeout(tm);clearInterval(typ);clearTimeout(swap)}
+  function gname(id){return (GROUPS.filter(function(g){return g.id===id})[0]||{}).name||''}
+  function show(i){
+    if(!alive())return stop();stop();cur=(i+C.length)%C.length;var c=C[cur];
+    [].forEach.call(tabs.children,function(b,k){b.setAttribute('aria-selected',k===cur?'true':'false');b.classList.toggle('done',k<cur);b.classList.remove('run')});
+    var list=c.av?c.av.map(function(a){return {src:a.avatar,cap:'@'+a.h}}):(c.pics||[]).map(function(x){return {src:small(x.src),cap:c.cred?(x.by||''):(c.styles?gname(x.g):'')}});
+    pics.classList.remove('in');
+    swap=setTimeout(function(){
+      pics.className='atour-pics'+(c.av?' av':'');
+      pics.innerHTML=list.slice(0,8).map(function(p,k){return '<figure style="--k:'+k+'"><img src="'+esc(p.src)+'" alt="" decoding="async" onerror="this.closest(\'figure\').remove()">'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'}).join('');
+      requestAnimationFrame(function(){pics.classList.add('in')})},still?0:260);
+    A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
+      (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
+       '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');
+    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;
+    if(still){X.textContent=c.x;A.classList.add('on');return}
+    A.classList.remove('on');X.textContent='';
+    var n=0,s=c.x;el.style.setProperty('--dur',(Math.ceil(s.length/2)*22+5200)+'ms');
+    var b=tabs.children[cur];void b.offsetWidth;b.classList.add('run');
+    typ=setInterval(function(){if(!alive())return stop();n+=2;X.textContent=s.slice(0,n);
+      if(n>=s.length){clearInterval(typ);A.classList.add('on');next()}},22);
+  }
+  function next(){clearTimeout(tm);tm=setTimeout(function(){if(!alive())return;if(paused)return next();show(cur+1)},5200)}
+  tabs.onclick=function(e){var b=e.target.closest('button[data-i]');if(b){started=true;show(+b.dataset.i)}};
+  A.onclick=function(e){var b=e.target.closest('[data-go]');if(b)tourGo(JSON.parse(b.dataset.go))};
+  el.onmouseenter=function(){paused=true;el.classList.add('paused')};
+  el.onmouseleave=function(){paused=false;el.classList.remove('paused')};
+  el.addEventListener('focusin',function(){paused=true;el.classList.add('paused')});
+  el.addEventListener('focusout',function(){paused=false;el.classList.remove('paused')});
+  if('IntersectionObserver' in window){var io=new IntersectionObserver(function(es){
+      if(!alive())return io.disconnect();
+      es.forEach(function(e){if(e.isIntersecting&&!started){started=true;show(0);io.disconnect()}})},{threshold:.3});io.observe(el)}
+  else{started=true;show(0)}
+}
+function tourGo(t){
+  var m=document.body.classList.contains('m');
+  if(t.g!=null){if(m)mGo('m-'+GROUPS[t.g].id);else go(t.g);return}
+  if(t.p){if(m)mGo('m-'+t.p);else openPage(t.p);return}
+  if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
+}
 function buildAboutGrid(own){
+  initTours();
   clearInterval(gridTimer);var grid=$('agrid');if(!grid||!own.length)return;
   /* every photo appears exactly once; columns chosen so the rows come out even (21 photos = 7 x 3) */
   var N=own.length,COLS=[9,8,7,6,5].filter(function(c){return N%c===0})[0]||Math.min(9,N),cells=shuffle(own);
