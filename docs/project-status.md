@@ -1,3 +1,6 @@
+## Pre-enquiry beauty team selection (25 November 2026)
+- Unlocked beauty team and reference selections before entering a name; incomplete drafts retain picks. My picks remains inside the enquiry only; removed the site-wide button.
+
 ## Enquiry picks (25 November 2026)
 - Removed header Browse looks; retained Reset chat. Added pre-enquiry beauty team selection and My picks browsing from the first (Natural) gallery, with tab persistence and enquiry prefill.
 - Verified live Supabase refs/affiliates JSONB columns and CRM booking sync function; no schema migration required.

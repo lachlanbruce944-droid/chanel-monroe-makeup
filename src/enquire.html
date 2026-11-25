@@ -1477,8 +1477,8 @@ function clearDraft(){try{sessionStorage.removeItem(DRAFT_KEY)}catch(e){}}
 function restoreDraft(){
  try{
   const d=JSON.parse(sessionStorage.getItem(DRAFT_KEY)||'null');if(!d||d.until<Date.now()){clearDraft();return false}
-  if(!d.answers||typeof d.answers.name!=='string')return false;
-  Object.assign(S,{answers:d.answers,history:d.history||[],refs:d.refs||[],affs:d.affs||[],timing:d.timing,selfie:d.selfie,submissionId:d.submissionId,started:true});
+  if(!d.answers||typeof d.answers!=='object')return false;
+  Object.assign(S,{answers:d.answers,history:d.history||[],refs:d.refs||[],affs:d.affs||[],timing:d.timing,selfie:d.selfie,submissionId:d.submissionId,started:typeof d.answers.name==='string'});
   if(S.answers.selfie==='added'&&!S.selfie?.path)delete S.answers.selfie;
   if(S.answers.start_window&&!['standard','extended'].includes(S.answers.start_window)){clearAnswer('start_window');S.history=S.history.filter(id=>S.answers[id]!==undefined)}
   if(S.answers.event_date&&(!makeupStart()||+new Date(makeupStart())<=Date.now()))clearAnswer('event_date');
@@ -1668,7 +1668,7 @@ function renderGallery(){
   const G = GROUPS.find(x => x.g === S.tab);
   document.body.dataset.g = S.tab;
   const g = $('#gallery');
-  const hint = S.started ? ' · tap + to add to your enquiry' : ' · start your enquiry to unlock +';
+  const hint = ' · tap + to add to your enquiry';
   let h = `<div class="ghead"><h1>${esc(G.name)}</h1><p>${esc(G.blurb)}${hint}</p></div>`;
   if(S.tab === 'team'){
     // one window per category (Hair, Nails, Lashes & brows, Photographers, Tattoo)
@@ -1730,17 +1730,16 @@ function renderGallery(){
 }
 function affTile(x, i){
   const added = S.affs.some(a => a.h === x.h);
-  const cls = !S.started ? 'locked' : added ? 'added' : '';
-  const icon = !S.started ? '🔒' : added ? '✓' : '+';
+  const cls = added ? 'added' : '';
+  const icon = added ? '✓' : '+';
   let role = (x.name || x.role || x.h).replace(/\s*[|\/].*$/,'').replace(/\s*•\s*/g,' · ').trim() || x.h;   // their Instagram name, first part only
   if(role === role.toUpperCase()) role = role.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());   // tame ALL CAPS names
   return `<div class="aff${added?' added':''}" style="animation-delay:${Math.min(i,16)*25}ms">
     <div class="artist-photo"><a href="https://www.instagram.com/${esc(x.h)}/" target="_blank" rel="noopener" title="See @${esc(x.h)} on Instagram"><img loading="lazy" src="${esc(x.avatar)}" alt="" onerror="this.style.visibility='hidden'"></a>
-    <button class="plus ${cls}" data-h="${esc(x.h)}" aria-label="${added?'Remove':'Add'} @${esc(x.h)}" title="${S.started?(added?'Remove from enquiry':'Add to your enquiry'):'Start your enquiry to add artists'}">${icon}</button></div>
+    <button class="plus ${cls}" data-h="${esc(x.h)}" aria-label="${added?'Remove':'Add'} @${esc(x.h)}" title="${added?'Remove from enquiry':'Add to your enquiry'}">${icon}</button></div>
     <b title="${esc(role)}">${esc(role)}</b></div>`;
 }
 function toggleAff(btn){
-  if(!S.started){ toast('Start your enquiry first: just tell me your name 💬'); minimise(false); return }
   if(S.sent){ toast('Your enquiry is already sent. Mention them when you book.'); return }
   const h = btn.dataset.h, i = S.affs.findIndex(a => a.h === h);
   if(i >= 0){ S.affs.splice(i,1); toast('Removed from your enquiry') }
@@ -1751,15 +1750,14 @@ function toggleAff(btn){
 }
 function tile(m, i){
   const added = S.refs.some(r => r.src === m.src);
-  const cls = !S.started ? 'locked' : added ? 'added' : '';
-  const icon = !S.started ? '🔒' : added ? '✓' : '+';
+  const cls = added ? 'added' : '';
+  const icon = added ? '✓' : '+';
   return `<figure class="tile${added?' added':''}" data-g="${esc(m.g)}" data-s="${esc(m.s||'')}" style="animation-delay:${Math.min(i,12)*30}ms">
     <img loading="lazy" decoding="async" src="${esc(thumb(m.src))}" alt="${esc(m.d||m.s||'')}" ${m.w?`width="${m.w}" height="${m.h}"`:''} onerror="if(!this.dataset.f){this.dataset.f=1;this.src='${esc(full(m.src))}'}else this.closest('.tile').remove()">
-    <button class="plus ${cls}" data-src="${esc(m.src)}" aria-label="${added?'Remove from':'Add to'} your enquiry" title="${S.started?(added?'Remove from enquiry':'Add as a reference'):'Start your enquiry to save looks'}">${icon}</button>
+    <button class="plus ${cls}" data-src="${esc(m.src)}" aria-label="${added?'Remove from':'Add to'} your enquiry" title="${added?'Remove from enquiry':'Add as a reference'}">${icon}</button>
     <figcaption>${esc(m.d || m.s || '')}${m.by ? ' · ' + esc(m.by) : ''}</figcaption></figure>`;
 }
 function togglePlus(btn){
-  if(!S.started){ toast('Start your enquiry first: just tell me your name 💬'); minimise(false); return }
   if(S.sent){ toast('Your enquiry is already sent. Mention extra looks when you book.'); return }
   const src = btn.dataset.src, i = S.refs.findIndex(r => r.src === src);
   if(i >= 0){ S.refs.splice(i,1); toast('Removed from your enquiry') }
@@ -1775,7 +1773,7 @@ function togglePlus(btn){
   renderTray(); renderTabs(); updateFab(); updateDev(); saveDraft();
   refreshPick();
 }
-function unlockPlus(){ renderGallery(); renderTabs(); toast('The + buttons are unlocked. Save any looks you love') }
+function unlockPlus(){ renderGallery(); renderTabs(); toast('Save any looks or beauty team members you like') }
 /* ---------- "YOUR BOOKING" PANEL ----------
    Fills in live as the client answers: what, style, date, time, suburb, people, estimate,
    plus every look and artist they've saved. Left 40% on wide screens, top 30% on tall ones. */

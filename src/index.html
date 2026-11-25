@@ -2236,9 +2236,6 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   try{var saved=JSON.parse(sessionStorage.getItem('cmm-site-picks')||'null');if(saved&&Array.isArray(saved.refs)&&Array.isArray(saved.affs))selections=saved}catch(e){}
   function persistPicks(){try{sessionStorage.setItem('cmm-site-picks',JSON.stringify(selections))}catch(e){}}
   function syncPicks(){send({cmm:'sync-picks',refs:selections.refs,affs:selections.affs})}
-  var picksButton=document.createElement('button');picksButton.type='button';picksButton.className='pill';picksButton.textContent='My picks';picksButton.id='myPicks';
-  document.getElementById('enquire').before(picksButton);
-  picksButton.onclick=function(){startPick(true,selections.refs.map(function(x){return x.src}),{category:'natural',style:null})};
   document.addEventListener('click',function(e){var b=e.target.closest('[data-pick-artist]');if(!b)return;
     var a=(window.AFFILIATES||[]).find(function(x){return x.h===b.dataset.pickArtist});if(!a)return;
     var i=selections.affs.findIndex(function(x){return x.h===a.h});
