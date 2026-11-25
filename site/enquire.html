@@ -728,7 +728,7 @@ const GROUPS = [
   { g:'editorial', name:'Editorial',     blurb:'Shoots, colour and graphic looks' },
   { g:'fx',        name:'SFX & Character', blurb:'Special effects, Halloween and character' },
   { g:'parties',   name:'Parties',       blurb:'Face paint, glitter and party looks' },
-  { g:'team',      name:'Beauty team',   blurb:'Trusted Gold Coast artists for hair, nails, lashes, tan and photos' },
+  { g:'team',      name:'Beauty team',   blurb:'Trusted Gold Coast artists for hair, nails, lashes and photos' },
   { g:'mine',      name:'My picks',      blurb:'Looks and artists you have added to your enquiry' }
 ];
 
@@ -776,9 +776,11 @@ function travel(){
   const extra = km - inc, fee = CONFIG.travelPerKm ? Math.round(extra * 2 * CONFIG.travelPerKm) : null;   // return trip on the km past the included distance
   return { km, included:false, fee, text:`about ${km} km, ${fee ? 'travel about ' + money(fee) : 'travel fee to be confirmed'}` };
 }
-const TEAM_CATS = { Hair:'Hair', Nail:'Nails', Cosmetics:'Lashes, brows & tan', Photography:'Photographers', Tattoo:'Tattoo' };
+const TEAM_CATS = { Hair:'Hair', Nail:'Nails', Cosmetics:'Lashes & brows', Photography:'Photographers', Tattoo:'Tattoo' };
 /* which beauty-team windows match the extra services the client picked */
-const EXTRA_TEAM = { 'Hair':['Hair'], 'Nails':['Nail'], 'Lashes & brows':['Cosmetics'], 'Spray tan':['Cosmetics'], 'Photographer':['Photography'] };
+const EXTRA_TEAM = { 'Hair':['Hair'], 'Nails':['Nail'], 'Lashes & brows':['Cosmetics'], 'Photographer':['Photography'] };
+/* Spray tan is not offered through the enquiry form: hide artists whose only listed service is spray tanning. */
+const sprayTanOnly = x => /spray\s*tan/i.test(`${x.name||''} ${x.role||''}`) && !/lash|brow|nail|hair|photograph/i.test(`${x.name||''} ${x.role||''} ${x.bio||''}`);
 const teamFor = () => { const e = S.answers.extras; return Array.isArray(e) ? [...new Set(e.flatMap(x => EXTRA_TEAM[x] || []))] : [] };
 const cat = a => CATS.find(c => c.id === a.category) || {};
 /* The site's Book buttons link here as enquire.html?for=<pricing section>.
@@ -794,6 +796,9 @@ function bookingPrefill(service){
 const look = a => PRICES.looks[a.category === 'lesson' ? 'lesson' : a.look === 'unsure' ? cat(a).looks?.[0] : a.look] || null;
 const money = n => '$' + Number(n).toLocaleString('en-AU');
 const priceTag = k => { const L = PRICES.looks[k]; return L ? `${L.from ? 'from ' : ''}${money(L.price)} ${L.unit}` : '' };
+/* Makeup operating hours (Brisbane). The server applies the same rule: crm_within_operating_hours(). */
+const OPERATING_HOURS = { label:'6:00 am to 5:00 pm' };
+const extendedHours = a => a.start_window === 'extended';
 const startMode = a => ['editorial','lesson'].includes(a.category);              // shoots and lessons have a start time, not a ready-by time
 const qtyKind = a => { if(a.category === 'lesson') return 'none'; const L = look(a); if(!L) return 'people';
   if(a.look === 'mini-paint') return 'group'; if(L.unit === 'per booking') return 'none';
@@ -853,8 +858,8 @@ const QUESTIONS = [
     ask:a => ({ group:'Mini face paint is for groups of 10 or more. Roughly how many people?', looks:'How many different makeup looks will the shoot need?\n(Each change, e.g. day to night, counts as one.)', characters:'How many characters?' })[qtyKind(a)]
       || (a.look === 'bridal-look' ? 'How many people need makeup, including the bride?' : a.look === 'bridal-party' ? 'How many in the bridal party and family need makeup?' : 'How many people need makeup, including you?') },
   { id:'start_window', label:'Appointment hours', type:'chips',
-    options:[{v:'early_3am_to_noon',l:'I understand · choose a time'}],
-    ask:() => 'Appointment starts are currently available from 3am to noon. Early starts may have an additional fee. Chanel will confirm any fee in your quote before you commit to the booking.' },
+    options:[{v:'standard',l:'Within operating hours',n:'6:00 am – 5:00 pm'},{v:'extended',l:'Outside operating hours',n:'Early or late · extra fee may apply'}],
+    ask:() => `Chanel's operating hours are ${OPERATING_HOURS.label}, every day.\nWould you like your appointment within those hours, or an early or late appointment outside them? Appointments outside operating hours may have an additional fee, which Chanel confirms in your quote before you book.` },
   { id:'event_date', label:'Makeup date', type:'date',
     ask:a => startMode(a) ? 'Choose an available appointment start.' : 'Choose when you need to be ready. Availability includes the time for your selected service and group size.' },
   { id:'ready_by', label:'Time', type:'time', ask:() => 'Choose your makeup date and time.' },
@@ -870,10 +875,7 @@ const QUESTIONS = [
   { id:'patch_test', label:'Patch test', type:'chips', options:['Yes please','No thanks'],
     when:a => a.look === 'sensitive' || a.skin_type === 'Sensitive' || (Array.isArray(a.allergies) && !a.allergies.includes('None')),
     ask:() => 'Chanel recommends a patch test 48 hours before for sensitive skin or allergies. Would you like one?' },
-  { id:'lashes', label:'Lashes', type:'chips', options:['Natural','Wispy / fluffy','Dramatic','No lashes','Chanel can decide'],
-    when:a => (['bridal','glam'].includes(a.category) || ['natural','birthday','hens','christmas'].includes(a.look)) && a.sub_style !== 'Groom grooming',
-    ask:() => 'Lashes?' },
-  { id:'extras', label:'Other services', type:'multi', options:['Hair','Nails','Lashes & brows','Spray tan','Photographer','No thanks'], none:'No thanks',
+  { id:'extras', label:'Other services', type:'multi', options:['Hair','Nails','Lashes & brows','Photographer','No thanks'], none:'No thanks',
     when:a => a.category !== 'lesson',
     ask:() => 'Need anything else for the day? Chanel works with a trusted Gold Coast beauty team.' },
   { id:'team', label:'Beauty team', type:'pick', kind:'affs', optional:true,
@@ -947,8 +949,8 @@ function emailFix(v){
 }
 /* answers that only make sense for a particular earlier answer: changing the earlier one clears them */
 const DEPENDS = {
-  category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','lashes','skin_type','patch_test'],
-  look:['quantity','bridal_trial','lashes','event_date','start_window'],
+  category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','skin_type','patch_test'],
+  look:['quantity','bridal_trial','event_date','start_window'],
   quantity:['event_date'], start_window:['event_date'],
   event_date:['ready_by','consult_at'], ready_by:['consult_at'],
   extras:['team'], allergies:['patch_test'], skin_type:['patch_test']
@@ -1206,9 +1208,10 @@ function renderAppointmentCalendar(q){
   ConsultationCalendar.mount(host,{
     kind, layout:'glass', eventAt:phone?makeupStart():null,
     initial:phone?S.prevAnswer?.consult_at:S.prevAnswer?.event_date&&S.prevAnswer.event_date+'T06:00',
-    note:()=>`Brisbane time · ${appointmentMinutes()} minutes for your service, plus ${S.timing?.buffer_mins ?? 60} minutes reserved afterwards.`,
+    note:()=>phone?`Brisbane time · ${appointmentMinutes()} minutes for your service, plus ${S.timing?.buffer_mins ?? 60} minutes reserved afterwards.`
+      :`${extendedHours(S.answers)?'Showing times outside operating hours ('+OPERATING_HOURS.label+'); an extra fee may apply':'Showing times within operating hours, '+OPERATING_HOURS.label} · Brisbane time · ${appointmentMinutes()} minutes for your service, plus ${S.timing?.buffer_mins ?? 60} minutes reserved afterwards. Use Back to change the hours.`,
     fetchSlots:async(month,signal)=>{
-      const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind,{service:bookingService(),quantity:bookingQuantity()});
+      const rows=await ConsultationCalendar.fetchSlots(CONFIG,month,signal,kind,{service:bookingService(),quantity:bookingQuantity(),...(phone?{}:{hours:extendedHours(S.answers)?'extended':'standard'})});
       if(!phone && rows.length) S.timing={duration_mins:rows[0].duration_mins,buffer_mins:rows[0].buffer_mins};
       return rows;
     },
@@ -1476,6 +1479,7 @@ function restoreDraft(){
   if(!d.answers||typeof d.answers.name!=='string')return false;
   Object.assign(S,{answers:d.answers,history:d.history||[],refs:d.refs||[],affs:d.affs||[],timing:d.timing,selfie:d.selfie,submissionId:d.submissionId,started:true});
   if(S.answers.selfie==='added'&&!S.selfie?.path)delete S.answers.selfie;
+  if(S.answers.start_window&&!['standard','extended'].includes(S.answers.start_window)){clearAnswer('start_window');S.history=S.history.filter(id=>S.answers[id]!==undefined)}
   if(S.answers.event_date&&(!makeupStart()||+new Date(makeupStart())<=Date.now()))clearAnswer('event_date');
   if(S.answers.consult_at&&ConsultationCalendar.valid(S.answers.consult_at,makeupStart())!==true)delete S.answers.consult_at;
   me('Your draft has been restored in this tab. You can use Back to change details.');renderTray();renderTabs();renderSide();updateFab();return true;
@@ -1559,7 +1563,7 @@ function buildRow(){
     notes: a.notes === "That's everything" ? null : val('notes'),
     refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
     affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
-    viewing: {...Attention.data(), calendar_version:'2', appointment_hours:'early_3am_to_noon', extended_hours_fee_pending:true},
+    viewing: {...Attention.data(), calendar_version:'2', appointment_hours:extendedHours(a)?'extended':'standard', extended_hours_fee_pending:extendedHours(a)},
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
     consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted
     calendar_event: calendarEvent(),
@@ -1578,7 +1582,7 @@ function calendarEvent(){
   const R = buildRowLite(), est = estimate();
   const lines = [
     `ENQUIRY (not yet confirmed): ${a.name}`,
-    'Early appointment window: 3:00 am–12:00 pm; additional fee subject to Chanel confirmation',
+    extendedHours(a) ? `Outside operating hours (${OPERATING_HOURS.label}) requested; additional fee subject to Chanel confirmation` : `Within operating hours (${OPERATING_HOURS.label})`,
     `${cat(a).name || ''}${L ? ' · ' + L.name : ''}${R.sub_style ? ' · ' + R.sub_style : ''}`,
     `${startMode(a) ? 'Start' : 'Ready by'}: ${fmtTime(a.ready_by)}${R.quantity ? ' · ' + R.quantity : ''}`,
     travel() && `Suburb: ${a.location} (${travel().text})`,
@@ -1666,7 +1670,7 @@ function renderGallery(){
   const hint = S.started ? ' · tap + to add to your enquiry' : ' · start your enquiry to unlock +';
   let h = `<div class="ghead"><h1>${esc(G.name)}</h1><p>${esc(G.blurb)}${hint}</p></div>`;
   if(S.tab === 'team'){
-    // one window per category (Hair, Nails, Lashes brows & tan, Photographers, Tattoo)
+    // one window per category (Hair, Nails, Lashes & brows, Photographers, Tattoo)
     let cats = Object.keys(TEAM_CATS).filter(c => S.affList.some(x => x.cat === c));
     const only = teamFor();
     if(only.length && !S.teamAll){
@@ -1938,7 +1942,7 @@ function restart(){
 function autofill(){
   const d = new Date(Date.now() + 60*864e5).toISOString().slice(0,10);
   S.answers = { name:'Jess Taylor', category:'bridal', look:'bridal-look', sub_style:'Natural radiant bride', event_date:d, ready_by:'14:00',
-    location:'Burleigh Heads', quantity:'4', bridal_trial:"Yes, I'd like a trial", skin_type:'Combination', allergies:['None'], lashes:'Wispy / fluffy',
+    location:'Burleigh Heads', quantity:'4', bridal_trial:"Yes, I'd like a trial", skin_type:'Combination', allergies:['None'],
     extras:['Hair','Photographer'], email:'jess@example.com', phone:'0400 000 000', notes:'Photographer arrives 12:30', consent:'I agree' };
   S.refs = shuffle((S.byGroup.bridal||[]).slice()).slice(0,3); S.answers.refs = S.refs.length;
   S.affs = S.affList.filter(x => x.cat === 'Hair').slice(0,1).concat(S.affList.filter(x => x.cat === 'Photography').slice(0,1)); S.answers.team = S.affs.length;
@@ -1962,7 +1966,7 @@ async function loadFirst(sources, key){
 (async function boot(){
   document.body.classList.add('details-' + CONFIG.detailsLayout);
   renderTabs(); renderGallery(); updateFab(); renderSide();
-  loadFirst(CONFIG.affiliateSources, 'AFFILIATES').then(list => { S.affList = list.filter(x => x.h && x.avatar); if(S.tab === 'team') renderGallery() })
+  loadFirst(CONFIG.affiliateSources, 'AFFILIATES').then(list => { S.affList = list.filter(x => x.h && x.avatar && !sprayTanOnly(x)); if(S.tab === 'team') renderGallery() })
     .catch(() => { S.affFailed = true; if(S.tab === 'team') renderGallery() });
   loadFirst(CONFIG.mediaSources, 'MEDIA').then(list => {
     S.media = shuffle(list.filter(m => m.type === 'img' && m.src)).sort((a,b) => (b.own||0) - (a.own||0));

@@ -14,7 +14,7 @@
  }
  async function fetchSlots(config,month,signal,kind='phone',booking){
   const rpc=booking?'enquiry_calendar_slots':'enquiry_calendar_availability';
-  const r=await fetch(config.supabaseUrl+'/rest/v1/rpc/'+rpc,{method:'POST',signal,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(/^sb_/.test(config.supabaseAnonKey)?{}:{Authorization:'Bearer '+config.supabaseAnonKey})},body:JSON.stringify({p_month:month+'-01',p_kind:kind,...(booking?{p_service:booking.service,p_quantity:booking.quantity}:{})})});
+  const r=await fetch(config.supabaseUrl+'/rest/v1/rpc/'+rpc,{method:'POST',signal,headers:{apikey:config.supabaseAnonKey,'Content-Type':'application/json',...(/^sb_/.test(config.supabaseAnonKey)?{}:{Authorization:'Bearer '+config.supabaseAnonKey})},body:JSON.stringify({p_month:month+'-01',p_kind:kind,...(booking?{p_service:booking.service,p_quantity:booking.quantity,...(booking.hours?{p_hours:booking.hours}:{})}:{})})});
   if(!r.ok)throw Error('Could not check calendar availability. Please retry.');
   const rows=await r.json();if(!Array.isArray(rows))throw Error('Calendar availability is unavailable. Please retry.');
   return rows.filter(x=>typeof x.local_start==='string'&&typeof x.available==='boolean');

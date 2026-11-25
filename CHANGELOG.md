@@ -1,3 +1,9 @@
+### 2026-11-25 (Enquiry form: operating hours, spray tan and lashes removed)
+- Appointment hours: Chanel's operating hours (6:00 am – 5:00 pm, every day) are shown in the chat with two buttons, "Within operating hours" and "Outside operating hours" (extra fee may apply). The makeup calendar then shows only those times. A slot is within hours when it starts at 6:00 am or later and the service finishes by 5:00 pm; outside hours covers starts from 3:00 am to 8:00 pm. Phone consultation times are unchanged (9:00 am – 4:00 pm).
+- The server applies the same rule (Supabase migration `operating_hours_6am_5pm` in the CRM repo: `crm_within_operating_hours`, `enquiry_calendar_slots(..., p_hours)`, `crm_validate_chat_calendar`) and records `viewing.appointment_hours` = standard/extended with `extended_hours_fee_pending`. Drafts saved with the old 3 am–noon option ask the hours question again.
+- Removed "Spray tan" from Other services and the "Lashes?" question; spray-tan-only artists are hidden from the beauty-team picker. "Lashes & brows" stays.
+- Only `enquire.html` and `booking/consultation-calendar.js` were updated in `site/` (copied from `src/`), so no other built files changed.
+
 ### 2026-11-24 (Webpage Scene Clips)
 - Add a repository reference page linking the Drive collection, scene selection board, CSV/JSON trackers, source credits and ChatGPT clipping instructions.
 - Link it from the repository README and record the remaining visual/timing review; no production media or website behaviour changes.
