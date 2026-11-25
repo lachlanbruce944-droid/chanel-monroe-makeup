@@ -417,8 +417,8 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
 .atour-x{min-height:5em;line-height:1.6;margin:0 0 14px;color:var(--fg)}
 .atour-x::after{content:"";display:inline-block;width:1px;height:1em;background:currentColor;margin-left:2px;vertical-align:-2px;animation:atourCaret 1s steps(1) infinite}
 .atour-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
-.atour-cta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s;pointer-events:none}
-.atour-cta.on{opacity:1;transform:none;pointer-events:auto}
+.atour-cta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;opacity:0;transform:translateY(4px);transition:none;pointer-events:none}
+.atour-cta.on{opacity:1;transform:none;pointer-events:auto;transition:opacity .4s,transform .4s}
 .atour-cta .pill{cursor:pointer}
 .atour-tabs{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
 .atour-tabs::-webkit-scrollbar{display:none}
@@ -1838,6 +1838,7 @@ function tourStart(el){
       pics.className='atour-pics'+(c.av?' av':'');
       pics.innerHTML=list.slice(0,8).map(function(p,k){return '<figure style="--k:'+k+'"><img src="'+esc(p.src)+'" alt="" decoding="async" onerror="this.closest(\'figure\').remove()">'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'}).join('');
       requestAnimationFrame(function(){pics.classList.add('in')})},still?0:260);
+    A.classList.remove('on');
     A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
       (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
        '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');

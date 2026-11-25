@@ -515,6 +515,7 @@ function tourStart(el){
       pics.className='atour-pics'+(c.av?' av':'');
       pics.innerHTML=list.slice(0,8).map(function(p,k){return '<figure style="--k:'+k+'"><img src="'+esc(p.src)+'" alt="" decoding="async" onerror="this.closest(\'figure\').remove()">'+(p.cap?'<figcaption>'+esc(p.cap)+'</figcaption>':'')+'</figure>'}).join('');
       requestAnimationFrame(function(){pics.classList.add('in')})},still?0:260);
+    A.classList.remove('on');
     A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
       (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
        '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');

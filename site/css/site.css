@@ -371,8 +371,8 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
 .atour-x{min-height:5em;line-height:1.6;margin:0 0 14px;color:var(--fg)}
 .atour-x::after{content:"";display:inline-block;width:1px;height:1em;background:currentColor;margin-left:2px;vertical-align:-2px;animation:atourCaret 1s steps(1) infinite}
 .atour-sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;margin:0}
-.atour-cta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;opacity:0;transform:translateY(4px);transition:opacity .4s,transform .4s;pointer-events:none}
-.atour-cta.on{opacity:1;transform:none;pointer-events:auto}
+.atour-cta{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;opacity:0;transform:translateY(4px);transition:none;pointer-events:none}
+.atour-cta.on{opacity:1;transform:none;pointer-events:auto;transition:opacity .4s,transform .4s}
 .atour-cta .pill{cursor:pointer}
 .atour-tabs{display:flex;gap:6px;margin:0 0 10px;overflow-x:auto;scrollbar-width:none}
 .atour-tabs::-webkit-scrollbar{display:none}
