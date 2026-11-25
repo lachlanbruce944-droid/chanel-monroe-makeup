@@ -1562,7 +1562,7 @@ function buildRow(){
     extra_services: on('extras') && Array.isArray(a.extras) && !a.extras.includes('No thanks') ? a.extras : [],
     notes: a.notes === "That's everything" ? null : val('notes'),
     refs: S.refs.map(r => ({ src:r.src, post:r.post, by:r.by, group:r.g, sub_style:r.s, desc:r.d })),
-    affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, instagram:'https://www.instagram.com/'+x.h+'/' })),
+    affiliates: S.affs.map(x => ({ handle:x.h, category:x.cat, name:x.name, site:x.site || null, avatar:/^https:/.test(x.avatar||'') ? x.avatar : null, instagram:'https://www.instagram.com/'+x.h+'/' })),
     viewing: {...Attention.data(), calendar_version:'2', appointment_hours:extendedHours(a)?'extended':'standard', extended_hours_fee_pending:extendedHours(a)},
     estimate_total: est?.total ?? null, estimate_is_from: est?.open ?? null, deposit_estimate: est?.deposit ?? null,
     consent: true,   // pressing "Send my enquiry" on the summary is the client's OK to be contacted

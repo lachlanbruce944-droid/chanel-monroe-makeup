@@ -10,7 +10,7 @@ const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND = Deno.env.get("RESEND_API_KEY") ?? "";
 const FROM = Deno.env.get("FROM_EMAIL") ?? "Chanel Monroe Makeup <enquiries@chanelmonroe.net>";
 const BUSINESS = Deno.env.get("BUSINESS_EMAIL") ?? "makeup@chanelmonroe.net";
-const SITE = "https://lachlanbruce944-droid.github.io/chanel-monroe-makeup/";
+const SITE = "https://chanelmonroe.net/";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -49,6 +49,10 @@ async function send(msg: Record<string, unknown>, key: string) {
   return r.json();
 }
 
+const OPERATING = "6:00 am – 5:00 pm";
+const hoursLabel = (h?: string) => h === "extended" ? `Outside operating hours (${OPERATING}) · extra fee to be confirmed`
+  : h === "standard" ? `Within operating hours (${OPERATING})` : "";
+
 function rows(e: Record<string, any>) {
   const when = [fmtDate(e.event_date), e.time && `${e.time_type === "start" ? "start" : "ready by"} ${fmtTime(e.time)}`].filter(Boolean).join(", ");
   const travel = e.travel_km_estimate != null ? ` (~${e.travel_km_estimate} km${e.travel_included ? ", travel included" : ", travel to confirm"})` : "";
@@ -56,6 +60,7 @@ function rows(e: Record<string, any>) {
     ["Booking", [e.category_name, e.look_name].filter(Boolean).join(" · ")],
     ["Style", e.sub_style || (e.lesson_focus?.length ? e.lesson_focus.join(", ") : "")],
     ["Date", when],
+    ["Appointment hours", hoursLabel(e.viewing?.appointment_hours)],
     ["Phone consultation · pending Chanel’s approval", e.consult_requested_at ? new Date(e.consult_requested_at).toLocaleString("en-AU", {timeZone:"Australia/Brisbane", dateStyle:"full", timeStyle:"short"}) + " · Brisbane time" : "Chanel will arrange a time"],
     ["Suburb", e.location ? e.location + travel : ""],
     ["How many", e.quantity],
@@ -81,6 +86,51 @@ const shell = (title: string,body: string) => `<!doctype html><html lang="en"><h
 const mediaURL = (src: unknown) => {
  try { const u=new URL(/^https?:/.test(String(src||''))?String(src):String(src||'').replace(/^\/+/,''),"https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/");return u.protocol==='https:'?u.href:'' } catch { return '' }
 };
+// Small image tiles for the reference looks and the beauty-team artists (both emails).
+const safeURL = (u: unknown) => { try { const x = new URL(String(u || "")); return x.protocol === "https:" ? x.href : ""; } catch { return ""; } };
+const TEAM_LABEL: Record<string, string> = { Hair: "Hair", Nail: "Nails", Cosmetics: "Lashes & brows", Photography: "Photographer", Tattoo: "Tattoo" };
+const handle = (v: unknown) => String(v || "").replace(/^@/, "").replace(/[^A-Za-z0-9._]/g, "").slice(0, 30);
+let avatarCache: Record<string, string> | null = null;
+async function avatars(): Promise<Record<string, string>> {   // older enquiries did not store the artist photo: look it up on the website
+  if (avatarCache) return avatarCache;
+  try {
+    const txt = await (await fetch("https://chanelmonroe.net/data/affiliates.js")).text();
+    const list = JSON.parse(txt.slice(txt.indexOf("["), txt.lastIndexOf("]") + 1));
+    avatarCache = Object.fromEntries(list.map((x: any) => [x.h, safeURL(x.avatar)]));
+  } catch { avatarCache = {}; }
+  return avatarCache;
+}
+const label = (s: string) => `<p style="margin:20px 0 8px;color:#7a5a50;font-size:13px">${s}</p>`;
+const grid = (cells: string[], per: number) => {
+  const rowsOut: string[] = [];
+  for (let i = 0; i < cells.length; i += per) {
+    const row = cells.slice(i, i + per); while (row.length < per) row.push("");
+    rowsOut.push(`<tr>${row.map(c => `<td valign="top" width="${Math.floor(100 / per)}%" style="width:${Math.floor(100 / per)}%;padding:0 6px 12px 0;vertical-align:top">${c}</td>`).join("")}</tr>`);
+  }
+  return `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="width:100%;table-layout:fixed;border-collapse:collapse">${rowsOut.join("")}</table>`;
+};
+async function tiles(e: Record<string, any>, forClient: boolean) {
+  const refs = (e.refs || []).slice(0, 12).filter((x: any) => mediaURL(x.src));
+  const refCells = refs.map((x: any) => {
+    const img = mediaURL(x.src), post = safeURL(x.post), by = handle(x.by), name = x.sub_style || x.desc || "Reference look";
+    return `<a href="${esc(post || img)}" style="text-decoration:none"><img src="${esc(img)}" width="160" height="160" alt="${esc(name)}" style="display:block;width:100%;max-width:160px;height:160px;object-fit:cover;border-radius:10px;border:0"></a>` +
+      `<div style="font-size:12px;line-height:16px;color:#3a2622;margin-top:5px;word-break:break-word">${esc(name)}</div>` +
+      (by ? `<div style="font-size:11px;line-height:15px;word-break:break-word"><a href="${esc(post || "https://www.instagram.com/" + by + "/")}" style="color:#b8846b">@${esc(by)}</a></div>` : "");
+  });
+  const team = (e.affiliates || []).slice(0, 12).filter((a: any) => handle(a.handle));
+  const pics = team.some((a: any) => !safeURL(a.avatar)) ? await avatars() : {};
+  const teamCells = team.map((a: any) => {
+    const h = handle(a.handle), pic = safeURL(a.avatar) || pics[h] || "", ig = `https://www.instagram.com/${h}/`, site = safeURL(a.site);
+    return `<table role="presentation" cellpadding="0" cellspacing="0" style="border-collapse:collapse"><tr>` +
+      (pic ? `<td valign="top" style="padding:0 10px 0 0;vertical-align:top"><a href="${esc(ig)}"><img src="${esc(pic)}" width="56" height="56" alt="@${esc(h)}" style="display:block;width:56px;height:56px;object-fit:cover;border-radius:28px;border:0"></a></td>` : "") +
+      `<td valign="top" style="vertical-align:top;font-size:13px;line-height:18px;word-break:break-word"><a href="${esc(ig)}" style="color:#b8846b;font-weight:bold">@${esc(h)}</a>` +
+      `<div style="font-size:12px;color:#7a5a50">${esc(TEAM_LABEL[a.category] || a.category || "")}</div>` +
+      (a.name ? `<div style="font-size:11px;color:#7a5a50">${esc(String(a.name).slice(0, 60))}</div>` : "") +
+      (site ? `<div style="font-size:11px"><a href="${esc(site)}" style="color:#b8846b">Website</a></div>` : "") + `</td></tr></table>`;
+  });
+  return (refCells.length ? label(forClient ? "The looks you saved" : "Reference looks") + grid(refCells, 3) : "") +
+    (teamCells.length ? label(forClient ? "Beauty team you picked · contact each artist to book their service" : "Beauty team the client picked") + grid(teamCells, 2) : "");
+}
 const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),"Phone consultation pending Chanel's approval. Makeup booking not yet confirmed."].filter(Boolean).join("\n");
 
 Deno.serve(async (req) => {
@@ -95,8 +145,6 @@ Deno.serve(async (req) => {
     if (Date.now() - new Date(e.created_at).getTime() > 24 * 60 * 60 * 1000) return reply('"too old"', 409);
     if (!RESEND) throw new Error("RESEND_API_KEY is not set");
     const r = rows(e);
-    const refs = (e.refs || []).slice(0, 12);
-    const artists = (e.affiliates || []);
     const done: Record<string, string> = {};
 
     if (!e.emailed_business_at) {
@@ -105,8 +153,7 @@ Deno.serve(async (req) => {
       const html = shell(`New enquiry from ${esc(e.name)}`,
         (pic ? `<p style="margin:0 0 12px"><img src="cid:selfie" width="160" style="width:160px;border-radius:14px;display:block" alt="Client selfie"></p>` : "") +
         `<p style="font-size:14px;line-height:22px;word-break:break-word">${esc(e.phone)}<br><a href="mailto:${esc(e.email)}" style="color:#b8846b">${esc(e.email)}</a></p>${table(r)}` +
-        (refs.length ? `<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Reference looks</p>${refs.filter((x: any)=>mediaURL(x.src)).map((x: any) => `<a href="${esc(mediaURL(x.src))}"><img src="${esc(mediaURL(x.src))}" width="88" height="88" style="object-fit:cover;border-radius:10px;margin:0 6px 6px 0;max-width:100%" alt="${esc(x.sub_style || x.desc || "Reference look")}"></a>`).join("")}` : "") +
-        (artists.length ? `<p style="margin:14px 0 6px;color:#7a5a50;font-size:13px">Beauty team</p><p style="font-size:14px">${artists.map((a: any) => `<a href="${esc(a.instagram)}" style="color:#b8846b">${esc(a.name || "@" + a.handle)}</a> (${esc(a.category)})`).join(", ")}</p>` : "") +
+        await tiles(e, false) +
         `<p style="font-size:12px;color:#7a5a50;margin-top:18px">${pic ? "The selfie is attached. " : "No selfie sent. "}Reply to this email to answer ${esc(first(e.name))} directly. Ref ${esc(String(e.id).slice(0, 8))}</p>`);
       await send({ from: FROM, to: [BUSINESS], reply_to: e.email || undefined,
         subject: `New enquiry: ${e.name}${e.look_name ? " · " + e.look_name : ""}${e.event_date ? " · " + fmtDate(e.event_date) : ""}`, html, text:plainDetails(e,r),
@@ -118,7 +165,7 @@ Deno.serve(async (req) => {
     if (e.email && !e.emailed_client_at) {
       const html = shell(`Thanks ${esc(first(e.name))}, your enquiry is in ✨`,
         `<p style="font-size:15px;line-height:1.5">Your preferred phone consultation is pending Chanel’s approval. Chanel will review your enquiry and email your confirmed date and time. Your makeup appointment is not confirmed yet. You do not need to confirm the consultation request again. Consultations normally happen at least three days before the makeup appointment; short-notice requests need Chanel’s approval.</p>
-<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}
+<p style="margin:18px 0 6px;color:#7a5a50;font-size:13px">Your enquiry</p>${table(r)}${await tiles(e, true)}
 <p style="font-size:12px;color:#7a5a50;margin-top:18px">The estimate is a guide; Chanel confirms your final quote on the call. Questions? Just reply to this email.</p>`);
       await send({ from: FROM, to: [e.email], reply_to: BUSINESS, subject: "Your enquiry with Chanel Monroe Makeup", html, text:plainDetails(e,r) }, `client-${e.id}`);
       done.emailed_client_at = new Date().toISOString();

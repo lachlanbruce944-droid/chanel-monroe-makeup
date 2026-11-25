@@ -1,3 +1,9 @@
+### 2026-11-25 (Enquiry emails: image tiles)
+- Chanel's enquiry email and the client's confirmation now show the saved reference looks as small tiles (three per row) with the style name and the credited artist's @handle linked to the post, and the chosen beauty-team artists as tiles with their photo, @handle (linked to Instagram), service category, profile title and website.
+- Both emails show an "Appointment hours" row (within / outside operating hours, extra fee to be confirmed).
+- The enquiry now stores each chosen artist's photo URL; older enquiries look the photo up from the site's affiliates list. Footer link now https://chanelmonroe.net/.
+- `enquiry-email` deployed as v9 from this source (based on the live v8; the selfie stays attached to Chanel's email only, unchanged). Only `enquire.html` changed in `site/`.
+
 ### 2026-11-25 (Enquiry form: operating hours, spray tan and lashes removed)
 - Appointment hours: Chanel's operating hours (6:00 am – 5:00 pm, every day) are shown in the chat with two buttons, "Within operating hours" and "Outside operating hours" (extra fee may apply). The makeup calendar then shows only those times. A slot is within hours when it starts at 6:00 am or later and the service finishes by 5:00 pm; outside hours covers starts from 3:00 am to 8:00 pm. Phone consultation times are unchanged (9:00 am – 4:00 pm).
 - The server applies the same rule (Supabase migration `operating_hours_6am_5pm` in the CRM repo: `crm_within_operating_hours`, `enquiry_calendar_slots(..., p_hours)`, `crm_validate_chat_calendar`) and records `viewing.appointment_hours` = standard/extended with `extended_hours_fee_pending`. Drafts saved with the old 3 am–noon option ask the hours question again.
