@@ -415,7 +415,7 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
 .car .rail>*{flex:none;user-select:none;-webkit-user-drag:none}
 .car img{-webkit-user-drag:none;pointer-events:none}
 .car .card{width:180px;cursor:pointer}
-/* Affiliates: just the round photo, bigger, with small text underneath (no card box) */
+/* Connections: just the round photo, bigger, with small text underneath (no card box) */
 .car .card[data-aff]{width:172px;background:none;border:0;padding:4px 0;box-shadow:none}
 .car .card[data-aff]:hover{transform:none;box-shadow:none}
 .car .card[data-aff] img.av{width:156px;height:156px;margin-bottom:10px;border:3px solid var(--card);box-shadow:0 0 0 1px var(--line),0 10px 24px rgba(0,0,0,.10);transition:transform .35s,box-shadow .35s}
@@ -719,7 +719,7 @@ body .nav,body[data-nav] .nav{border-bottom:0!important;box-shadow:none!importan
   .capbar .desc{font-size:clamp(10.5px,calc(3.1 * var(--uvh)),13.5px)!important}.capbar .sub,.capbar .src{font-size:clamp(8.5px,calc(2.4 * var(--uvh)),10px)}
   html button.x.x{width:clamp(34px,calc(10 * var(--uvh)),42px);height:clamp(34px,calc(10 * var(--uvh)),42px)}
   .info h1{font-size:clamp(22px,calc(7 * var(--uvh)),30px)}
-  /* Affiliates: the desktop layout, scaled down in proportion to the screen */
+  /* Connections: the desktop layout, scaled down in proportion to the screen */
   body[data-g="affiliates"] .info{--av:clamp(74px,calc(21 * var(--uvh)),116px)}
   body[data-g="affiliates"] .info .lead{font-size:clamp(11.5px,calc(3.2 * var(--uvh)),14px);max-width:62ch;margin-bottom:6px}
   body[data-g="affiliates"] .info .hint{font-size:clamp(9px,calc(2.4 * var(--uvh)),11px);margin:0 0 4px}
@@ -1054,7 +1054,7 @@ body.m .mtrack>.tile:last-child{margin-right:var(--pad)}
 body.m .mtrack .tile figcaption{opacity:1!important;transform:none!important;padding:36px 12px 10px;font-size:12px;line-height:1.35}
 body.m .mtrack .tile figcaption a{pointer-events:auto}
 body.m .mhint{margin:10px 0 0;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--soft)}
-/* About, Lessons, Reviews, Affiliates (the same content as the desktop pages) */
+/* About, Lessons, Reviews, Connections (the same content as the desktop pages) */
 body.m .mpage h1{font-family:var(--fh);font-weight:500;font-size:clamp(32px,calc(10 * var(--uvw)),46px);margin:0 0 6px;line-height:1.05}
 body.m .mpage h1.brand-title{font-family:"Cormorant Garamond",serif;letter-spacing:.03em}body.m .mpage h1.brand-title i{font-style:italic;color:var(--acc)}
 body.m .mpage .lead{color:var(--soft);margin:0 0 16px;font-size:15px;line-height:1.5}
@@ -1078,7 +1078,7 @@ body:not(.m) #affBox .side{min-height:0;min-width:0;overflow:auto!important;just
 body:not(.m) #affBox .side .sin{flex:0 0 auto;min-width:0;overflow-wrap:anywhere}
 body:not(.m) #affBox .g9{min-height:0;height:100%;box-sizing:border-box}
 body:not(.m) #affMod .x{top:24px;right:24px;background:rgba(20,16,14,.85);color:#fff;border-radius:50%}
-/* Affiliate phone popup: bounded profile + equal-height photo rows, including sideways phones. */
+/* Connection phone popup: bounded profile + equal-height photo rows, including sideways phones. */
 body.m #affMod.mod{padding:calc(46px + env(safe-area-inset-top)) 10px calc(10px + env(safe-area-inset-bottom));height:calc(100 * var(--uvh));box-sizing:border-box;align-items:stretch}
 body.m #affMod .x{position:absolute;top:calc(6px + env(safe-area-inset-top));right:14px;width:36px;height:36px;background:rgba(20,16,14,.85)!important;color:#fff!important;border:1px solid rgba(255,255,255,.5);text-shadow:none}
 body.m #affBox.aff{width:100%;height:100%;max-height:100%;min-height:0;border-radius:14px;overflow:hidden;grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,55fr) minmax(0,45fr)}
@@ -1099,7 +1099,7 @@ body.m #affBox .g9{height:100%;min-width:0;min-height:0;box-sizing:border-box;ga
 body.m .car .card.tm{width:132px}body.m .car .card.tm .av{width:118px;height:118px}
 body.m .offer{width:min(calc(76 * var(--uvw)),300px)}body.m .rev{width:min(calc(76 * var(--uvw)),300px)}body.m .lesson{width:min(calc(42 * var(--uvw)),170px)}
 body.m .msec:last-of-type{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
-/* bottom right: Enquire always, plus Pricing / Become an affiliate for the section in view */
+/* bottom right: Enquire always, plus Pricing / Become a connection for the section in view */
 body.m .fab{position:fixed;right:max(12px,env(safe-area-inset-right));bottom:calc(14px + env(safe-area-inset-bottom))!important;height:auto!important;z-index:65;gap:8px;opacity:1!important;pointer-events:auto!important}
 body.m .fab .pill{padding:11px 18px!important;font-size:13px!important;letter-spacing:.06em;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
 body.m .fab .pill:not(.solid){background:color-mix(in srgb,var(--card) 88%,transparent)!important;color:var(--fg)!important;border-color:var(--line)!important}

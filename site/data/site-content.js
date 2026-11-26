@@ -172,7 +172,7 @@
     { id: 'styles', label: 'Styles', groups: styleGroups, order: STYLE_ORDER },
     { id: 'clients', label: 'Clients', groups: [{ name: 'From Instagram', tiles: many(12, 'Client photo') }] },
     { id: 'inspiration', label: 'Inspiration', groups: [{ name: 'Style reference', tiles: INSPO.map(function (n) { return tile(n, '', { handle: 'artist-handle', credit: true }); }) }], note: COPYRIGHT },
-    { id: 'affiliates', label: 'Affiliates', groups: AFFILIATES, lines: AFFILIATE_LINES, spread: true },   /* spread: the lines are shared out across the whole section; the last one shows for the final 4 images */
+    { id: 'affiliates', label: 'Connections', groups: AFFILIATES, lines: AFFILIATE_LINES, spread: true },   /* spread: the lines are shared out across the whole section; the last one shows for the final 4 images */
     { id: 'brands', label: 'Brands', groups: BRANDS, lines: BRAND_LINES },
     { id: 'products', label: 'Products', groups: PRODUCTS, lines: PRODUCT_LINES }
   ];

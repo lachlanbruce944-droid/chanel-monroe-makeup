@@ -14,7 +14,7 @@ document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length
 <!--
   apply.html: chat-style application form, opened over the site like the enquiry chat (added 2026-11-16).
     apply.html?type=team        "Become an associate"        (About)
-    apply.html?type=affiliate   "Become an affiliate"  (Affiliates)
+    apply.html?type=affiliate   "Become a connection"  (Affiliates)
   Answers go to the Supabase edge function `application`, which saves them in the CRM (crm_people, status "applied",
   shown in the CRM's Employees section) and emails Chanel plus a confirmation to the applicant.
   ?test runs it without sending anything.
@@ -106,7 +106,7 @@ var Q = {
     { id:'notes', label:'About you', type:'text', area:true, ask:function(){ return 'Anything else Chanel should know? Training, kit, favourite looks…' }, ph:'Optional', optional:true }
   ],
   affiliate: [
-    { id:'name', label:'Name', type:'text', ask:function(){ return 'Hi! Thanks for wanting to be one of Chanel’s affiliates ✨\nAffiliates are the local artists and creatives she trusts and sends clients to. What’s your full name?' }, ph:'First and last name', check:function(v){ return v.trim().length >= 2 || 'Please type your name' } },
+    { id:'name', label:'Name', type:'text', ask:function(){ return 'Hi! Thanks for wanting to be one of Chanel’s connections ✨\nConnections is her curated selection of beauty artists and creatives across the Gold Coast. What’s your full name?' }, ph:'First and last name', check:function(v){ return v.trim().length >= 2 || 'Please type your name' } },
     { id:'business', label:'Business', type:'text', ask:function(a){ return 'Lovely to meet you, ' + first(a.name) + '! What’s your business called?' }, ph:'Business name', optional:true },
     { id:'role', label:'Service', type:'chips', ask:function(){ return 'What service do you offer?' }, opts:['Hair','Nails','Brows','Lashes','Photography','Videography','Spray tan','Skin and beauty therapy','Florals and styling','Other'] },
     { id:'instagram', label:'Instagram', type:'text', ask:function(){ return 'What’s your Instagram handle?' }, ph:'@yourbusiness' },
@@ -118,8 +118,8 @@ var Q = {
     { id:'notes', label:'Anything else', type:'text', area:true, ask:function(){ return 'Anything else you’d like Chanel to know?' }, ph:'Optional', optional:true }
   ]
 }[TYPE];
-$('title').firstChild.textContent = TYPE === 'affiliate' ? 'Become an affiliate' : 'Become an associate';
-document.title = (TYPE === 'affiliate' ? 'Become an affiliate' : 'Become an associate') + ' · Chanel Monroe Makeup';
+$('title').firstChild.textContent = TYPE === 'affiliate' ? 'Become a connection' : 'Become an associate';
+document.title = (TYPE === 'affiliate' ? 'Become a connection' : 'Become an associate') + ' · Chanel Monroe Makeup';
 
 var S = { a:{}, editing:null, sent:false, id:(crypto.randomUUID ? crypto.randomUUID() : String(Date.now())) };
 var wait = function(ms){ return new Promise(function(r){ setTimeout(r, ms) }) };
@@ -185,7 +185,7 @@ async function summary(){
   await bot('Here’s everything. Tap anything to change it, then send it to Chanel.');
   var old = document.getElementById('sum'); if(old) old.remove();
   var d = document.createElement('div'); d.className = 'sum'; d.id = 'sum';
-  d.innerHTML = '<h2>' + (TYPE === 'affiliate' ? 'Your affiliate application' : 'Your application') + '</h2><div class="flds">' +
+  d.innerHTML = '<h2>' + (TYPE === 'affiliate' ? 'Your connection application' : 'Your application') + '</h2><div class="flds">' +
     Q.map(function(q){ return '<button type="button" class="fld" data-e="' + q.id + '"><small>' + esc(q.label) + '</small><b>' + esc(shown(q, S.a[q.id])) + '</b></button>' }).join('') +
     '</div><button type="button" class="big" id="sendApp">Send to Chanel →</button><p class="fine">By sending, you’re happy for Chanel to contact you about working together. Your details are only used for this.</p>';
   msgs.appendChild(d); scroll();
@@ -205,7 +205,7 @@ async function send(){
   if(!ok){ btn.disabled = false; btn.textContent = 'Try sending again'; console.warn('application', why);
     await bot('Sorry, that didn’t go through. Please try again, or email makeup@chanelmonroe.net.'); return }
   S.sent = true; btn.textContent = 'Sent ✓';
-  await bot('Thank you, ' + first(S.a.name) + '! 💛 Your ' + (TYPE === 'affiliate' ? 'affiliate application' : 'application') + ' is with Chanel. You’ll get a confirmation email, and she’ll be in touch.');
+  await bot('Thank you, ' + first(S.a.name) + '! 💛 Your ' + (TYPE === 'affiliate' ? 'connection application' : 'application') + ' is with Chanel. You’ll get a confirmation email, and she’ll be in touch.');
   var w = document.createElement('div'); w.className = 'chips';
   var c = document.createElement('button'); c.type = 'button'; c.className = 'chip pri'; c.textContent = FRAMED ? 'Back to the site' : 'Done'; c.onclick = close;
   w.appendChild(c); comp.innerHTML = ''; comp.appendChild(w);

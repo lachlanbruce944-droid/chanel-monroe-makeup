@@ -40,7 +40,7 @@ var GROUPS = [
   {id:'parties',  name:'Parties & Seasons', tag:'Every celebration needs a little sparkle.',
    subs:['Glitter bar and gems','Kids face paint','Express designs','Easter','Christmas and New Year','Holiday specials'], looks:['easter','christmas','birthday','festival','hens','mini-paint']}
 ];
-var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'reviews',name:'Reviews'},{id:'affiliates',name:'Affiliates'}];   /* 2026-11-16: Brands and Products removed from the site */
+var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'reviews',name:'Reviews'},{id:'affiliates',name:'Connections'}];   /* 2026-11-16: Brands and Products removed from the site */
 var DESC = {
  'No-makeup makeup':['Skin that looks like skin, only better','A barely-there base with a soft flush'],
  'Clean polished':['Clean, even skin and groomed brows','Polished, simple and camera-ready'],
@@ -288,8 +288,8 @@ setInterval(function(){if(!po.classList.contains('open')||document.hidden)return
   f.forEach(function(x,j){x.classList.toggle('on',j===n)});d.forEach(function(x,j){x.classList.toggle('on',j===n)})},3800);
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
 $('openPricing').onclick=function(){poOpen(page?0:cur)};
-/* 2026-11-16: Pricing shows only in the style sections; About and Affiliates put their own form button in its place; Enquire always stays */
-var CTX={affiliates:['Become an affiliate','apply.html?type=affiliate']};
+/* 2026-11-16: Pricing shows only in the style sections; About and Connections put their own form button in its place; Enquire always stays */
+var CTX={affiliates:['Become a connection','apply.html?type=affiliate']};
 function setFab(pg){var c=CTX[pg],b=$('ctxBtn');$('openPricing').hidden=!!pg;b.hidden=!c;if(c){b.textContent=c[0];b.setAttribute('href',c[1])}}
 $('poX').onclick=function(){po.classList.remove('open')};
 po.addEventListener('click',function(e){if(e.target===po||(e.target===$('poView')&&po.dataset.layout==='c'))po.classList.remove('open')});
@@ -297,7 +297,7 @@ $('poPrev').onclick=function(){poGo(poIdx-1)};$('poNext').onclick=function(){poG
 $('poDots').onclick=$('poTabs').onclick=function(e){var x=e.target.closest('button[data-i]');if(x)poGo(+x.dataset.i)};
 var poRaf=0;$('poView').addEventListener('scroll',function(){if(po.dataset.layout!=='c')return;cancelAnimationFrame(poRaf);poRaf=requestAnimationFrame(function(){var v=$('poView'),mid=v.scrollLeft+v.clientWidth/2,best=0,bd=1e9;[].forEach.call($('poPages').children,function(c,k){var d=Math.abs(c.offsetLeft+c.offsetWidth/2-mid);if(d<bd){bd=d;best=k}});if(best!==poIdx)poGo(best,true)})},{passive:true});
 
-/* ---- About, Affiliates, Brands, Products ---- */
+/* ---- About, Connections, Brands, Products ---- */
 function sec(id){return SECTIONS.filter(function(s){return s.id===id})[0]||{groups:[]}}
 var aboutTimer=0;
 function openPage(id){
@@ -307,7 +307,7 @@ function openPage(id){
   if(id==='about')buildAboutGrid(P.own);
   startCarousels(el);
 }
-/* the content of each page (About, Lessons, Reviews, Affiliates): used by the desktop pages and the mobile one-page site */
+/* the content of each page (About, Lessons, Reviews, Connections): used by the desktop pages and the mobile one-page site */
 function pageHTML(id){
   var ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/', h='';
   if(id==='about'){
@@ -324,7 +324,7 @@ function pageHTML(id){
   }
   if(id==='affiliates'){
     var AF=window.AFFILIATES||[],cats=[];AF.forEach(function(a){if(cats.indexOf(a.cat)<0)cats.push(a.cat)});
-    h='<h1>Affiliates</h1><p class="lead">My people. These are the Gold Coast artists and creatives I trust, work alongside and happily send you to: hair, nails, brows, lashes, photographers and more. If I’m booked out, or you need a whole glam team for the big day, start here.</p><p class="hint">Tap anyone to see their work.</p>'+cats.map(function(c){
+    h='<h1>Connections</h1><p class="lead">Discover a curated selection of beauty artists and creatives across the Gold Coast. From hair, nails, brows and lashes to photography and more, explore my recommendations and connect with the right people to bring your look together.</p><p class="hint">Tap anyone to see their work.</p>'+cats.map(function(c){
       return '<h3>'+esc(c)+'</h3>'+carousel(AF.map(function(a,i){return a.cat!==c?'':'<div class="card" data-aff="'+i+'"><img class="av" src="'+a.avatar+'" alt="" onerror="this.style.visibility=\'hidden\'"><b>'+esc(a.role)+'</b><small>@'+esc(a.h)+'</small></div>'}).join(''))}).join('');
   }
   if(id==='brands'){
@@ -539,7 +539,7 @@ function tourChapters(){
   return [
    {k:'Explore',t:'Six styles to explore',x:'Natural, Glam, Bridal, Editorial, Character & FX, and Parties & Seasons. Each style has its own sub-styles, so you can find the look that suits your occasion.',pics:one,styles:true},
    {k:'Inspiration',t:'Looks from creators worldwide',x:'The photos in the style galleries are by makeup artists and creators from all over the world, each credited with a link to the original post. Use them as inspiration for your occasion: save the ones you love to your enquiry, and Chanel will talk through creating a look like it for you.',pics:tourPics(function(x){return !x.own&&x.by},6),cred:true,cta:['Browse the galleries',{g:0}]},
-   {k:'Affiliates',t:'Build your beauty team',x:'Affiliates are trusted Gold Coast artists for hair, nails, lashes and brows, tattoo and photography. Planning a big day? Find your whole glam team here and add them to your enquiry, so everyone is on the same page.',av:shuffle(AF).slice(0,8),cta:['Meet the affiliates',{p:'affiliates'}]},
+   {k:'Connections',t:'Build your beauty team',x:'Explore a curated selection of beauty artists and creatives across the Gold Coast. Discover hair, nails, brows, lashes, photography and more, and connect with the right people to bring your look together.',av:shuffle(AF).slice(0,8),cta:['Meet the connections',{p:'affiliates'}]},
    {k:'Lessons',t:'Learn it yourself',x:'Lessons with Chanel teach you a look on your own face, with your own kit: one to one or with friends, at your place anywhere on the Gold Coast. Video tutorials are on the way.',pics:lesson,cta:['See lessons',{p:'lessons'}]},
    {k:'Chanel’s work',t:'Chanel’s own work',x:'Everything Chanel has created herself is in the gallery below, from soft bridal glow to full character.',pics:tourPics(function(x){return x.own},6),cta:['See Chanel’s work',{work:1}]},
    {k:'Enquire',t:'Ready when you are',x:'Tell Chanel about your occasion in a short chat, add the looks and artists you saved, and pick a time for a free phone consultation.',pics:tourPics(function(x){return x.own},5),cta:['Start an enquiry',{enq:1}]}
@@ -726,7 +726,7 @@ if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding
   var WL=['Hi, I’m Chanel, a mobile makeup artist on the Gold Coast. Welcome in.',
     'This is a place to explore looks: natural, glam, bridal, editorial, FX and parties.',
     'Each style has its own gallery. Swipe sideways and the details follow along.',
-    'Affiliates are the local artists I trust and work with: hair, nails, brows, lashes and photographers.',
+    'Connections brings together my curated recommendations for beauty artists and creatives across the Gold Coast.',
     'Brands and Products show what’s in my kit, and what I actually reach for on clients.',
     'Found a look you love? Tap Pricing or Enquire, and I’ll come to you.'],wi=0,wt=0;
   function wnext(){var el=$('wl');if(!document.body.classList.contains('gate')){wt=setTimeout(wnext,1000);return}
@@ -735,7 +735,7 @@ if(!BASE.length)document.body.insertAdjacentHTML('afterbegin','<p style="padding
   wt=setTimeout(wnext,Math.max(3500,WL[0].length*62+1200));
   upd()})();
 /* ---- Settings: try design options while browsing (remembered on this device) ---- */
-var SETTINGS=[{key:'afftile',label:'Affiliate tile size',fixed:'b',opts:   /* fixed: the live site always uses Medium (2026-11-15) */[['a','Standard','pictures with names and handles'],['b','Medium','pictures only, 55% of the screen'],['c','Large','pictures only, 80% of the screen']]},
+var SETTINGS=[{key:'afftile',label:'Connection tile size',fixed:'b',opts:   /* fixed: the live site always uses Medium (2026-11-15) */[['a','Standard','pictures with names and handles'],['b','Medium','pictures only, 55% of the screen'],['c','Large','pictures only, 80% of the screen']]},
   {key:'pricing',label:'Pricing layout',opts:[['fit','Fit to window','everything on one screen, slimmer style menu'],['sticky','Photo stays in view','prices scroll, the photo stays in the middle']]}];
 function getSet(k,d){try{return localStorage.getItem('cmm-'+k)||d}catch(e){return d}}
 function setSet(k,v){try{localStorage.setItem('cmm-'+k,v)}catch(e){}document.body.dataset[k]=v}
@@ -756,9 +756,9 @@ document.addEventListener('click',function(e){if(e.target.closest('#gear')){setp
 document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(false)});
 
 /* ==== 2026-11-16: MOBILE SITE. Phones get one continuous vertical page: the sections in nav order, top to bottom
-   (About, the six styles, Lessons, Reviews, Affiliates). Each style is a swipe carousel with its sub-style chips.
+   (About, the six styles, Lessons, Reviews, Connections). Each style is a swipe carousel with its sub-style chips.
    Top bar: brand on the left, ☰ opens a menu from the right with every section and sub-style.
-   Bottom right: Enquire always; Pricing in the style sections; Become an affiliate (Affiliates). ==== */
+   Bottom right: Enquire always; Pricing in the style sections; Become a connection (Connections). ==== */
 var mLists={},mCur=-1;
 function mInit(){
   page='m';   /* stops the desktop gallery's auto-scroll */
@@ -997,7 +997,7 @@ if(/[?&]edit/.test(location.search))setEdit(true);
   function open(href){
     releaseSiteOverlays();
     if(!ov){ ov=document.createElement('div'); ov.id='enqOverlay'; document.body.appendChild(ov); addEventListener('resize',size); if(window.visualViewport){window.visualViewport.addEventListener('resize',size);window.visualViewport.addEventListener('scroll',size)} }
-    var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become an affiliate) */
+    var form=href.split('?')[0];   /* enquire.html or apply.html (Become an associate / Become a connection) */
     if(pickMode)endPick(false);
     if(fr&&fr.dataset.form===form&&fr.dataset.href===href){ ov.style.display='block'; ov.classList.remove('away'); size(); requestAnimationFrame(function(){ ov.classList.add('on') }); return }   /* opened before: show the same chat, intro and progress as they were */
     var key=href; var css=document.querySelector('link[href*="site.css?v="]'), ver=css?css.getAttribute('href').split('v=')[1]:'';   /* same cache-buster as the page, so a new release always loads the new chat */

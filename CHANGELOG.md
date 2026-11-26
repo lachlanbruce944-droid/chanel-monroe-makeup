@@ -1,3 +1,8 @@
+## 26 November 2026 — Connections
+
+- Rename public Affiliates labels to Connections across navigation, desktop/mobile pages, About tour, profile dialog, settings and application copy.
+- Describe the collection as curated Gold Coast beauty artist recommendations.
+
 ## 26 November 2026 — Enquiry update prompts
 
 Back arrows and summary edits use short prompts tailored to the detail being updated, including previously answered dates cleared by a scheduling change. Initial questions keep their original wording.

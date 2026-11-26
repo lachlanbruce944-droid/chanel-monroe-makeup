@@ -1,3 +1,7 @@
+## Connections wording (26 November 2026)
+
+Public Affiliates labels now read Connections, with a curated Gold Coast recommendations introduction and matching About/application wording. Existing page routes and data fields retained for compatibility.
+
 ## 26 November 2026 — Enquiry update prompts
 
 Back arrows and summary edits use short prompts tailored to the detail being updated, including previously answered dates cleared by a scheduling change. Initial questions keep their original wording.
