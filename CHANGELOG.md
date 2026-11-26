@@ -1,3 +1,9 @@
+## 26 November 2026 — Website suggestions
+
+- Add Suggest an improvement beneath Enquire in the mobile menu, linking to a category and message form.
+- Store private submissions in public.website_suggestions with insert-only public access, length/category validation and default review status.
+- Verify anonymous insert in a rolled-back transaction and confirm public read/update are denied.
+
 ## 26 November 2026 — Remove refresh controls
 
 - Remove the floating Refresh site button and enquiry Reset chat button, including their testing handlers.

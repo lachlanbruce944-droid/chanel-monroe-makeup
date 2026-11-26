@@ -1,3 +1,7 @@
+## Website suggestions (26 November 2026)
+
+Mobile menu links to suggestions.html beneath Enquire. Five categories, required message, honeypot, duplicate-submit guard and retry handling. Live Supabase table website_suggestions accepts submissions; visitors cannot read/update them. Review suggestions in Supabase Table Editor. Anonymous insert verified with rollback; advisors report no findings for the new table. No browser visual check performed.
+
 ## Refresh controls removed (26 November 2026)
 
 Removed the public Refresh site and Reset chat testing buttons and handlers.

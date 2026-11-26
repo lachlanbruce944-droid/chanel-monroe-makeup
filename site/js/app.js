@@ -745,7 +745,7 @@ function mInit(){
     order.map(function(o){if(o.gi==null)return '<a class="md-l" href="#m-'+o.id+'">'+esc(o.name)+'</a>';
       var g=GROUPS[o.gi];return '<div class="md-g"><button class="md-l md-t" aria-expanded="false">'+esc(g.name)+'<i aria-hidden="true"></i></button><div class="md-subs">'+
         '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="">All '+esc(g.name)+'</a>'+g.subs.map(function(sb){return '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="'+esc(sb)+'">'+esc(sb)+'</a>'}).join('')+'</div></div>'}).join('')+
-    '<a class="pill solid md-enq" href="'+BOOK+'" style="text-decoration:none">Enquire</a></div></nav>';
+    '<a class="pill solid md-enq" href="'+BOOK+'" style="text-decoration:none">Enquire</a><a class="md-l" href="suggestions.html" style="font-size:16px;margin-top:8px">Suggest an improvement</a></div></nav>';
   var secs=order.map(function(o){
     if(o.gi==null){var P=pageHTML(o.id);if(o.id==='about')mOwn=P.own;return '<section class="msec mpage" id="m-'+o.id+'" data-g="'+o.id+'">'+P.h+'</section>'}
     var g=GROUPS[o.gi];
