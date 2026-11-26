@@ -19,11 +19,24 @@ test('changing service date invalidates ready-by and phone consult but preserves
 });
 test('back and summary edits use update prompts and reselect invalidated dates',async()=>{
  const prompts=[];
- const c={S:{answers:{event_date:'2026-12-12',ready_by:'12:00',consult_at:'2026-12-11T10:00',email:'client@example.com'},history:['event_date','email']},QUESTIONS:[{id:'event_date',label:'Makeup date'},{id:'email',label:'Email'}],msgs:{querySelectorAll:()=>[]},scheduleAnswerReturn(){},$:()=>null,saveDraft(){},comp:{},me(){},say:async t=>prompts.push(t),renderComposer(){},qtyKind:()=>'',startMode:()=>false};
+ const c={S:{answers:{event_date:'2026-12-12',ready_by:'12:00',consult_at:'2026-12-11T10:00',email:'client@example.com'},history:['event_date','email']},QUESTIONS:[{id:'event_date',label:'Makeup date'},{id:'email',label:'Email'}],msgs:{querySelectorAll:()=>[]},scheduleAnswerReturn(){},$:()=>null,saveDraft(){},comp:{},me(){},sayEditPrompt:async t=>prompts.push(t),renderComposer(){},qtyKind:()=>'',startMode:()=>false};
  vm.createContext(c);
  vm.runInContext(html.slice(html.indexOf('const DEPENDS ='),html.indexOf('/* ---------- QUOTE')),c);
  vm.runInContext(html.slice(html.indexOf('async function editAnswer('),html.indexOf('async function submit(')),c);
  await c.goBack();assert.match(prompts[0],/What email address should receive/);assert.equal(c.S.answers.event_date,'2026-12-12');
  await c.editAnswer('event_date');assert.match(prompts[1],/updated makeup date/);assert.equal(c.S.answers.consult_at,undefined);assert.equal(c.S.updateFields.has('consult_at'),true);
  assert.match(c.updatePrompt({id:'consult_at'}),/updated 30-minute phone consultation/);
+});
+
+test('edits replace the original answer in place, including photos and repeated changes',()=>{
+ const nodes=[];
+ const element=tag=>({tagName:tag,dataset:{},replaceWith(n){nodes.splice(nodes.indexOf(this),1,n)},remove(){nodes.splice(nodes.indexOf(this),1)}});
+ const c={S:{selfie:{preview:'replacement.jpg'}},document:{createElement:element},msgs:{querySelectorAll:()=>nodes.filter(n=>n.dataset.answer),appendChild:n=>nodes.push(n)},display:(_,v)=>v,scheduleAnswerReturn(){},scroll(){}};
+ vm.createContext(c);vm.runInContext(html.slice(html.indexOf('function writeAnswer('),html.indexOf('async function sayEditPrompt(')),c);
+ c.writeAnswer({id:'email'},'old@example.com');c.writeAnswer({id:'phone'},'0400000000');
+ const originalPhone=nodes[1];nodes[0].hidden=true;
+ c.writeAnswer({id:'email'},'new@example.com');c.writeAnswer({id:'email'},'final@example.com');
+ assert.equal(nodes.length,2);assert.equal(nodes[0].textContent,'final@example.com');assert.equal(nodes[1],originalPhone);assert.notEqual(nodes[0].hidden,true);
+ c.writeAnswer({id:'selfie',type:'photo'},'added');assert.equal(nodes[2].tagName,'img');assert.equal(nodes[2].src,'replacement.jpg');
+ c.writeAnswer({id:'selfie',type:'photo'},'__skip','Skipped');assert.equal(nodes.length,3);assert.equal(nodes[2].tagName,'div');assert.equal(nodes[2].textContent,'Skipped');
 });

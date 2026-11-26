@@ -1,3 +1,7 @@
+## 27 November 2026 — Replace edited chat answers
+
+Edits replace the original answer bubble and selected-image row. Invalidated dependent answers are hidden until replaced. Update prompts are temporary, change-announcement messages are removed, and summary introduction is reused.
+
 ## 27 November 2026 — Enquiry connections
 
 Rename beauty team to Connections, clarify independent Instagram recommendations and direct availability enquiries, retain preselected artists in the selection step, and make No connections clear the selection. Include Instagram links and guidance in completion and HTML/plain-text emails.

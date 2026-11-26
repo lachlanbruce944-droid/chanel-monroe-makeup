@@ -966,7 +966,8 @@ const DEPENDS = {
 function clearAnswer(id){
   S.submissionId=null;
   delete S.answers[id];
-  msgs.querySelectorAll('[data-answer]').forEach(b => { if(b.dataset.answer === id) b.removeAttribute('data-answer') });
+  msgs.querySelectorAll('[data-answer]').forEach(b => { if(b.dataset.answer === id) b.hidden = true });
+  msgs.querySelectorAll('[data-picks]').forEach(r => { if(r.dataset.picks === id) r.hidden = true });
   scheduleAnswerReturn();
   (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
 }
@@ -1177,7 +1178,7 @@ async function askNext(){
     text = `${S.answers.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(S.answers.name)}!`} You selected ${PRICES.looks[S.answers.look]?.name || cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
   const instant = q.id === 'name' && introSeen();
   if(q.id === 'name') try{ sessionStorage.setItem('cmm-intro-seen', '1') }catch(e){}
-  S.typing = say(text, () => renderComposer(q), instant);
+  S.typing = updating ? sayEditPrompt(text, () => renderComposer(q)) : say(text, () => renderComposer(q), instant);
   await S.typing;
 }
 /* the intro types itself out once per visit; after that it is simply there */
@@ -1191,15 +1192,36 @@ async function answer(q, value, shown){
   S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
   saveDraft();
   comp.innerHTML = '';
-  if(q.type === 'photo' && value !== '__skip' && S.selfie){ const im = document.createElement('img'); im.className = 'b me selfie'; im.src = S.selfie.preview; im.alt = 'Your selfie'; im.dataset.answer = q.id; msgs.appendChild(im); scroll() }
-  else { const bubble = me(shown ?? display(q, value)); bubble.dataset.answer = q.id; }
-  if(q.type === 'pick') pickRow(q.kind);
+  msgs.querySelectorAll('[data-edit-prompt]').forEach(row => row.remove());
+  writeAnswer(q, value, shown);
+  if(q.type === 'pick') pickRow(q.kind, q.id);
   if(q.id === 'name' && !S.started){ S.started = true; unlockPlus() }
   if(['category','sub_style'].includes(q.id) && S.tab === 'all') renderGallery();
   if(q.id === 'location') await travelNote();
   updateDev();
   if(S.returnToSummary){ S.returnToSummary = false; }
   askNext();
+}
+
+// Keep one answer bubble per field, in its original position, when details change.
+function writeAnswer(q, value, shown){
+  const previous = [...msgs.querySelectorAll('[data-answer]')].filter(b => b.dataset.answer === q.id);
+  const photo = q.type === 'photo' && value !== '__skip' && S.selfie;
+  const bubble = document.createElement(photo ? 'img' : 'div');
+  bubble.className = photo ? 'b me selfie' : 'b me';
+  bubble.dataset.answer = q.id;
+  if(photo){ bubble.src = S.selfie.preview; bubble.alt = 'Your selfie' }
+  else bubble.textContent = shown ?? display(q, value);
+  if(previous.length){ previous[0].replaceWith(bubble); previous.slice(1).forEach(b => b.remove()) }
+  else msgs.appendChild(bubble);
+  scheduleAnswerReturn(); scroll();
+  return bubble;
+}
+async function sayEditPrompt(text, onStart){
+  msgs.querySelectorAll('[data-edit-prompt]').forEach(row => row.remove());
+  const bubble = await say(text, onStart);
+  bubble.parentElement.dataset.editPrompt = 'true';
+  return bubble;
 }
 
 /* ---------- composer (answer area) ---------- */
@@ -1443,16 +1465,21 @@ function textBox(q, done, append){
   // Let the client tap the field before opening the keyboard or date picker.
 }
 function chip(label, cls, fn){ const c = document.createElement('button'); c.type = 'button'; c.className = 'chip ' + (cls||''); c.textContent = label; c.onclick = fn; return c }
-function pickRow(kind){
+function pickRow(kind, id){
+  msgs.querySelectorAll('[data-picks]').forEach(r => { if(r.dataset.picks === id) r.remove() });
   const list = kind === 'refs' ? S.refs : S.affs; if(!list.length) return;
-  const r = document.createElement('div'); r.className = 'refrow';
+  const r = document.createElement('div'); r.className = 'refrow'; r.dataset.picks = id;
   r.innerHTML = list.map(x => `<img src="${esc(kind==='refs' ? thumb(x.src) : x.avatar)}" alt="" ${kind==='affs'?'style="border-radius:50%"':''}>`).join('');
-  msgs.appendChild(r); scroll();
+  const answer = [...msgs.querySelectorAll('[data-answer]')].find(b => b.dataset.answer === id);
+  if(answer) answer.after(r); else msgs.appendChild(r); scroll();
 }
 
 /* ---------- summary, save, book ---------- */
 async function showSummary(){
-  await say(`Here's everything, ${first(S.answers.name)}. Tap any detail to change it.`);
+  const summaryText = `Here's everything, ${first(S.answers.name)}. Tap any detail to change it.`;
+  const summaryPrompt = msgs.querySelector('[data-summary-prompt]');
+  if(summaryPrompt) summaryPrompt.textContent = summaryText;
+  else { const bubble = await say(summaryText); bubble.dataset.summaryPrompt = 'true' }
   const card = document.createElement('div'); card.className = 'card confirm'; card.id = 'summary';
   const field = q => `<button type="button" class="fld${q.id==='selfie' && S.selfie ? ' has-pic' : ''}" data-edit="${q.id}" title="Tap to change">
       ${q.id==='selfie' && S.selfie ? `<img src="${S.selfie.preview}" alt="">` : ''}<small>${esc(q.label)}</small><b>${esc(display(q, S.answers[q.id]) || '-')}</b></button>`;
@@ -1487,8 +1514,7 @@ async function editAnswer(id){
   S.history = (S.history || []).filter(key => S.answers[key] !== undefined);
   saveDraft();
   comp.innerHTML = '';
-  me(`Change ${q.label.toLowerCase()}`);
-  S.typing = say(updatePrompt(q), () => renderComposer(q));
+  S.typing = sayEditPrompt(updatePrompt(q), () => renderComposer(q));
   await S.typing;
 }
 async function submit(){
