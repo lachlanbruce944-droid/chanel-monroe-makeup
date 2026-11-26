@@ -140,3 +140,6 @@ Six automated enquiry/search/navigation checks passed. Live checks: all 26 prici
 
 
 26 November 2026: Phone consultations automatically confirm for 30 minutes, with half-hour availability and confirmation in the enquiry email.
+
+
+26 November 2026: Hold-to-flag image review added to gallery and image viewers. Local flags can be reviewed, undone and exported as chanel-image-removal-flags.js for editorial removal.

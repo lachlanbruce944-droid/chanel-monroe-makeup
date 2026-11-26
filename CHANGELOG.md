@@ -1,3 +1,7 @@
+## 26 November 2026 — Image removal flags
+
+Hold a gallery photo for 700 ms to confirm a removal flag. Flags persist locally, support undo, and export to a JavaScript removal list. Live images are not deleted by visitors.
+
 ## 26 November 2026 — Phone consultations
 
 - Confirm calls automatically without a separate approval email.
