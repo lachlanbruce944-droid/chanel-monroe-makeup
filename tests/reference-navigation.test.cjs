@@ -10,7 +10,7 @@ test('mobile filters the chosen category and scrolls to its section',()=>{const 
 test('invalid category cannot navigate; foreign style falls back safely',()=>{const f=siteFixture(false);assert.equal(f.c.window.cmmBrowseReference('bad','Soft glam'),false);assert.equal(f.calls.length,0);f.c.window.cmmBrowseReference('bridal','Soft glam');assert.deepEqual(f.calls,[['desktop',0,null]])});
 
 test('My picks opens first gallery with adding enabled before starting enquiry',()=>{const f=chatFixture({});f.c.S.started=false;vm.runInContext(chat.slice(chat.indexOf('function browseMyPicks()'),chat.indexOf('function referenceTarget()')),f.c);f.c.browseMyPicks();assert.equal(f.message().category,'natural');assert.equal(f.message().style,null);assert.equal(f.message().plus,true)});
-test('header keeps reset and removes redundant browse link',()=>{assert.match(chat,/id="resetChat"/);assert.doesNotMatch(chat,/id="browseBtn"/)});
+test('header omits testing reset and redundant browse controls',()=>{assert.doesNotMatch(chat,/id="resetChat"/);assert.doesNotMatch(chat,/id="browseBtn"/)});
 test('site and deployed scripts parse',()=>{for(const file of ['src/index.html','site/index.html','site/enquire.html','site/js/app.js']){const source=fs.readFileSync(file,'utf8').replace(/<!--[\s\S]*?-->/g,'');if(file.endsWith('.js'))new vm.Script(source);else for(const m of source.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/g))if(!m[0].includes('application/ld+json'))new vm.Script(m[1]);}});
 
 test('built app loads after the page and affiliate data',()=>{const built=fs.readFileSync('site/index.html','utf8');assert.ok(built.indexOf('src="js/app.js')>built.indexOf('src="data/affiliates.js'));assert.ok(built.indexOf('src="js/app.js')>built.indexOf('<body'));});

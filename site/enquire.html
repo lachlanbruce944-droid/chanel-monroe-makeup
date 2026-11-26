@@ -686,7 +686,6 @@ body.typing #conv{grid-row:1 / -1}
   <div id="conv">
   <div class="chd">
 
-    <div class="chat-tools"><button class="hbtn" id="resetChat" type="button" title="Testing: start a fresh chat in this browser. Submitted CRM enquiries are kept.">↺ Reset chat</button></div>
   </div>
   <div class="tray" id="tray"></div>
   <div id="msgs" aria-live="polite"><div class="chat-intro" id="chatIntro">    <span class="orb lg idle" id="hdrOrb" aria-hidden="true"></span>
@@ -1502,7 +1501,6 @@ async function submit(){
   const validConsult = consultQuestion.validate(val('consult_at') || '');
   if(validConsult !== true){ toast(validConsult); editAnswer('consult_at'); return; }
   const btn = $('#sendBtn'); btn.disabled = true; btn.textContent = 'Sending…';
-  $('#resetChat').disabled = true;
   document.querySelectorAll('#summary [data-edit]').forEach(b => { b.disabled = true; b.removeAttribute('data-edit') });
   document.querySelector('#summary .cf-f')?.remove();
   document.querySelector('#summary .cf-h small') && (document.querySelector('#summary .cf-h small').textContent = 'Sending…');
@@ -1513,7 +1511,6 @@ async function submit(){
   try{
     const res = await saveToSupabase(row);
     S.submitting=false; S.sent = true; S.enquiryId = res.id; clearDraft(); btn.remove();
-    $('#resetChat').disabled = false;
     if(!res.simulated) saveSent();   // this browser now shows the sent enquiry instead of starting a new one
     S.notificationState=res.simulated?'test':'pending';
     updateDev();
@@ -1525,7 +1522,6 @@ async function submit(){
     if(!res.simulated) notifyEnquiry();
   }catch(e){
     S.submitting=false;
-    $('#resetChat').disabled = false;
     const slot = e.message.includes('ENQUIRY_MAKEUP_SLOT_UNAVAILABLE') ? 'event_date' :
       e.message.includes('ENQUIRY_PHONE_SLOT_UNAVAILABLE') ? 'consult_at' : null;
     if(slot){
@@ -1535,7 +1531,6 @@ async function submit(){
     }
     $('#summary')?.remove();
     await showSummary();
-    $('#resetChat').disabled = false;
     await say("Hmm, that didn't send. Check your connection and try again. Your enquiry has not been sent.");
     if(S.sent) showSent(saveSent(liveMode()), false);
     console.error(e);
@@ -2021,16 +2016,6 @@ function updateDev(){
 }
 $('#devbtn').hidden = !SHOW_TEST_PANEL;
 $('#devbtn').onclick = () => { $('#dev').classList.toggle('on'); updateDev() };
-// Temporary testing control. Reload also cancels old typing callbacks and clears in-memory picks.
-function resetChatForTesting(){
-  if($('#resetChat').disabled) return;
-  clearDraft();
-  try{ localStorage.removeItem(SENT_KEY) }catch(e){}
-  try{ sessionStorage.removeItem('cmm-intro-seen') }catch(e){}
-  if(FRAMED) parent.postMessage({cmm:'clear-picks'}, location.origin);
-  location.reload();
-}
-$('#resetChat').onclick = resetChatForTesting;
 function restart(){
   try{ localStorage.removeItem(SENT_KEY) }catch(e){} document.body.classList.remove('locked');
   sideSeen = new Set();

@@ -2,30 +2,6 @@
 (function(){if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return;document.documentElement.style.touchAction='manipulation';
 function no(e){e.preventDefault()}document.addEventListener('gesturestart',no,{passive:false});document.addEventListener('gesturechange',no,{passive:false});
 document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false})})();;
-(function(){
-  function addButton(){
-    if(document.getElementById('site-refresh-btn'))return;
-    var button=document.createElement('button');button.id='site-refresh-btn';button.type='button';button.textContent='↻ Refresh site';button.title='Load the newest published website without clearing browser history';
-    button.addEventListener('click',async function(){
-      button.disabled=true;button.textContent='Refreshing…';
-      try{
-        if('caches' in window){var keys=await caches.keys();await Promise.all(keys.map(function(key){return caches.delete(key)}))}
-        if('serviceWorker' in navigator){var regs=await navigator.serviceWorker.getRegistrations();await Promise.all(regs.map(function(reg){return reg.unregister()}))}
-        var url=new URL(location.href);url.searchParams.set('_fresh',Date.now().toString());
-        var response=await fetch(url.href,{cache:'no-store'});if(!response.ok)throw new Error('HTTP '+response.status);
-        var html=await response.text();var doc=new DOMParser().parseFromString(html,'text/html');
-        doc.querySelectorAll('script[src],link[rel="stylesheet"][href]').forEach(function(el){
-          var attr=el.tagName==='SCRIPT'?'src':'href';var value=el.getAttribute(attr);
-          if(!value||/^(?:https?:)?\/\//i.test(value)||value.startsWith('data:'))return;
-          var asset=new URL(value,url.href);asset.searchParams.set('_fresh',Date.now().toString());el.setAttribute(attr,asset.href);
-        });
-        history.replaceState(null,'',url.href);document.open();document.write('<!DOCTYPE html>\n'+doc.documentElement.outerHTML);document.close();
-      }catch(error){button.disabled=false;button.textContent='↻ Retry refresh';alert('Could not refresh the website. Please try again. '+error.message)}
-    });
-    document.body.appendChild(button);
-  }
-  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',addButton);else addButton();
-})();;
 var GROUPS = [
   {id:'natural',  name:'Natural',           tag:'Fresh skin, natural light, nothing to hide.',
    subs:['No-makeup makeup','Clean polished','Fresh lift','Dewy glass skin','Sun-kissed bronze','Mature natural','Sensitive skin','Maternity glow','Makeup lesson'], looks:['natural','headshot','portrait','sensitive','lesson']},

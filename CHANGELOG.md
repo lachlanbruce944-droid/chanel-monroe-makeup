@@ -1,3 +1,8 @@
+## 26 November 2026 — Remove refresh controls
+
+- Remove the floating Refresh site button and enquiry Reset chat button, including their testing handlers.
+- Preserve submission recovery and normal browser reload behaviour.
+
 ## 26 November 2026 — Connections
 
 - Rename public Affiliates labels to Connections across navigation, desktop/mobile pages, About tour, profile dialog, settings and application copy.

@@ -1,3 +1,7 @@
+## Refresh controls removed (26 November 2026)
+
+Removed the public Refresh site and Reset chat testing buttons and handlers.
+
 ## Connections wording (26 November 2026)
 
 Public Affiliates labels now read Connections, with a curated Gold Coast recommendations introduction and matching About/application wording. Existing page routes and data fields retained for compatibility.
