@@ -1,3 +1,7 @@
+/* Phones and tablets: no page zoom (pinch, double-tap, or zoom when tapping a text box). Photos zoom inside the photo viewer instead. */
+(function(){if(!(window.matchMedia&&matchMedia('(pointer:coarse)').matches))return;document.documentElement.style.touchAction='manipulation';
+function no(e){e.preventDefault()}document.addEventListener('gesturestart',no,{passive:false});document.addEventListener('gesturechange',no,{passive:false});
+document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1)e.preventDefault()},{passive:false})})();;
 (function(){
   function addButton(){
     if(document.getElementById('site-refresh-btn'))return;
@@ -308,13 +312,13 @@ function pageHTML(id){
   var ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/', h='';
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
-    /* Keep work photos; exclude the catalogued selfie from About only. */
-    var own=shuffle(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)&&x.post!=='https://www.instagram.com/p/CJil6Ijg8aP/'}));
+    /* Subject assignment follows the catalogued selfie, not the photographer credit. */
+    var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)&&!isChanelPortrait(x)});
     h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      tourHTML()+'<h3>Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
+      tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
@@ -542,7 +546,7 @@ function tourChapters(){
   ];
 }
 function tourHTML(){return '<section class="atour" aria-label="About this site"><div class="atour-tabs" role="tablist" aria-label="About this site"></div><div class="atour-stage"><div class="atour-pics" aria-hidden="true"></div>'+
-  '<div class="atour-card"><p class="atour-k">About this site</p><h3 class="atour-t"></h3><p class="atour-x" aria-hidden="true"></p><p class="atour-sr" aria-live="polite"></p><div class="atour-cta"></div></div></div></section>'}
+  '<div class="atour-card"><h3 class="atour-t"></h3><p class="atour-x" aria-hidden="true"></p><p class="atour-sr" aria-live="polite"></p><div class="atour-cta"></div></div></div></section>'}
 function initTours(){[].forEach.call(document.querySelectorAll('.atour:not([data-on])'),tourStart)}
 function tourStart(el){
   el.dataset.on=1;
@@ -593,23 +597,35 @@ function tourGo(t){
   if(t.p){if(m)mGo('m-'+t.p);else openPage(t.p);return}
   if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
 }
+function isChanelPortrait(x){return x.subject==='chanel'||x.post==='https://www.instagram.com/p/CJil6Ijg8aP/'}
 function buildAboutGrid(own){
   initTours();
-  clearInterval(gridTimer);var grid=$('agrid');if(!grid||!own.length)return;
-  /* every photo appears exactly once; columns chosen so the rows come out even (21 photos = 7 x 3) */
-  var N=own.length,COLS=[9,8,7,6,5].filter(function(c){return N%c===0})[0]||Math.min(9,N),cells=shuffle(own);
-  grid.style.gridTemplateColumns=window.matchMedia('(max-width:760px)').matches?'':'repeat('+COLS+',1fr)';
-  grid.innerHTML=cells.map(function(x,i){return '<div class="cell" data-i="'+i+'"><img loading="'+(i<9?'eager':'lazy')+'" decoding="async" src="'+small(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></div>'}).join('');
-  grid.onclick=function(e){var c=e.target.closest('.cell');if(!c)return;igOpen(own,own.indexOf(cells[+c.dataset.i]))};
+  clearInterval(gridTimer);
+  var grid=$('agrid'),hero=document.querySelector('.about-hero .me');
+  var portraits=[window.ABOUT_PHOTO||'images/about/chanel.jpg'].concat(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)&&isChanelPortrait(x)}).map(function(x){return x.src}));
+  portraits=portraits.filter(function(src,i){return portraits.indexOf(src)===i});
+  var pi=0,k=0,tick=0,paused=false,portraitPaused=false,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(hero&&portraits.length>1){
+    var pause=document.createElement('button');pause.type='button';pause.textContent='Pause';pause.setAttribute('aria-label','Pause portrait rotation');
+    pause.onclick=function(){portraitPaused=!portraitPaused;pause.textContent=portraitPaused?'Play':'Pause';pause.setAttribute('aria-label',(portraitPaused?'Resume':'Pause')+' portrait rotation')};hero.appendChild(pause);
+    if(still){portraitPaused=true;pause.textContent='Play';pause.setAttribute('aria-label','Resume portrait rotation')}
+  }
+  function show(){
+    if(!grid||!own.length)return;
+    var x=own[k];
+    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-pause>'+((paused||still)?'Play':'Pause')+'</button><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
+  }
+  if(grid){
+    grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work carousel");
+    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('[data-pause]')){paused=!(paused||still);still=false;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
+    grid.onmouseenter=function(){grid.dataset.hover='1'};grid.onmouseleave=function(){delete grid.dataset.hover};show();
+  }
   gridTimer=setInterval(function(){
-    if(!document.body.contains(grid)||page!=='about'){clearInterval(gridTimer);return}
-    if(document.hidden||$('lb').classList.contains('open')||$('igMod').classList.contains('open'))return;
-    if(N<2)return; /* two tiles swap places with a crossfade, so the grid keeps moving without ever repeating a photo */
-    var a=Math.floor(Math.random()*N),b=(a+1+Math.floor(Math.random()*(N-1)))%N;
-    [[a,cells[b]],[b,cells[a]]].forEach(function(p){var cell=grid.children[p[0]],old=cell.querySelector('img:last-of-type'),next=p[1];
-      var img=new Image();img.alt=desc(next);img.className='out';img.onload=function(){cell.appendChild(img);requestAnimationFrame(function(){img.classList.remove('out');old.classList.add('out')});setTimeout(function(){old.remove()},1000);cell.querySelector('span').textContent=desc(next)};img.src=small(next.src)});
-    var t=cells[a];cells[a]=cells[b];cells[b]=t;
-  },3200);
+    if((!grid||!grid.isConnected)&&(!hero||!hero.isConnected)){clearInterval(gridTimer);return}
+    if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
+    if(hero&&hero.isConnected&&!portraitPaused&&portraits.length>1){pi=(pi+1)%portraits.length;var img=hero.querySelector('img');img.onerror=function(){this.src=portraits[0];this.onerror=null};img.src=portraits[pi]}
+    if(grid&&grid.isConnected&&own.length>1&&!paused&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
+  },2000);
 }
 
 /* ---- EDIT MODE: drag to reorder (pins), pin, hide, re-caption, move; save to data/overrides.js ---- */

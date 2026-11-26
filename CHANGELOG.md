@@ -1,3 +1,11 @@
+## 26 November 2026 — About photo carousels
+
+- Rotate the About portrait and catalogued Chanel selfie every two seconds, with pause control.
+- Replace the work mosaic with a large centred carousel, manual navigation, pause, and existing post popup.
+- Remove the repeated “About this site” label from tour chapters.
+- Respect hidden photos and reduced motion; pause work rotation during hover, focus and photo popups.
+- Build and JavaScript syntax check passed; existing automated suite: 50 passed. Subject metadata identifies only one selfie; other portraits require explicit subject tagging.
+
 ## 26 November 2026 — Image removal flags
 
 Hold a gallery photo for 700 ms to confirm a removal flag. Flags persist locally, support undo, and export to a JavaScript removal list. Live images are not deleted by visitors.

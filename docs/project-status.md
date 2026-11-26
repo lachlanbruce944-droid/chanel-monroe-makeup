@@ -1,3 +1,7 @@
+## About carousels (26 November 2026)
+
+Profile cycles every two seconds through the original portrait and catalogued selfie. Work photos use a large centred carousel. Repeated tour label removed. Existing 50 tests pass. Remaining work photos lack person labels; subject tagging is supported with `subject: "chanel"`. Browser layout verification remains outstanding.
+
 ## 26 November 2026 — Gallery return bar
 Approved design 4 implemented for gallery browsing: live total pick count and short Enquiry return button, retaining current enquiry selections and progress.
 
