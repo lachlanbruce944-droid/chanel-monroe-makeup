@@ -1,3 +1,7 @@
+## 27 November 2026 — Enquiry connections
+
+Rename beauty team to Connections, clarify independent Instagram recommendations and direct availability enquiries, retain preselected artists in the selection step, and make No connections clear the selection. Include Instagram links and guidance in completion and HTML/plain-text emails.
+
 ## 26 November 2026 — Smaller suggestion link
 
 - Make the mobile menu suggestion link a small, right-aligned link beneath Enquire.

@@ -1,3 +1,7 @@
+## 27 November 2026 — Enquiry connections
+
+Rename beauty team to Connections, clarify independent Instagram recommendations and direct availability enquiries, retain preselected artists in the selection step, and make No connections clear the selection. Include Instagram links and guidance in completion and HTML/plain-text emails.
+
 ## Website suggestions (26 November 2026)
 
 Mobile menu links to suggestions.html beneath Enquire. Five categories, required message, honeypot, duplicate-submit guard and retry handling. Live Supabase table website_suggestions accepts submissions; visitors cannot read/update them. Review suggestions in Supabase Table Editor. Anonymous insert verified with rollback; advisors report no findings for the new table. No browser visual check performed.

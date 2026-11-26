@@ -68,7 +68,7 @@ function rows(e: Record<string, any>) {
     ["Skin", e.skin_type],
     ["Allergies", e.allergies],
     ["Lashes", e.lashes],
-    ["Also booking", (e.extra_services || []).join(", ")],
+    ["Connection interests", (e.extra_services || []).join(", ")],
     ["Notes", e.notes],
     ["Estimate", e.estimate_total != null ? `${e.estimate_is_from ? "from " : ""}${money(e.estimate_total)}` : ""],
   ].filter(([, v]) => v);
@@ -129,9 +129,9 @@ async function tiles(e: Record<string, any>, forClient: boolean) {
       (site ? `<div style="font-size:11px"><a href="${esc(site)}" style="color:#b8846b">Website</a></div>` : "") + `</td></tr></table>`;
   });
   return (refCells.length ? label(forClient ? "The looks you saved" : "Reference looks") + grid(refCells, 3) : "") +
-    (teamCells.length ? label(forClient ? "Beauty team you picked · contact each artist to book their service" : "Beauty team the client picked") + grid(teamCells, 2) : "");
+    (teamCells.length ? label(forClient ? "Your connections" : "Connections selected by the client") + label("Highly recommended artists. These are links to Instagram pages. Contact each artist directly to ask about availability and arrange their service. Selecting a connection does not book their service.") + grid(teamCells, 2) : "");
 }
-const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),"Phone consultation confirmed for 30 minutes. Makeup booking still requires a quote and deposit."].filter(Boolean).join("\n");
+const plainDetails = (e: Record<string,any>,r: string[][]) => ["Chanel Monroe Makeup",e.name,e.email,e.phone,...r.map(([k,v])=>`${k}: ${v}`),...(e.affiliates?.length ? ["Your connections · highly recommended artists. Contact each artist directly on Instagram for availability; selection does not book their service.",...e.affiliates.filter((a: any)=>handle(a.handle)).map((a: any)=>`${a.name || handle(a.handle)}: https://www.instagram.com/${handle(a.handle)}/`)] : []),"Phone consultation confirmed for 30 minutes. Makeup booking still requires a quote and deposit."].filter(Boolean).join("\n");
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: CORS });

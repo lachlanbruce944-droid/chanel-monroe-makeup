@@ -300,7 +300,7 @@ function pageHTML(id){
   }
   if(id==='affiliates'){
     var AF=window.AFFILIATES||[],cats=[];AF.forEach(function(a){if(cats.indexOf(a.cat)<0)cats.push(a.cat)});
-    h='<h1>Connections</h1><p class="lead">Discover a curated selection of beauty artists and creatives across the Gold Coast. From hair, nails, brows and lashes to photography and more, explore my recommendations and connect with the right people to bring your look together.</p><p class="hint">Tap anyone to see their work.</p>'+cats.map(function(c){
+    h='<h1>Connections</h1><p class="lead">Discover a curated selection of beauty artists and creatives across the Gold Coast. From hair, nails, brows and lashes to photography and more, explore my recommendations and connect with the right people to bring your look together.</p><p class="hint">Highly recommended artists. Tap an artist to visit their Instagram page and contact them directly for availability. Select a few to receive their details at the end of your enquiry and by email. Selecting a connection does not book their service.</p>'+cats.map(function(c){
       return '<h3>'+esc(c)+'</h3>'+carousel(AF.map(function(a,i){return a.cat!==c?'':'<div class="card" data-aff="'+i+'"><img class="av" src="'+a.avatar+'" alt="" onerror="this.style.visibility=\'hidden\'"><b>'+esc(a.role)+'</b><small>@'+esc(a.h)+'</small></div>'}).join(''))}).join('');
   }
   if(id==='brands'){
@@ -515,7 +515,7 @@ function tourChapters(){
   return [
    {k:'Explore',t:'Six styles to explore',x:'Natural, Glam, Bridal, Editorial, Character & FX, and Parties & Seasons. Each style has its own sub-styles, so you can find the look that suits your occasion.',pics:one,styles:true},
    {k:'Inspiration',t:'Looks from creators worldwide',x:'The photos in the style galleries are by makeup artists and creators from all over the world, each credited with a link to the original post. Use them as inspiration for your occasion: save the ones you love to your enquiry, and Chanel will talk through creating a look like it for you.',pics:tourPics(function(x){return !x.own&&x.by},6),cred:true,cta:['Browse the galleries',{g:0}]},
-   {k:'Connections',t:'Build your beauty team',x:'Explore a curated selection of beauty artists and creatives across the Gold Coast. Discover hair, nails, brows, lashes, photography and more, and connect with the right people to bring your look together.',av:shuffle(AF).slice(0,8),cta:['Meet the connections',{p:'affiliates'}]},
+   {k:'Connections',t:'Find your connections',x:'Explore a curated selection of beauty artists and creatives across the Gold Coast. Discover hair, nails, brows, lashes, photography and more, and connect with the right people to bring your look together.',av:shuffle(AF).slice(0,8),cta:['Meet the connections',{p:'affiliates'}]},
    {k:'Lessons',t:'Learn it yourself',x:'Lessons with Chanel teach you a look on your own face, with your own kit: one to one or with friends, at your place anywhere on the Gold Coast. Video tutorials are on the way.',pics:lesson,cta:['See lessons',{p:'lessons'}]},
    {k:'Chanel’s work',t:'Chanel’s own work',x:'Everything Chanel has created herself is in the gallery below, from soft bridal glow to full character.',pics:tourPics(function(x){return x.own},6),cta:['See Chanel’s work',{work:1}]},
    {k:'Enquire',t:'Ready when you are',x:'Tell Chanel about your occasion in a short chat, add the looks and artists you saved, and pick a time for a free phone consultation.',pics:tourPics(function(x){return x.own},5),cta:['Start an enquiry',{enq:1}]}
