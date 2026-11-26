@@ -1,3 +1,11 @@
+## 26 November 2026 — Remove patch-test references
+
+Removed the patch-test enquiry question, pricing text, lesson tile and email wording. Legacy database field remains false for new website enquiries.
+
+## About descriptions (26 November 2026)
+
+About tour descriptions and action buttons now appear immediately when each chapter loads. Typing timers removed; chapter rotation retained. The Become an associate button is temporarily hidden.
+
 ## About photo controls (26 November 2026)
 
 Profile photo is static again. Removed portrait and work carousel pause buttons; work photos continue rotating with previous/next navigation and hover/focus pausing.

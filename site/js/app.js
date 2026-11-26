@@ -289,7 +289,7 @@ setInterval(function(){if(!po.classList.contains('open')||document.hidden)return
 function poOpen(i){po.classList.add('open');poGo(i);if(po.dataset.layout==='c')setTimeout(function(){poGo(i)},30)}
 $('openPricing').onclick=function(){poOpen(page?0:cur)};
 /* 2026-11-16: Pricing shows only in the style sections; About and Affiliates put their own form button in its place; Enquire always stays */
-var CTX={about:['Become an associate','apply.html?type=team'],affiliates:['Become an affiliate','apply.html?type=affiliate']};
+var CTX={affiliates:['Become an affiliate','apply.html?type=affiliate']};
 function setFab(pg){var c=CTX[pg],b=$('ctxBtn');$('openPricing').hidden=!!pg;b.hidden=!c;if(c){b.textContent=c[0];b.setAttribute('href',c[1])}}
 $('poX').onclick=function(){po.classList.remove('open')};
 po.addEventListener('click',function(e){if(e.target===po||(e.target===$('poView')&&po.dataset.layout==='c'))po.classList.remove('open')});
@@ -550,13 +550,13 @@ function tourHTML(){return '<section class="atour" aria-label="About this site">
 function initTours(){[].forEach.call(document.querySelectorAll('.atour:not([data-on])'),tourStart)}
 function tourStart(el){
   el.dataset.on=1;
-  var C=tourChapters(),cur=-1,tm=0,typ=0,swap=0,paused=false,started=false,
+  var C=tourChapters(),cur=-1,tm=0,swap=0,paused=false,started=false,
       still=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches,
       tabs=el.querySelector('.atour-tabs'),pics=el.querySelector('.atour-pics'),T=el.querySelector('.atour-t'),
       X=el.querySelector('.atour-x'),SR=el.querySelector('.atour-sr'),A=el.querySelector('.atour-cta');
   tabs.innerHTML=C.map(function(c,i){return '<button role="tab" aria-selected="false" data-i="'+i+'"><span class="atour-bar"><i></i></span>'+esc(c.k)+'</button>'}).join('');
   function alive(){return document.body.contains(el)}
-  function stop(){clearTimeout(tm);clearInterval(typ);clearTimeout(swap)}
+  function stop(){clearTimeout(tm);clearTimeout(swap)}
   function gname(id){return (GROUPS.filter(function(g){return g.id===id})[0]||{}).name||''}
   function show(i){
     if(!alive())return stop();stop();cur=(i+C.length)%C.length;var c=C[cur];
@@ -572,12 +572,11 @@ function tourStart(el){
       (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
        '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');
     T.textContent=c.t;SR.textContent=c.t+'. '+c.x;
-    if(still){X.textContent=c.x;A.classList.add('on');return}
-    A.classList.remove('on');X.textContent='';
-    var n=0,s=c.x;el.style.setProperty('--dur',(Math.ceil(s.length/2)*22+5200)+'ms');
+    X.textContent=c.x;A.classList.add('on');
+    if(still)return;
+    el.style.setProperty('--dur','5200ms');
     var b=tabs.children[cur];void b.offsetWidth;b.classList.add('run');
-    typ=setInterval(function(){if(!alive())return stop();n+=2;X.textContent=s.slice(0,n);
-      if(n>=s.length){clearInterval(typ);A.classList.add('on');next()}},22);
+    next();
   }
   function next(){clearTimeout(tm);tm=setTimeout(function(){if(!alive())return;if(paused)return next();show(cur+1)},5200)}
   tabs.onclick=function(e){var b=e.target.closest('button[data-i]');if(b){started=true;show(+b.dataset.i)}};
@@ -759,7 +758,7 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')setpOpen(fal
 /* ==== 2026-11-16: MOBILE SITE. Phones get one continuous vertical page: the sections in nav order, top to bottom
    (About, the six styles, Lessons, Reviews, Affiliates). Each style is a swipe carousel with its sub-style chips.
    Top bar: brand on the left, ☰ opens a menu from the right with every section and sub-style.
-   Bottom right: Enquire always; Pricing in the style sections; Become an associate (About) and Become an affiliate (Affiliates). ==== */
+   Bottom right: Enquire always; Pricing in the style sections; Become an affiliate (Affiliates). ==== */
 var mLists={},mCur=-1;
 function mInit(){
   page='m';   /* stops the desktop gallery's auto-scroll */

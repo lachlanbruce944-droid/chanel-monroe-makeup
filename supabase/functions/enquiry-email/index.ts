@@ -66,7 +66,7 @@ function rows(e: Record<string, any>) {
     ["How many", e.quantity],
     ["Trial", e.bridal_trial],
     ["Skin", e.skin_type],
-    ["Allergies", e.allergies && e.allergies + (e.patch_test ? " · patch test requested" : "")],
+    ["Allergies", e.allergies],
     ["Lashes", e.lashes],
     ["Also booking", (e.extra_services || []).join(", ")],
     ["Notes", e.notes],

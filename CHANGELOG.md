@@ -1,3 +1,13 @@
+## 26 November 2026 — Remove patch-test references
+
+Removed the patch-test enquiry question, pricing text, lesson tile and email wording. Legacy database field remains false for new website enquiries.
+
+## 26 November 2026 — Instant About descriptions
+
+- Show complete About tour descriptions and action buttons immediately, without typing animation.
+- Keep chapter rotation and reduced-motion support.
+- Temporarily hide the Become an associate button.
+
 ### 2026-11-26 — Static About profile
 - Keep Chanel’s original profile photo static and remove the About photo pause buttons.
 - Retain work carousel rotation, previous/next navigation, hover/focus pausing and reduced-motion support.

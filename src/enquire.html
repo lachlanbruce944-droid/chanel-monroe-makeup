@@ -884,9 +884,6 @@ const QUESTIONS = [
     when:a => faceWork(a), ask:() => 'How would you describe your skin?' },
   { id:'allergies', label:'Allergies', type:'multi', options:['None','Lash glue','Fragrance','Latex','Nut oils','Eczema or rosacea'], none:'None', other:true, otherLabel:'Something else…',
     ask:() => 'Any allergies or sensitivities? Tap all that apply.' },
-  { id:'patch_test', label:'Patch test', type:'chips', options:['Yes please','No thanks'],
-    when:a => a.look === 'sensitive' || a.skin_type === 'Sensitive' || (Array.isArray(a.allergies) && !a.allergies.includes('None')),
-    ask:() => 'Chanel recommends a patch test 48 hours before for sensitive skin or allergies. Would you like one?' },
   { id:'extras', label:'Other services', type:'multi', options:['Hair','Nails','Lashes & brows','Photographer','No thanks'], none:'No thanks',
     when:a => a.category !== 'lesson',
     ask:() => 'Need anything else for the day? Chanel works with a trusted Gold Coast beauty team.' },
@@ -961,11 +958,11 @@ function emailFix(v){
 }
 /* answers that only make sense for a particular earlier answer: changing the earlier one clears them */
 const DEPENDS = {
-  category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','skin_type','patch_test'],
+  category:['event_date','look','sub_style','lesson_focus','quantity','bridal_trial','skin_type'],
   look:['quantity','bridal_trial','event_date','start_window'],
   quantity:['event_date'], start_window:['event_date'],
   event_date:['ready_by','consult_at'], ready_by:['consult_at'],
-  extras:['team'], allergies:['patch_test'], skin_type:['patch_test']
+  extras:['team']
 };
 function clearAnswer(id){
   S.submissionId=null;
@@ -1617,7 +1614,7 @@ function buildRow(){
     quantity: on('quantity') ? display(q('quantity'), a.quantity) : null,
     bridal_trial: on('bridal_trial') ? val('bridal_trial') : null,
     skin_type: on('skin_type') ? val('skin_type') : null, allergies: val('allergies'),
-    patch_test: on('patch_test') ? a.patch_test === 'Yes please' : false,
+    patch_test: false,
     lashes: on('lashes') ? val('lashes') : null,
     extra_services: on('extras') && Array.isArray(a.extras) && !a.extras.includes('No thanks') ? a.extras : [],
     notes: a.notes === "That's everything" ? null : val('notes'),
@@ -1648,7 +1645,7 @@ function calendarEvent(){
     travel() && `Suburb: ${a.location} (${travel().text})`,
     R.lesson_focus.length && `Lesson focus: ${R.lesson_focus.join(', ')}`,
     R.bridal_trial && `Trial: ${R.bridal_trial}`, R.skin_type && `Skin: ${R.skin_type}`,
-    `Allergies: ${R.allergies || 'None'}${R.patch_test ? ' · PATCH TEST 48h before' : ''}`, R.lashes && `Lashes: ${R.lashes}`,
+    `Allergies: ${R.allergies || 'None'}`, R.lashes && `Lashes: ${R.lashes}`,
     R.extras.length && `Other services: ${R.extras.join(', ')}`,
     S.affs.length && `Beauty team: ${S.affs.map(x => '@'+x.h+' ('+(TEAM_CATS[x.cat]||x.cat)+')').join(', ')}`,
     est && `Estimate: ${est.open ? 'from ' : ''}${money(est.total)} (deposit ~${money(est.deposit)})`,
@@ -1669,7 +1666,7 @@ function buildRowLite(){   // the bits calendarEvent needs, without recursion
   const a = S.answers, on = id => activeQs().some(q => q.id === id), q = id => QUESTIONS.find(x => x.id === id);
   return { sub_style: on('sub_style') ? val('sub_style') : null, quantity: on('quantity') ? display(q('quantity'), a.quantity) : null,
     lesson_focus: on('lesson_focus') ? a.lesson_focus || [] : [], bridal_trial: on('bridal_trial') ? val('bridal_trial') : null,
-    skin_type: on('skin_type') ? val('skin_type') : null, allergies: val('allergies'), patch_test: on('patch_test') && a.patch_test === 'Yes please',
+    skin_type: on('skin_type') ? val('skin_type') : null, allergies: val('allergies'), patch_test: false,
     lashes: on('lashes') ? val('lashes') : null, extras: on('extras') && Array.isArray(a.extras) && !a.extras.includes('No thanks') ? a.extras : [],
     notes: a.notes === "That's everything" ? null : val('notes') };
 }
