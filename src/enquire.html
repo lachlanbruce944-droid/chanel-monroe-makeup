@@ -971,16 +971,44 @@ function clearAnswer(id){
   scheduleAnswerReturn();
   (DEPENDS[id] || []).forEach(d => { if(S.answers[d] !== undefined) clearAnswer(d) });
 }
+// Updating an existing answer uses a short field-specific prompt, including any
+// previously answered dependent details that need to be selected again.
+const UPDATE_PROMPTS = {
+  name:'What name should Chanel use for your enquiry?',
+  selfie:'Choose a replacement selfie, or skip to remove it from your enquiry.',
+  category:'Choose the booking type and style you would like to switch to.',
+  look:'Which service would you like to change your enquiry to?',
+  lesson_focus:'Update what you would like to cover in your lesson. Select all that apply.',
+  sub_style:'Which style would you like to use instead?',
+  refs:'Update your reference looks. Add or remove photos, then confirm your selection.',
+  quantity:'Update how many people need makeup.',
+  start_window:'Update your appointment hours. Early or late appointments may have an additional fee, confirmed in your quote.',
+  event_date:'Choose your updated makeup date and time. Changing this also means choosing your phone consultation again.',
+  ready_by:'Choose your updated makeup time.',
+  location:'Which suburb should Chanel use for your appointment now? Travel costs will be checked again.',
+  bridal_trial:'Update whether you would like a wedding trial.',
+  skin_type:'Update your skin type for Chanel.',
+  allergies:'Update your allergies or sensitivities. Select all that apply, or choose None.',
+  extras:'Update the other beauty services you would like. Select all that apply.',
+  team:'Update your beauty team. Add or remove artists, then confirm your selection.',
+  email:'What email address should receive your enquiry confirmation?',
+  phone:'What mobile number should Chanel call for your consultation?',
+  consult_at:'Choose your updated 30-minute phone consultation in Brisbane time, at least 24 hours before your makeup appointment.',
+  notes:'Update your notes for Chanel, or choose That’s everything to clear them.'
+};
+function updatePrompt(q){
+  if(q.id==='quantity'){
+    const kind=qtyKind(S.answers);
+    if(kind==='looks')return 'Update how many makeup looks your shoot needs.';
+    if(kind==='characters')return 'Update how many characters need makeup.';
+  }
+  if(q.id==='event_date' && startMode(S.answers))return 'Choose your updated appointment start. You will also need to choose your phone consultation again.';
+  return UPDATE_PROMPTS[q.id] || `Update your ${q.label.toLowerCase()} below.`;
+}
 async function goBack(){
   if(S.busy){ S.skip = true; await S.typing }
-  const id = S.history.pop(); if(!id) return;
-  const q = QUESTIONS.find(x => x.id === id);
-  S.prevAnswer = { [id]: S.answers[id] };
-  clearAnswer(id);
-  comp.innerHTML = '';
-  me('↩ Back');
-  updateDev(); if(S.tab === 'all') renderGallery();
-  askNext();
+  const id = S.history[S.history.length-1]; if(!id) return;
+  await editAnswer(id);
 }
 /* ---------- QUOTE ESTIMATE (shown on the summary; Chanel confirms on the call) ---------- */
 function estimate(){
@@ -1144,8 +1172,9 @@ async function askNext(){
     return askNext();
   }
   comp.innerHTML = '';
-  let text = q.ask(S.answers);
-  if(S.forFilled && q.id !== 'category'){ S.forFilled = false;
+  const updating = S.updateFields?.has(q.id);
+  let text = updating ? updatePrompt(q) : q.ask(S.answers);
+  if(!updating && S.forFilled && q.id !== 'category'){ S.forFilled = false;
     text = `${S.answers.selfie === 'added' ? 'Perfect, thank you! 📸' : `Lovely to meet you, ${first(S.answers.name)}!`} You selected ${PRICES.looks[S.answers.look]?.name || cat(S.answers).name}, so that's filled in ✨ (tap Back to change it).\n\n` + text }
   const instant = q.id === 'name' && introSeen();
   if(q.id === 'name') try{ sessionStorage.setItem('cmm-intro-seen', '1') }catch(e){}
@@ -1159,6 +1188,7 @@ async function answer(q, value, shown){
   if(S.busy){ S.skip = true; await S.typing }   // answered while it was still typing: finish the line first
   S.submissionId=null;
   S.answers[q.id] = value;
+  S.updateFields?.delete(q.id);
   S.history = (S.history || []).filter(x => x !== q.id).concat(q.id);
   saveDraft();
   comp.innerHTML = '';
@@ -1450,13 +1480,16 @@ async function editAnswer(id){
   $('#summary')?.remove();
   if(id==='ready_by') id='event_date';
   const q = QUESTIONS.find(x => x.id === id);
+  if(!q)return;
+  S.updateFields = new Set([...(S.updateFields || []), ...Object.keys(S.answers)]);
   S.prevAnswer = { [id]: S.answers[id] };
   clearAnswer(id);
+  S.updateFields = new Set([...S.updateFields].filter(key => S.answers[key] === undefined));
   S.history = (S.history || []).filter(key => S.answers[key] !== undefined);
   saveDraft();
   comp.innerHTML = '';
   me(`Change ${q.label.toLowerCase()}`);
-  S.typing = say(q.ask(S.answers), () => renderComposer(q));
+  S.typing = say(updatePrompt(q), () => renderComposer(q));
   await S.typing;
 }
 async function submit(){

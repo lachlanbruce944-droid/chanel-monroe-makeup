@@ -1,3 +1,7 @@
+## 26 November 2026 — Enquiry update prompts
+
+Back arrows and summary edits use short prompts tailored to the detail being updated, including previously answered dates cleared by a scheduling change. Initial questions keep their original wording.
+
 ## 26 November 2026 — Remove patch-test references
 
 Removed the patch-test enquiry question, pricing text, lesson tile and email wording. Legacy database field remains false for new website enquiries.

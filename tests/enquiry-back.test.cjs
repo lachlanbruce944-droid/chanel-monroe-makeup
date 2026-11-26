@@ -17,3 +17,13 @@ test('changing service date invalidates ready-by and phone consult but preserves
  vm.createContext(c);vm.runInContext(html.slice(html.indexOf('const DEPENDS ='),html.indexOf('async function goBack')),c);
  c.clearAnswer('event_date');assert.equal(c.S.answers.event_date,undefined);assert.equal(c.S.answers.ready_by,undefined);assert.equal(c.S.answers.consult_at,undefined);assert.equal(c.S.answers.name,'Client');assert.equal(c.S.answers.refs,'added');assert.equal(c.S.submissionId,null);
 });
+test('back and summary edits use update prompts and reselect invalidated dates',async()=>{
+ const prompts=[];
+ const c={S:{answers:{event_date:'2026-12-12',ready_by:'12:00',consult_at:'2026-12-11T10:00',email:'client@example.com'},history:['event_date','email']},QUESTIONS:[{id:'event_date',label:'Makeup date'},{id:'email',label:'Email'}],msgs:{querySelectorAll:()=>[]},scheduleAnswerReturn(){},$:()=>null,saveDraft(){},comp:{},me(){},say:async t=>prompts.push(t),renderComposer(){},qtyKind:()=>'',startMode:()=>false};
+ vm.createContext(c);
+ vm.runInContext(html.slice(html.indexOf('const DEPENDS ='),html.indexOf('/* ---------- QUOTE')),c);
+ vm.runInContext(html.slice(html.indexOf('async function editAnswer('),html.indexOf('async function submit(')),c);
+ await c.goBack();assert.match(prompts[0],/What email address should receive/);assert.equal(c.S.answers.event_date,'2026-12-12');
+ await c.editAnswer('event_date');assert.match(prompts[1],/updated makeup date/);assert.equal(c.S.answers.consult_at,undefined);assert.equal(c.S.updateFields.has('consult_at'),true);
+ assert.match(c.updatePrompt({id:'consult_at'}),/updated 30-minute phone consultation/);
+});
