@@ -1,3 +1,7 @@
+## 27 November 2026 — Fill mobile pricing image frames
+
+Fix competing pricing-layout CSS that overrode the mobile image row. Each swipe image fills the frame width with cover sizing; remove the black gallery background.
+
 ## 27 November 2026 — Move selection notifications
 
 Align added-look and connection notifications to the left and above the return bar while browsing, keeping Enquiry unobstructed on mobile.
