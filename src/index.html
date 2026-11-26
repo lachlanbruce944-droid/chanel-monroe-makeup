@@ -1085,6 +1085,7 @@ body.m .md-g.open .md-subs{display:block}
 body.m .md-subs a{display:block;padding:8px 26px 8px 40px;font-size:14px;color:var(--soft);text-decoration:none}
 body.m .md-subs a:first-child{color:var(--fg);font-weight:500}
 body.m .md-enq{align-self:flex-start;margin:18px 26px 0}
+body.m .md-suggest{align-self:flex-end;margin:18px 26px 0;padding:8px 0;font:400 12px/1.4 var(--ff);letter-spacing:0;text-transform:none;text-align:right;color:var(--soft);text-decoration:underline;text-underline-offset:3px}
 /* sections, in nav order */
 body.m #mobile{display:block}
 body.m .msec{position:relative;padding:30px var(--pad) 36px;color:var(--fg);background:color-mix(in srgb,var(--bg) 92%,transparent);scroll-margin-top:var(--mbar);transition:background .5s}
@@ -2045,7 +2046,7 @@ function mInit(){
     order.map(function(o){if(o.gi==null)return '<a class="md-l" href="#m-'+o.id+'">'+esc(o.name)+'</a>';
       var g=GROUPS[o.gi];return '<div class="md-g"><button class="md-l md-t" aria-expanded="false">'+esc(g.name)+'<i aria-hidden="true"></i></button><div class="md-subs">'+
         '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="">All '+esc(g.name)+'</a>'+g.subs.map(function(sb){return '<a href="#m-'+g.id+'" data-mg="'+o.gi+'" data-ms="'+esc(sb)+'">'+esc(sb)+'</a>'}).join('')+'</div></div>'}).join('')+
-    '<a class="pill solid md-enq" href="'+BOOK+'" style="text-decoration:none">Enquire</a><a class="md-l" href="suggestions.html" style="font-size:16px;margin-top:8px">Suggest an improvement</a></div></nav>';
+    '<a class="pill solid md-enq" href="'+BOOK+'" style="text-decoration:none">Enquire</a><a class="md-suggest" href="suggestions.html">Suggest an improvement</a></div></nav>';
   var secs=order.map(function(o){
     if(o.gi==null){var P=pageHTML(o.id);if(o.id==='about')mOwn=P.own;return '<section class="msec mpage" id="m-'+o.id+'" data-g="'+o.id+'">'+P.h+'</section>'}
     var g=GROUPS[o.gi];

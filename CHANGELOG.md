@@ -1,3 +1,7 @@
+## 26 November 2026 — Smaller suggestion link
+
+- Make the mobile menu suggestion link a small, right-aligned link beneath Enquire.
+
 ## 26 November 2026 — Website suggestions
 
 - Add Suggest an improvement beneath Enquire in the mobile menu, linking to a category and message form.
