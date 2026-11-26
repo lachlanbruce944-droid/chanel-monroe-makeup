@@ -10,7 +10,7 @@ const SB_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 const RESEND = Deno.env.get("RESEND_API_KEY") ?? "";
 const FROM = Deno.env.get("FROM_EMAIL") ?? "Chanel Monroe Makeup <enquiries@chanelmonroe.net>";
 const BUSINESS = Deno.env.get("BUSINESS_EMAIL") ?? "makeup@chanelmonroe.net";
-const SITE = "https://chanelmonroe.net/";
+const SITE = "https://chanelmonroe.info/";
 const CORS = { "Access-Control-Allow-Origin": "*", "Access-Control-Allow-Headers": "content-type", "Access-Control-Allow-Methods": "POST, OPTIONS" };
 
 const esc = (v: unknown) => String(v ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]!));
@@ -94,7 +94,7 @@ let avatarCache: Record<string, string> | null = null;
 async function avatars(): Promise<Record<string, string>> {   // older enquiries did not store the artist photo: look it up on the website
   if (avatarCache) return avatarCache;
   try {
-    const txt = await (await fetch("https://chanelmonroe.net/data/affiliates.js")).text();
+    const txt = await (await fetch("https://chanelmonroe.info/data/affiliates.js")).text();
     const list = JSON.parse(txt.slice(txt.indexOf("["), txt.lastIndexOf("]") + 1));
     avatarCache = Object.fromEntries(list.map((x: any) => [x.h, safeURL(x.avatar)]));
   } catch { avatarCache = {}; }

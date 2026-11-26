@@ -3,7 +3,7 @@
  'use strict';
  const KEY='cm-image-removal-flags-v1';
  function canonical(src){
-  try { const u=new URL(src,'https://chanelmonroe.net/');if(!['http:','https:'].includes(u.protocol))return '';return decodeURIComponent(u.pathname).replace(/^.*\/storage\/v1\/object\/public\/media\//,'').replace(/^\//,'').replace(/(?:\.m|-800)\.webp$/i,'.webp'); } catch(_){return '';}
+  try { const u=new URL(src,'https://chanelmonroe.info/');if(!['http:','https:'].includes(u.protocol))return '';return decodeURIComponent(u.pathname).replace(/^.*\/storage\/v1\/object\/public\/media\//,'').replace(/^\//,'').replace(/(?:\.m|-800)\.webp$/i,'.webp'); } catch(_){return '';}
  }
  function gesture(onHold,clock={set:setTimeout,clear:clearTimeout}){
   let pending=null;
