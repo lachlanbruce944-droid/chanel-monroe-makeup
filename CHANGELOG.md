@@ -1,3 +1,7 @@
+### 2026-11-26 — Static About profile
+- Keep Chanel’s original profile photo static and remove the About photo pause buttons.
+- Retain work carousel rotation, previous/next navigation, hover/focus pausing and reduced-motion support.
+
 ## 26 November 2026 — About photo carousels
 
 - Rotate the About portrait and catalogued Chanel selfie every two seconds, with pause control.

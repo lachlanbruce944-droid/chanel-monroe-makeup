@@ -601,30 +601,22 @@ function isChanelPortrait(x){return x.subject==='chanel'||x.post==='https://www.
 function buildAboutGrid(own){
   initTours();
   clearInterval(gridTimer);
-  var grid=$('agrid'),hero=document.querySelector('.about-hero .me');
-  var portraits=[window.ABOUT_PHOTO||'images/about/chanel.jpg'].concat(items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)&&isChanelPortrait(x)}).map(function(x){return x.src}));
-  portraits=portraits.filter(function(src,i){return portraits.indexOf(src)===i});
-  var pi=0,k=0,tick=0,paused=false,portraitPaused=false,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(hero&&portraits.length>1){
-    var pause=document.createElement('button');pause.type='button';pause.textContent='Pause';pause.setAttribute('aria-label','Pause portrait rotation');
-    pause.onclick=function(){portraitPaused=!portraitPaused;pause.textContent=portraitPaused?'Play':'Pause';pause.setAttribute('aria-label',(portraitPaused?'Resume':'Pause')+' portrait rotation')};hero.appendChild(pause);
-    if(still){portraitPaused=true;pause.textContent='Play';pause.setAttribute('aria-label','Resume portrait rotation')}
-  }
+  var grid=$('agrid');
+  var k=0,tick=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function show(){
     if(!grid||!own.length)return;
     var x=own[k];
-    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-pause>'+((paused||still)?'Play':'Pause')+'</button><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
+    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
   }
   if(grid){
     grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work carousel");
-    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('[data-pause]')){paused=!(paused||still);still=false;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
+    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
     grid.onmouseenter=function(){grid.dataset.hover='1'};grid.onmouseleave=function(){delete grid.dataset.hover};show();
   }
   gridTimer=setInterval(function(){
-    if((!grid||!grid.isConnected)&&(!hero||!hero.isConnected)){clearInterval(gridTimer);return}
+    if(!grid||!grid.isConnected){clearInterval(gridTimer);return}
     if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
-    if(hero&&hero.isConnected&&!portraitPaused&&portraits.length>1){pi=(pi+1)%portraits.length;var img=hero.querySelector('img');img.onerror=function(){this.src=portraits[0];this.onerror=null};img.src=portraits[pi]}
-    if(grid&&grid.isConnected&&own.length>1&&!paused&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
+    if(grid&&grid.isConnected&&own.length>1&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
   },2000);
 }
 
