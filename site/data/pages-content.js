@@ -30,7 +30,7 @@ window.LESSON_VIDEOS = [
   { title: 'Taking it all off properly', topic: 'Removal' }
 ];
 
-/* Reviews. While this list only has placeholders, the Reviews page shows "coming soon" cards.
+/* Reviews. Reviews stays hidden until this list contains a client review.
    Real review:  { name: 'Sarah', event: 'Wedding, March 2026', stars: 5, text: '...', source: 'Google' }
    Only add reviews the client has agreed to share. */
 window.REVIEWS = [

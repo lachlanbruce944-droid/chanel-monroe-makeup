@@ -1315,7 +1315,10 @@ var GROUPS = [
   {id:'parties',  name:'Parties & Seasons', tag:'Every celebration needs a little sparkle.',
    subs:['Glitter bar and gems','Kids face paint','Express designs','Easter','Christmas and New Year','Holiday specials'], looks:['easter','christmas','birthday','festival','hens','mini-paint']}
 ];
-var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'reviews',name:'Reviews'},{id:'affiliates',name:'Connections'}];   /* 2026-11-16: Brands and Products removed from the site */
+var publishedReviews = (window.REVIEWS || []).filter(function(r){
+  return r && !r.placeholder && typeof r.text === 'string' && r.text.trim();
+});
+var PAGES = [{id:'about',name:'About'},{id:'lessons',name:'Lessons'},{id:'reviews',name:'Reviews'},{id:'affiliates',name:'Connections'}].filter(function(p){return p.id!=='reviews'||publishedReviews.length>0});
 var DESC = {
  'No-makeup makeup':['Skin that looks like skin, only better','A barely-there base with a soft flush'],
  'Clean polished':['Clean, even skin and groomed brows','Polished, simple and camera-ready'],
@@ -1729,11 +1732,11 @@ function lessonsHTML(){
       (x.src?'<span class="play" aria-hidden="true"></span>':'<span class="soon-t">Coming soon</span>')+'</div><b>'+esc(x.title)+'</b><small>'+esc(x.topic||'')+'</small></div>'}).join(''))+
     '<p class="note-small">Tutorials are on the way. Want a lesson sooner? Tap Book or Enquire.</p>'}
 function reviewsHTML(){
-  var R=window.REVIEWS||[],real=R.filter(function(r){return !r.placeholder});
+  if(!publishedReviews.length)return '';
   var star=function(n){var h='';for(var i=0;i<5;i++)h+='<i class="'+(i<n?'on':'')+'">★</i>';return '<span class="stars">'+h+'</span>'};
-  return '<h1>Reviews</h1><p class="lead">'+(real.length?'Kind words from brides, birthday girls, shoot crews and everyone in between.':'Client reviews are on their way. Booked with Chanel before? She’d love to hear how it went.')+'</p>'+
-    carousel((real.length?real:R).map(function(r){return r.placeholder?'<div class="rev soon">'+star(0)+'<p>A client review will appear here soon.</p><b>Coming soon</b></div>':
-      '<div class="rev">'+star(r.stars||5)+'<p>“'+esc(r.text)+'”</p><b>'+esc(r.name)+'</b><small>'+esc([r.event,r.source].filter(Boolean).join(' · '))+'</small></div>'}).join(''))}
+  return '<h1>Reviews</h1><p class="lead">Kind words from brides, birthday girls, shoot crews and everyone in between.</p>'+
+    carousel(publishedReviews.map(function(r){
+      return '<div class="rev">'+star(r.stars||5)+'<p>“'+esc(r.text)+'”</p><b>'+esc(r.name)+'</b><small>'+esc([r.event,r.source].filter(Boolean).join(' · '))+'</small></div>'}).join(''))}
 /* Only connected, contacted and explicitly published CRM associates are public. */
 var TEAM=null;
 (function(){var u=window.SUPABASE_URL||'https://qxiugfatpybldluipcyy.supabase.co',k=window.SUPABASE_KEY||'sb_publishable_sGLIpIxvos66FLVI9vPSbg_qXsTT6rt';

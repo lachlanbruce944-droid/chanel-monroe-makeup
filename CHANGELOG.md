@@ -1,3 +1,7 @@
+## 27 November 2026 — Hide empty Reviews
+
+Show Reviews in the desktop menu and mobile page once a client review is added. Placeholder cards stay hidden.
+
 ## 27 November 2026 - Natural gallery video
 
 Hide the @beazackova Clean polished video (DZ3-RxdoZca) using the saved Edit mode selection.
