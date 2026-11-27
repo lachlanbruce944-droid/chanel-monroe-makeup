@@ -3,7 +3,9 @@
    captions: replacement descriptions.  moved: images moved to another section or style.
    log: a dated record of every saved change. */
 window.SITE_OVERRIDES = {
- "hidden": [],
+ "hidden": [
+  "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/videos/natural_clean-polished_beazackova_dz3-rxdozca.mp4"
+ ],
  "pinned": {},
  "captions": {},
  "moved": {},
@@ -526,6 +528,18 @@ window.SITE_OVERRIDES = {
      "section": "",
      "image": "",
      "detail": "3 hidden items removed; files in M:\\CMM-Site\\_removed; listed in data/removed.json"
+    }
+   ]
+  },
+  {
+   "saved": "2026-11-27T02:15:32.586Z",
+   "changes": [
+    {
+     "time": "2026-11-27T02:14:32.878Z",
+     "action": "hide",
+     "section": "natural",
+     "image": "https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/videos/natural_clean-polished_beazackova_dz3-rxdozca.mp4",
+     "detail": ""
     }
    ]
   }

@@ -1,3 +1,7 @@
+## 27 November 2026 - Natural gallery video
+
+Hide the @beazackova Clean polished video (DZ3-RxdoZca) using the saved Edit mode selection.
+
 ## 27 November 2026 — Fill mobile pricing image frames
 
 Fix competing pricing-layout CSS that overrode the mobile image row. Each swipe image fills the frame width with cover sizing; remove the black gallery background.
