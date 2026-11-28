@@ -12,7 +12,7 @@ function setup(fetch,stored=new Map()){
  const window={localStorage:{getItem:k=>stored.get(k),setItem:(k,v)=>stored.set(k,v)},addEventListener:(name,fn)=>online[name]=fn};
  let n=0;vm.runInNewContext(script,{document,window,fetch,crypto:{randomUUID:()=>`00000000-0000-4000-8000-${String(++n).padStart(12,'0')}`},URL,URLSearchParams,location:{search:''},setTimeout:fn=>{timers.push(fn);return timers.length},clearTimeout(){},AbortSignal,MutationObserver:class{observe(){}},requestAnimationFrame(){}});
  const dialog=document.body.children.find(c=>c.id==='cm-review-dialog');
- return {stored,online,dialog,button:text=>dialog.all().find(c=>c.tag==='button'&&c.textContent===text),hold(){const img={src:'https://example.com/images/chanel/test.webp',alt:'Test About photo',closest:()=>true};events.pointerdown({target:{closest:()=>img},pointerId:1,clientX:10,clientY:10,button:0});timers.pop()();}};
+ return {stored,online,dialog,events,timers,button:text=>dialog.all().find(c=>c.tag==='button'&&c.textContent===text),hold(){const img={src:'https://example.com/images/chanel/test.webp',alt:'Test About photo',closest:()=>true};events.pointerdown({target:{closest:()=>img},pointerId:1,clientX:10,clientY:10,button:0});timers.pop()();}};
 }
 const settle=()=>new Promise(r=>setImmediate(r));
 test('About hold confirms before submitting; saves flag and undo in order',async()=>{
@@ -32,4 +32,18 @@ test('legacy local About flags migrate once with references intact',async()=>{
  const stored=new Map([[FLAG,JSON.stringify([{source:'images/chanel/old.webp',url:'https://example.com/images/chanel/old.webp',reason:'Remove selfie'}])]]),sent=[];
  setup(async(_,opts)=>{sent.push(JSON.parse(opts.body));return {ok:true}},stored);await settle();
  assert.equal(sent.length,1);assert.equal(sent[0].section,'about');assert.equal(sent[0].details.reason,'Remove selfie');
+});
+
+test('mobile caption hold opens the photo prompt and consumes the following click',()=>{
+ const c=setup(async()=>({ok:true}));
+ const img={src:'https://example.com/images/chanel/mobile.webp',alt:'Mobile About photo',closest:()=>true};
+ const surface={querySelector:()=>img};
+ const caption={closest:selector=>selector.includes('.tile img')?null:surface};
+ c.events.pointerdown({target:caption,pointerId:7,pointerType:'touch',clientX:30,clientY:50,button:0});
+ c.timers.pop()();
+ assert.equal(c.dialog.open,true);
+ assert.ok(c.button('Save removal request'));
+ let prevented=false,stopped=false;
+ c.events.click({target:caption,preventDefault(){prevented=true},stopImmediatePropagation(){stopped=true}});
+ assert.equal(prevented,true);assert.equal(stopped,true);
 });
