@@ -295,7 +295,7 @@ function pageHTML(id){
     h='<div class="about-hero"><figure class="me"><button type="button" class="profile-gallery-open" aria-label="Open Chanel’s photo gallery"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></button></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
-      '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
+      '<ol class="tline" aria-label="Chanel’s journey">'+ABOUT_BIO.map(function(b,i){return '<li><button type="button" class="milestone" aria-expanded="false" aria-controls="milestone-detail-'+i+'"><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="milestone-hint">More</span></button><div class="milestone-detail" id="milestone-detail-'+i+'" hidden><span class="ln">'+esc(b[2])+'</span></div></li>'}).join('')+'</ol>'+
       tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
@@ -325,7 +325,7 @@ function pageHTML(id){
 }
 
 /* ---- About: short biography, taken from Chanel's Instagram (posts, tags and highlights). Confirm with Chanel before going live. ---- */
-/* [year, title, line] in date order: shown as a one-row timeline */
+/* [year, title, line] in date order: compact cards expand on tap. */
 var ABOUT_BIO=[
  ['2017','Makeup school','Trained at the Huxley School of Makeup; created "Gypsy Witch" for its competition.'],
  ['2017','Character & SFX','Halloween characters, SFX creatures and gothic glam.'],
@@ -333,6 +333,19 @@ var ABOUT_BIO=[
  ['2021','Cosmetic tattoo','Cosmetic tattoo training with Trace Cosmetic Tattoo Academy.'],
  ['Today','Mobile on the Gold Coast','Bridal, glam, events, shoots and parties: I come to you.']
 ];
+
+/* Keep milestone expansion within the About layout, with one detail open at a time. */
+document.addEventListener('click',function(e){
+  var button=e.target.closest('.milestone');if(!button)return;
+  var list=button.closest('.tline'),open=button.getAttribute('aria-expanded')!=='true';
+  list.querySelectorAll('.milestone').forEach(function(b){
+    var selected=b===button&&open;
+    b.setAttribute('aria-expanded',String(selected));
+    b.closest('li').classList.toggle('expanded',selected);
+    b.querySelector('.milestone-hint').textContent=selected?'Less':'More';
+    document.getElementById(b.getAttribute('aria-controls')).hidden=!selected;
+  });
+});
 
 /* ---- brand websites (checked Nov 2026) ---- */
 var BRAND_URL={'Ultra Violette':'https://www.ultraviolette.com.au','Nude by Nature':'https://www.nudebynature.com.au','MCoBeauty':'https://www.mcobeauty.com','Designer Brands':'https://www.dbcosmetics.com.au','Napoleon Perdis':'https://www.napoleonperdis.com','Adorn Cosmetics':'https://www.adorncosmetics.com.au','Bloom Cosmetics':'https://bloomcosmetics.com','INIKA Organic':'https://inikaorganic.com','Bali Body':'https://au.balibodyco.com','Natio':'https://www.natio.com.au','Ere Perez':'https://ereperez.com','ModelCo':'https://www.modelco.com','Lanolips':'https://lanolips.com','Frank Body':'https://frankbody.com','Sand & Sky':'https://au.sandandsky.com','Go-To Skincare':'https://gotoskincare.com','LaGlam Minerals':'https://australianmade.com.au/licensees/laglam-minerals','MECCA Cosmetica':'https://www.mecca.com/en-au',
