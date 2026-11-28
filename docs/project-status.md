@@ -1,3 +1,9 @@
+## 29 November 2026 — Animated About redesign
+
+Replace the single-photo carousel with a responsive masonry gallery (12 photos per page, all 225 retained), gentle image motion and expansion from the selected tile into the existing Instagram viewer. Preserve captions, comments, source links, biography copy, all timeline milestones, site-tour chapters and connected associates. Add a floating arched portrait, moving milestone cards and animated tour copy in an editorial layout. Respect reduced-motion preferences; lazy-load thumbnails and pause gallery animation off screen. Keep keyboard focus in the expanded viewer and restore it on close.
+
+Validation: publish build and 14 reference/navigation checks pass. Desktop browser checked loaded media, photo expansion, captions/comments, close/focus, pagination, active animations and no horizontal page overflow. Physical phone checks remain pending. Publication awaits owner authorization.
+
 ## 29 November 2026 — Owner-confirmed Chanel photo labels
 
 Record 79 owner-selected images as Chanel Monroe in `src/data/photo-subject-labels.json`, with stable review IDs, source paths, Supabase bucket/object names, post references and confirmation provenance. Mark the subject review complete in `docs/about-photo-review.json`. Labels use the owner's explicit selections; unselected images remain unlabelled. No binary image or gallery visibility changes.

@@ -98,6 +98,54 @@ body[data-theme="c"]{background:transparent}
  #igBox .side{border-top:0;border-left:1px solid #efefef}
 }
 
+
+/* About — living editorial gallery, retaining all existing copy and post details. */
+.about-editorial{max-width:1360px;margin:auto;isolation:isolate}
+.about-editorial .about-hero{display:grid;grid-template-columns:1fr 1.35fr;align-items:center;gap:clamp(28px,6vw,90px);padding:42px 0 60px;margin:0}
+.about-editorial .about-hero .me{width:100%;max-width:420px;aspect-ratio:4/5;border-radius:44% 44% 20px 20px;justify-self:center;transform:rotate(-3deg);animation:aboutPortrait 10s ease-in-out infinite alternate;box-shadow:20px 24px 0 color-mix(in srgb,var(--acc) 13%,transparent)}
+.about-editorial .me img{object-fit:cover;animation:aboutZoom 16s ease-in-out infinite alternate}
+.about-editorial .brand-title{font-size:clamp(44px,6.6vw,96px);line-height:.98;animation:aboutReveal 1s both}
+.about-editorial .lead{font-size:clamp(16px,1.6vw,21px);max-width:42ch;animation:aboutReveal 1s .12s both}
+.about-editorial .about-lines{font-size:clamp(24px,2.5vw,36px);color:var(--acc);animation:aboutReveal 1s .24s both}
+.about-editorial .tline{gap:14px;margin:0 0 64px;padding:12px 0 20px;scroll-snap-type:x proximity}
+.about-editorial .tline li{flex:1 0 180px;padding:24px 20px;border:1px solid var(--line);border-radius:20px;background:color-mix(in srgb,var(--card) 75%,transparent);animation:aboutDrift 7s ease-in-out infinite alternate;transition:background .4s,translate .4s}
+.about-editorial .tline li:nth-child(even){animation-delay:-3.5s}
+.about-editorial .tline li:hover{translate:0 -6px;background:var(--card)}
+.about-editorial .tline li:before{display:none}
+.about-editorial .tline li:after{top:auto;bottom:12px;left:20px;width:24px;height:2px;border:0;border-radius:0}
+.about-editorial .tline .yr{position:static;display:block;padding:0;margin-bottom:20px;background:none;font-size:14px}
+.about-editorial .tline b{font-size:25px}.about-editorial .tline .ln{font-size:16px;line-height:1.55}
+.about-work h3{font-size:clamp(36px,5vw,64px);font-weight:400;margin:0 0 28px}
+.about-editorial .agrid{width:100%;margin:0 0 70px;text-align:left}
+.about-masonry{columns:3;column-gap:18px}
+.about-editorial .agrid .cell{display:inline-block;vertical-align:top;width:100%;height:auto;margin:0 0 18px;border-radius:16px;break-inside:avoid;background:var(--bg2);animation:aboutReveal .8s both;animation-delay:calc(var(--i) * 45ms);transition:translate .5s,box-shadow .5s}
+.about-editorial .agrid .cell img{height:auto;width:100%;min-height:180px;object-fit:cover;animation:aboutZoom 14s ease-in-out infinite alternate;animation-delay:calc(var(--i) * -1.7s)}
+.about-editorial .agrid .cell:nth-child(3n+2) img{aspect-ratio:3/4}.about-editorial .agrid .cell:nth-child(3n) img{aspect-ratio:1}
+.about-editorial .agrid .cell:hover,.about-editorial .agrid .cell:focus-visible{translate:0 -5px;box-shadow:0 16px 32px #0002}
+.about-editorial .agrid .cell span{font:16px/1.45 var(--fh);padding:45px 16px 14px;text-align:left}
+.about-editorial .about-controls{justify-content:space-between;border-top:1px solid var(--line);padding-top:18px}
+.about-editorial .about-controls button{border-radius:10px;transition:background .3s,transform .3s}
+.about-editorial .about-controls button:hover{background:var(--bg2);transform:translateY(-3px)}
+.about-editorial .atour{display:grid;grid-template-columns:180px 1fr;gap:24px;margin:0 0 54px}
+.about-editorial .atour-tabs{flex-direction:column;overflow:visible;gap:14px;justify-content:center}
+.about-editorial .atour-tabs button{flex:0;font-size:16px;padding:8px;min-width:0;transition:translate .4s}
+.about-editorial .atour-tabs button[aria-selected=true]{translate:8px 0}
+.about-editorial .atour-stage{min-height:530px;border-radius:30px}
+.about-editorial .atour-card{background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid var(--line);animation:aboutDrift 8s ease-in-out infinite alternate}
+.about-editorial .atour-x::after{display:none}.about-editorial .atour-x{font-size:16px}
+.about-editorial .atour-t{font-size:36px}
+.about-editorial .atour-cta.on{animation:aboutReveal .6s both}
+#igMod.about-expanded{background:#17131185;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+#igMod.about-expanded #igBox{border-radius:24px;overflow:hidden;box-shadow:0 30px 100px #0005}
+@keyframes aboutReveal{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes aboutPortrait{from{transform:rotate(-3deg) translateY(-5px)}to{transform:rotate(1deg) translateY(8px)}}
+@keyframes aboutZoom{from{transform:scale(1)}to{transform:scale(1.065)}}
+@keyframes aboutDrift{from{transform:translateY(-3px)}to{transform:translateY(4px)}}
+body.m .about-editorial .about-hero{display:grid;grid-template-columns:1fr;gap:30px;text-align:left;padding:28px 0 40px}
+body.m .about-editorial .about-hero .me{width:min(70vw,340px)}
+body.m .about-editorial .me-txt{width:100%}
+@media(max-width:700px){.about-masonry{columns:2;column-gap:12px}.about-editorial .agrid .cell{margin-bottom:12px}.about-editorial .atour{display:block}.about-editorial .atour-tabs{flex-direction:row;overflow-x:auto;gap:8px;margin-bottom:20px}.about-editorial .atour-tabs button{flex:1 0 100px}.about-editorial .atour-stage{min-height:450px}.about-editorial .atour-t{font-size:28px}.about-editorial .about-controls{gap:8px}.about-editorial .about-controls button{padding:10px;font-size:14px}}
+@media(prefers-reduced-motion:reduce){.about-editorial *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 </style>
 <style>
 /* ===== HEADER + NAV ===== */
@@ -1593,12 +1641,12 @@ function pageHTML(id){
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
     var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)});
-    h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
+    h='<div class="about-editorial"><div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
-      '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
+      '<section class="about-work"><h3>Chanel’s work</h3><div class="agrid" id="agrid"></div></section>'+tourHTML()+teamHTML()+
+      '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p></div>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
   if(id==='affiliates'){
@@ -1850,7 +1898,7 @@ function tourStart(el){
     A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
       (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
        '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');
-    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;
+    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;if(!still&&T.animate){[T,X].forEach(function(node){node.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:500,easing:'ease-out'})})}
     X.textContent=c.x;A.classList.add('on');
     if(still)return;
     el.style.setProperty('--dur','5200ms');
@@ -1876,25 +1924,32 @@ function tourGo(t){
   if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
 }
 function buildAboutGrid(own){
-  initTours();
-  clearInterval(gridTimer);
-  var grid=$('agrid');
-  var k=0,tick=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  initTours();clearInterval(gridTimer);
+  var grid=$('agrid'),offset=0,size=12,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(!grid)return;
+  grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work gallery");
   function show(){
-    if(!grid||!own.length)return;
-    var x=own[k];
-    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
+    if(!own.length){grid.innerHTML='';return}
+    var end=Math.min(offset+size,own.length);
+    grid.innerHTML='<div class="about-masonry">'+own.slice(offset,end).map(function(x,i){return '<button type="button" class="cell" data-photo="'+(offset+i)+'" style="--i:'+i+'" aria-label="Open photo '+(offset+i+1)+'"><img loading="lazy" decoding="async" src="'+esc(small(x.src))+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button>'}).join('')+'</div><div class="about-controls"><button type="button" data-step="-1">Previous photos</button><output aria-live="polite">'+(offset+1)+'–'+end+' / '+own.length+'</output><button type="button" data-step="1">Next photos</button></div>';
   }
-  if(grid){
-    grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work carousel");
-    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
-    grid.onmouseenter=function(){grid.dataset.hover='1'};grid.onmouseleave=function(){delete grid.dataset.hover};show();
-  }
-  gridTimer=setInterval(function(){
-    if(!grid||!grid.isConnected){clearInterval(gridTimer);return}
-    if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
-    if(grid&&grid.isConnected&&own.length>1&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
-  },2000);
+  grid.onclick=function(e){
+    var step=e.target.closest('[data-step]'),cell=e.target.closest('[data-photo]');
+    if(step){offset=(offset+Number(step.dataset.step)*size+Math.ceil(own.length/size)*size)%(Math.ceil(own.length/size)*size);show();grid.querySelector('[data-step="'+step.dataset.step+'"]').focus();return}
+    if(!cell)return;
+    var rect=cell.querySelector('img').getBoundingClientRect();
+    igOpen(own,+cell.dataset.photo);var mod=$('igMod');mod.classList.add('about-expanded');
+    var image=$('igBox').querySelector('.ph img');
+    requestAnimationFrame(function(){var target=image.getBoundingClientRect();if(!still&&image.animate&&target.width&&target.height)image.animate([{transformOrigin:'top left',transform:'translate('+(rect.left-target.left)+'px,'+(rect.top-target.top)+'px) scale('+(rect.width/target.width)+','+(rect.height/target.height)+')',borderRadius:'16px'},{transformOrigin:'top left',transform:'none',borderRadius:'0'}],{duration:650,easing:'cubic-bezier(.2,.8,.2,1)'})});
+    var close=mod.querySelector('[data-close]');if(close)close.focus();
+    function restore(){if(!mod.classList.contains('open')){mod.classList.remove('about-expanded');if(cell.isConnected)cell.focus();mod.removeEventListener('click',restore);document.removeEventListener('keydown',key)}}
+    function key(e){if(e.key==='Escape'){mod.classList.remove('open');restore()}if(e.key==='Tab'&&mod.classList.contains('open')){var controls=Array.from(mod.querySelectorAll('button,a[href]')).filter(function(x){return x.getClientRects().length});var first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}}
+    mod.addEventListener('click',restore);document.addEventListener('keydown',key);
+  };
+  show();
+  // Gentle motion continues on visible images; content never changes under a pointer.
+  var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){grid.querySelectorAll('img').forEach(function(img){img.style.animationPlayState=entry.isIntersecting?'running':'paused'})})});observer.observe(grid);
+  gridTimer=setInterval(function(){if(!grid.isConnected){observer.disconnect();clearInterval(gridTimer)}},4000);
 }
 
 /* ---- EDIT MODE: drag to reorder (pins), pin, hide, re-caption, move; save to data/overrides.js ---- */
