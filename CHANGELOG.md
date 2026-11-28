@@ -1,3 +1,13 @@
+## 29 November 2026 — About fits the screen
+
+Replace sideways timeline scrolling with responsive milestone cards. Tap a milestone to expand its description, with a subtle background and reveal; only one opens at a time. Website-tour navigation wraps into three columns on phones and six on desktop. Keep rotating descriptions, action buttons and work tiles within the About width. Include the pending natural-proportion work-photo sizing fix.
+
+## 29 November 2026 — Fit work tiles to each image
+
+Size the main Chanel’s Work tile to its photo’s natural proportions, within the available width and responsive gallery height. Remove empty bars above and below photos while preserving full images, rounded corners, captions, rotation and side thumbnails.
+
+Validation: publish build and About photo checks passed.
+
 ## 29 November 2026 — Labelled profile gallery and work thumbnails
 
 Cycle the About profile through the 79 owner-labelled Chanel photos every two seconds. Clicking opens the complete collection in an 11-column, 8-row desktop grid, adapting to four columns on phones; each tile opens its full Instagram preview. Show the remaining 146 photos in Chanel’s work with one large main image and independently scrollable thumbnail tiles on both sides. Preserve original captions, comments and post links. Missing thumbnails fall back to their original images. Respect reduced motion and pause automatic changes during interaction.

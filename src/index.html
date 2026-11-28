@@ -404,7 +404,7 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
   .po .po-sheet{max-height:calc(var(--vh) - 20px)}
 }
 @media (max-width:380px){.fbrand{display:none}}  /* very small phones: keep the buttons, drop the wordmark */
-/* About timeline: one row, a line with a dot per milestone; scrolls sideways on narrow screens, never stacks */
+/* About website tour and responsive biography milestones. */
 .atour{margin:8px 0 30px}
 .atour-stage{position:relative;min-height:clamp(330px,54vh,470px);border-radius:22px;overflow:hidden;background:var(--bg2);display:grid;place-items:center;isolation:isolate}
 .atour-pics{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .45s ease}
@@ -1193,13 +1193,14 @@ body.m .lb img,body.m .lb video{max-width:94vw;max-height:72svh}
 .about-hero .me .profile-gallery-open img{width:100%;height:100%;object-fit:cover;animation:profileReveal .7s ease-out}
 .profile-gallery-open:focus-visible,.work-thumb:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
 .agrid.work-gallery{width:min(100%,1400px)}
-.work-stage{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2.8fr) minmax(90px,1fr);gap:14px;height:clamp(280px,65vh,720px)}
+.work-stage{--work-height:clamp(280px,65vh,720px);display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2.8fr) minmax(90px,1fr);gap:14px;height:var(--work-height)}
 .work-wing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:max-content;align-content:start;gap:8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:4px}
 .work-thumb{padding:0;border:2px solid transparent;border-radius:9px;overflow:hidden;aspect-ratio:1;background:var(--bg2);cursor:pointer;transition:opacity .3s,transform .3s,border-color .3s;opacity:.7}
 .work-thumb:hover,.work-thumb[aria-pressed=true]{opacity:1;border-color:var(--acc);transform:scale(.96)}
 .work-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.work-gallery .work-stage .cell{height:100%;min-width:0;border-radius:18px}
-.work-gallery .cell img{object-fit:contain;animation:workReveal .6s ease-out}
+.work-main{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.work-gallery .work-stage .cell{width:fit-content;height:auto;max-width:100%;min-width:0;flex:0 1 auto;border-radius:18px;background:transparent}
+.work-gallery .cell img{width:auto;height:auto;max-width:100%;max-height:var(--work-height);object-fit:contain;animation:workReveal .6s ease-out}
 .profile-collection{box-sizing:border-box;width:min(1500px,96vw);max-width:96vw;height:min(880px,94dvh);max-height:94dvh;padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--bg,#f2eee8);color:var(--fg,#26221f);box-shadow:0 25px 80px #0005;overflow:hidden}
 .profile-collection::backdrop{background:#211c1980;backdrop-filter:blur(14px)}
 .profile-collection header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:16px;height:40px}
@@ -1211,8 +1212,40 @@ body.m .lb img,body.m .lb video{max-width:94vw;max-height:72svh}
 .profile-photo-grid button:hover img{transform:scale(1.08)}
 @keyframes profileReveal{from{opacity:.2;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes workReveal{from{opacity:.3;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
-@media(max-width:700px){.work-stage{grid-template-columns:minmax(42px,1fr) minmax(0,4fr) minmax(42px,1fr);gap:6px;height:clamp(260px,55vh,520px)}.work-wing{grid-template-columns:1fr;gap:6px;padding:2px}.profile-collection{padding:12px}.profile-photo-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:110px;gap:6px}}
+@media(max-width:700px){.work-stage{grid-template-columns:minmax(42px,1fr) minmax(0,4fr) minmax(42px,1fr);gap:6px;--work-height:clamp(260px,55vh,520px)}.work-wing{grid-template-columns:1fr;gap:6px;padding:2px}.profile-collection{padding:12px}.profile-photo-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:110px;gap:6px}}
 @media(prefers-reduced-motion:reduce){.profile-photo-grid button,.profile-gallery-open img,.work-gallery .cell img{animation:none!important}.profile-photo-grid img,.work-thumb{transition:none}}
+
+/* About content stays within the screen; the milestone and tour navigation wrap. */
+body[data-g="about"] #info,body.m #m-about{overflow-x:clip}
+body[data-g="about"] #info>*,body.m #m-about>*,.atour,.atour-stage,.atour-card,.work-stage,.work-wing,.work-thumb{min-width:0;max-width:100%;box-sizing:border-box}
+.tline,body.m .tline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;overflow:visible;scroll-snap-type:none;padding:0;align-items:start}
+.tline li{min-width:0;max-width:100%;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);transition:background .25s,box-shadow .25s}
+.tline li::before,.tline li::after{display:none}
+.tline .milestone{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;min-height:112px;padding:14px;border:0;border-radius:14px;background:transparent;color:var(--fg);text-align:left;cursor:pointer;font:inherit;box-sizing:border-box}
+.tline .yr{position:static;padding:0;background:none;font-size:13px}
+.tline b{font-size:18px;line-height:1.2;overflow-wrap:anywhere;margin:0}
+.tline .milestone-hint{font-size:13px;color:var(--soft);margin-top:auto}
+.tline .milestone:focus-visible{outline:2px solid var(--acc);outline-offset:-3px}
+.tline li.expanded{background:var(--bg2);box-shadow:0 8px 20px #00000012}
+.tline .milestone-detail{padding:0 14px 16px;animation:milestoneReveal .25s ease-out}
+.tline .milestone-detail[hidden]{display:none}
+.tline .ln{font-size:15px;line-height:1.5;max-width:none;overflow-wrap:anywhere}
+.atour-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;overflow:visible}
+.atour-tabs button{min-width:0;width:100%;min-height:48px;padding:8px 4px;font-size:14px;line-height:1.3;overflow-wrap:anywhere;white-space:normal;box-sizing:border-box}
+.atour-card{width:min(570px,calc(100% - 28px));max-width:calc(100% - 28px);margin:20px 0;padding:20px}
+.atour-t,.atour-x,.atour-cta{overflow-wrap:anywhere;min-width:0}
+.atour-cta .pill{max-width:100%;white-space:normal;box-sizing:border-box}
+@keyframes milestoneReveal{from{opacity:.3;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+ .tline,body.m .tline{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .tline li:last-child,.tline li.expanded{grid-column:1/-1}
+ .tline .milestone{min-height:106px;padding:12px}
+ .tline b{font-size:18px}.tline .milestone-detail{padding:0 12px 14px}
+ .atour-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .atour-card{padding:16px;margin:16px 0}
+ .atour-x{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.tline li{transition:none}.milestone-detail{animation:none!important}}
 </style>
 
 
@@ -1623,7 +1656,7 @@ function pageHTML(id){
     h='<div class="about-hero"><figure class="me"><button type="button" class="profile-gallery-open" aria-label="Open Chanel’s photo gallery"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></button></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
-      '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
+      '<ol class="tline" aria-label="Chanel’s journey">'+ABOUT_BIO.map(function(b,i){return '<li><button type="button" class="milestone" aria-expanded="false" aria-controls="milestone-detail-'+i+'"><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="milestone-hint">More</span></button><div class="milestone-detail" id="milestone-detail-'+i+'" hidden><span class="ln">'+esc(b[2])+'</span></div></li>'}).join('')+'</ol>'+
       tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
@@ -1653,7 +1686,7 @@ function pageHTML(id){
 }
 
 /* ---- About: short biography, taken from Chanel's Instagram (posts, tags and highlights). Confirm with Chanel before going live. ---- */
-/* [year, title, line] in date order: shown as a one-row timeline */
+/* [year, title, line] in date order: compact cards expand on tap. */
 var ABOUT_BIO=[
  ['2017','Makeup school','Trained at the Huxley School of Makeup; created "Gypsy Witch" for its competition.'],
  ['2017','Character & SFX','Halloween characters, SFX creatures and gothic glam.'],
@@ -1661,6 +1694,19 @@ var ABOUT_BIO=[
  ['2021','Cosmetic tattoo','Cosmetic tattoo training with Trace Cosmetic Tattoo Academy.'],
  ['Today','Mobile on the Gold Coast','Bridal, glam, events, shoots and parties: I come to you.']
 ];
+
+/* Keep milestone expansion within the About layout, with one detail open at a time. */
+document.addEventListener('click',function(e){
+  var button=e.target.closest('.milestone');if(!button)return;
+  var list=button.closest('.tline'),open=button.getAttribute('aria-expanded')!=='true';
+  list.querySelectorAll('.milestone').forEach(function(b){
+    var selected=b===button&&open;
+    b.setAttribute('aria-expanded',String(selected));
+    b.closest('li').classList.toggle('expanded',selected);
+    b.querySelector('.milestone-hint').textContent=selected?'Less':'More';
+    document.getElementById(b.getAttribute('aria-controls')).hidden=!selected;
+  });
+});
 
 /* ---- brand websites (checked Nov 2026) ---- */
 var BRAND_URL={'Ultra Violette':'https://www.ultraviolette.com.au','Nude by Nature':'https://www.nudebynature.com.au','MCoBeauty':'https://www.mcobeauty.com','Designer Brands':'https://www.dbcosmetics.com.au','Napoleon Perdis':'https://www.napoleonperdis.com','Adorn Cosmetics':'https://www.adorncosmetics.com.au','Bloom Cosmetics':'https://bloomcosmetics.com','INIKA Organic':'https://inikaorganic.com','Bali Body':'https://au.balibodyco.com','Natio':'https://www.natio.com.au','Ere Perez':'https://ereperez.com','ModelCo':'https://www.modelco.com','Lanolips':'https://lanolips.com','Frank Body':'https://frankbody.com','Sand & Sky':'https://au.sandandsky.com','Go-To Skincare':'https://gotoskincare.com','LaGlam Minerals':'https://australianmade.com.au/licensees/laglam-minerals','MECCA Cosmetica':'https://www.mecca.com/en-au',
