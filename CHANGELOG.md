@@ -1,3 +1,9 @@
+## 29 November 2026 — Labelled profile gallery and work thumbnails
+
+Cycle the About profile through the 79 owner-labelled Chanel photos every two seconds. Clicking opens the complete collection in an 11-column, 8-row desktop grid, adapting to four columns on phones; each tile opens its full Instagram preview. Show the remaining 146 photos in Chanel’s work with one large main image and independently scrollable thumbnail tiles on both sides. Preserve original captions, comments and post links. Missing thumbnails fall back to their original images. Respect reduced motion and pause automatic changes during interaction.
+
+Validation: publish build and 16 automated checks passed, including exact source/deployed partitions of 79 + 146 with no missing or duplicated photos. Desktop browser checked gallery count, last-photo preview, thumbnail selection and spacing, and archived-image fallback. Physical phone testing remains pending.
+
 ## 29 November 2026 — Owner-confirmed Chanel photo labels
 
 Record 79 owner-selected images as Chanel Monroe in `src/data/photo-subject-labels.json`, with stable review IDs, source paths, Supabase bucket/object names, post references and confirmation provenance. Mark the subject review complete in `docs/about-photo-review.json`. Labels use the owner's explicit selections; unselected images remain unlabelled. No binary image or gallery visibility changes.

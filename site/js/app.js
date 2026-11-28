@@ -292,7 +292,7 @@ function pageHTML(id){
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
     var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)});
-    h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
+    h='<div class="about-hero"><figure class="me"><button type="button" class="profile-gallery-open" aria-label="Open Chanel’s photo gallery"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></button></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
@@ -574,25 +574,48 @@ function tourGo(t){
   if(t.p){if(m)mGo('m-'+t.p);else openPage(t.p);return}
   if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
 }
+function aboutPhotoGroups(own){
+  var labelled=new Set(window.CHANEL_SUBJECT_SOURCES||[]);
+  return {profile:own.filter(function(x){return labelled.has(x.src)}),work:own.filter(function(x){return !labelled.has(x.src)})};
+}
+function openProfileCollection(photos){
+  if(!photos.length)return;
+  var dialog=document.getElementById('profileCollection');if(dialog)dialog.remove();
+  dialog=document.createElement('dialog');dialog.id='profileCollection';dialog.className='profile-collection';dialog.setAttribute('aria-label','Chanel’s photo gallery');
+  dialog.innerHTML='<header><h2>Chanel Monroe · '+photos.length+' photos</h2><button type="button" data-profile-close>Close</button></header><div class="profile-photo-grid">'+photos.map(function(x,i){return '<button type="button" data-profile-photo="'+i+'" style="--i:'+i+'" aria-label="Open Chanel photo '+(i+1)+'"><img loading="lazy" src="'+esc(small(x.src))+'" data-full="'+esc(x.src)+'" onerror="this.onerror=null;this.src=this.dataset.full" alt="'+esc(desc(x))+'"></button>'}).join('')+'</div>';
+  document.body.appendChild(dialog);
+  var trigger=document.activeElement;
+  dialog.addEventListener('close',function(){if(trigger&&trigger.isConnected)trigger.focus()});
+  dialog.onclick=function(e){var tile=e.target.closest('[data-profile-photo]');if(tile){dialog.close();igOpen(photos,+tile.dataset.profilePhoto);$('igMod').querySelector('[data-close]').focus()}else if(e.target===dialog||e.target.closest('[data-profile-close]'))dialog.close()};
+  dialog.showModal();
+}
 function buildAboutGrid(own){
-  initTours();
-  clearInterval(gridTimer);
-  var grid=$('agrid');
-  var k=0,tick=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  initTours();clearInterval(gridTimer);
+  var groups=aboutPhotoGroups(own),photos=groups.profile,work=groups.work,grid=$('agrid'),profile=document.querySelector('.profile-gallery-open'),portrait=profile&&profile.querySelector('img');
+  var k=0,p=0,tick=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(profile)profile.onclick=function(){openProfileCollection(photos)};
+  function setPortrait(){if(portrait&&photos.length){portrait.onerror=function(){this.onerror=null;this.src=photos[p].src};portrait.src=small(photos[p].src);portrait.alt='Chanel Monroe — open all '+photos.length+' labelled photos'}}
+  setPortrait();
+  function thumb(x,i){return '<button type="button" class="work-thumb" data-work-photo="'+i+'" aria-label="Show work photo '+(i+1)+'" aria-pressed="false"><img loading="lazy" src="'+esc(small(x.src))+'" data-full="'+esc(x.src)+'" onerror="this.onerror=null;this.src=this.dataset.full" alt="'+esc(desc(x))+'"></button>'}
   function show(){
-    if(!grid||!own.length)return;
-    var x=own[k];
-    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
+    if(!grid||!work.length)return;
+    var x=work[k],main=grid.querySelector('.work-main');
+    main.innerHTML='<button type="button" class="cell" aria-label="Open main work photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button>';
+    grid.querySelector('output').textContent=(k+1)+' / '+work.length;
+    grid.querySelectorAll('[data-work-photo]').forEach(function(tile){tile.setAttribute('aria-pressed',+tile.dataset.workPhoto===k?'true':'false')});
   }
-  if(grid){
-    grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work carousel");
-    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
+  if(grid&&work.length){
+    grid.classList.add('work-gallery');grid.setAttribute('role','region');grid.setAttribute('aria-label','Chanel’s work gallery');
+    var half=Math.ceil(work.length/2);
+    grid.innerHTML='<div class="work-stage"><div class="work-wing" aria-label="Work thumbnails left">'+work.slice(0,half).map(thumb).join('')+'</div><div class="work-main"></div><div class="work-wing" aria-label="Work thumbnails right">'+work.slice(half).map(function(x,i){return thumb(x,i+half)}).join('')+'</div></div><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous work photo">‹</button><output aria-live="off"></output><button type="button" data-step="1" aria-label="Next work photo">›</button></div>';
+    grid.onclick=function(e){var step=e.target.closest('[data-step]'),tile=e.target.closest('[data-work-photo]');if(step||tile){k=tile?+tile.dataset.workPhoto:(k+Number(step.dataset.step)+work.length)%work.length;tick=0;show()}else if(e.target.closest('.cell'))igOpen(work,k)};
     grid.onmouseenter=function(){grid.dataset.hover='1'};grid.onmouseleave=function(){delete grid.dataset.hover};show();
   }
   gridTimer=setInterval(function(){
     if(!grid||!grid.isConnected){clearInterval(gridTimer);return}
-    if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
-    if(grid&&grid.isConnected&&own.length>1&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
+    if(still||document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open')||document.querySelector('.profile-collection[open]'))return;
+    if(photos.length>1&&profile&&!profile.contains(document.activeElement)&&!profile.matches(':hover')){p=(p+1)%photos.length;setPortrait()}
+    if(work.length>1&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%work.length;show()}
   },2000);
 }
 
