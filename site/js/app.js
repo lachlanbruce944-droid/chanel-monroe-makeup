@@ -291,8 +291,7 @@ function pageHTML(id){
   var ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/', h='';
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
-    /* Subject assignment follows the catalogued selfie, not the photographer credit. */
-    var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)&&!isChanelPortrait(x)});
+    var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)});
     h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
@@ -495,11 +494,11 @@ function igAv(c){return c.av?'<img class="ava" src="'+c.av+'" alt="">':'<span cl
 function igCom(c,rep){return '<div class="c'+(rep?' rep':'')+'">'+igAv(c)+'<div class="tx"><b>'+esc(c.u)+'</b>'+esc(c.t)+(c.l?'<span class="meta">'+c.l+' like'+(c.l>1?'s':'')+'</span>':'')+'</div></div>'+(c.r||[]).map(function(x){return igCom(x,1)}).join('')}
 function igShow(k){igk=(k+igList.length)%igList.length;var it=igList[igk],P=(window.IG_POSTS||{})[it.post]||null,ig=SITE.instagram||'https://www.instagram.com/chanelmonroemakeup/';
   var me={u:'chanelmonroemakeup',av:'https://qxiugfatpybldluipcyy.supabase.co/storage/v1/object/public/media/images/chanel/comments/chanelmonroemakeup.webp'};
-  var cap=P&&P.caption?P.caption:desc(it);
+  var cap=P&&P.caption?P.caption:(it.caption||desc(it));
   $('igBox').innerHTML='<div class="ph"><img src="'+it.src+'" alt="'+esc(desc(it))+'">'+(igList.length>1?'<button class="arw l" data-ig="-1" aria-label="Previous">‹</button><button class="arw r" data-ig="1" aria-label="Next">›</button>':'')+'</div>'+
     '<div class="side"><div class="hd"><img class="ava" src="'+me.av+'" alt="" onerror="this.outerHTML=\'<span class=&quot;ava&quot;>CM</span>\'"><b>chanelmonroemakeup</b>'+(it.post?'<a href="'+it.post+'" target="_blank" rel="noopener">View post</a>':'<a href="'+ig+'" target="_blank" rel="noopener">Follow</a>')+'</div>'+
     '<div class="cm"><div class="cap">'+igCom({u:me.u,av:'',t:cap,at:P&&P.date})+'</div>'+
-    (P&&P.comments.length?P.comments.map(function(c){return igCom(c)}).join(''):'<p class="none">No comments yet.<br>Be the first on Instagram.</p>')+'</div>'+
+    (P&&P.comments.length?P.comments.map(function(c){return igCom(c)}).join(''):it.instagram_import?'':'<p class="none">No comments yet.<br>Be the first on Instagram.</p>')+'</div>'+
     (P&&P.count?'<div class="ft">'+P.count+' comment'+(P.count>1?'s':'')+'</div>':'')+'</div>';
   var hav=$('igBox').querySelector('.cap .ava');if(hav)hav.outerHTML='<img class="ava" src="'+me.av+'" alt="" onerror="this.outerHTML=\'<span class=&quot;ava&quot;>CM</span>\'">';}
 function igOpen(list,k){igList=list;igShow(k);$('igMod').classList.add('open')}
@@ -575,7 +574,6 @@ function tourGo(t){
   if(t.p){if(m)mGo('m-'+t.p);else openPage(t.p);return}
   if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
 }
-function isChanelPortrait(x){return x.subject==='chanel'||x.post==='https://www.instagram.com/p/CJil6Ijg8aP/'}
 function buildAboutGrid(own){
   initTours();
   clearInterval(gridTimer);

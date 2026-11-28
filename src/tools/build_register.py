@@ -22,8 +22,9 @@ hidden = set(ov.get('hidden', []))
 rows = []
 for m in js('media.js', 'MEDIA') or []:
     src = re.sub('%20', ' ', m['src'])
+    source = ' '.join(filter(None, (m.get('by'), m.get('post'))))
     rows.append(dict(kind='own-photo' if m.get('own') else m['type'], key=code(m.get('post')), name=m.get('d', ''), section=m['g'] + ' / ' + m['s'],
-                     file=src, status='hidden' if m['src'] in hidden or src in hidden else 'live', source=m.get('by', '') + ' ' + (m.get('post') or '')))
+                     file=src, status='hidden' if m['src'] in hidden or src in hidden else 'live', source=source))
 for p in js('products.js', 'PRODUCTS') or []:
     rows.append(dict(kind='kit-product', key=p['url'], name=p['brand'] + ' ' + p['name'], section=p['g'], file=p.get('img', ''), status='live', source=''))
 for p in (js('catalog.js', 'CATALOG') or {}).get('items', []):

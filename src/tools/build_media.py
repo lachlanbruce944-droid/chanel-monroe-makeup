@@ -44,6 +44,10 @@ for r in rows(os.path.join(ROOT, 'images', 'chanel', 'index.csv')):
     if label not in OWN or not os.path.exists(p): continue
     g, s, d = OWN[label]
     out.append(dict(type='img', g=g, s=s, src=url(p), by='@chanelmonroemakeup', post=r['post_url'], own=1, d=d, w=int(r['width']), h=int(r['height'])))
+instagram_work = os.path.join(ROOT, 'data', 'instagram-work.json')
+if os.path.exists(instagram_work):
+    with open(instagram_work, encoding='utf-8') as imported:
+        out.extend(json.load(imported))
 for csvname in ('credits.csv', 'lip-credits.csv'):
     for r in rows(os.path.join(ROOT, 'images', 'inspiration', csvname)):
         style = r['style']; name = os.path.basename(r['file']); folder = os.path.join(ROOT, 'images', 'inspiration', style)

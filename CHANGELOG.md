@@ -1,3 +1,7 @@
+## 28 November 2026 — Expand Chanel’s Work
+
+Add 205 photos from Chanel’s archived and current Instagram posts to the About gallery using Supabase Storage.
+
 ## 27 November 2026 — Hide empty Reviews
 
 Show Reviews in the desktop menu and mobile page once a client review is added. Placeholder cards stay hidden.
