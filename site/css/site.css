@@ -354,7 +354,7 @@ body[data-g="about"] .fbrand{opacity:0;pointer-events:none}
   .po .po-sheet{max-height:calc(var(--vh) - 20px)}
 }
 @media (max-width:380px){.fbrand{display:none}}  /* very small phones: keep the buttons, drop the wordmark */
-/* About timeline: one row, a line with a dot per milestone; scrolls sideways on narrow screens, never stacks */
+/* About website tour and responsive biography milestones. */
 .atour{margin:8px 0 30px}
 .atour-stage{position:relative;min-height:clamp(330px,calc(54 * var(--uvh)),470px);border-radius:22px;overflow:hidden;background:var(--bg2);display:grid;place-items:center;isolation:isolate}
 .atour-pics{position:absolute;inset:0;z-index:0;opacity:0;transition:opacity .45s ease}
@@ -1143,13 +1143,14 @@ body.m .lb img,body.m .lb video{max-width:calc(94 * var(--uvw));max-height:72svh
 .about-hero .me .profile-gallery-open img{width:100%;height:100%;object-fit:cover;animation:profileReveal .7s ease-out}
 .profile-gallery-open:focus-visible,.work-thumb:focus-visible{outline:3px solid var(--acc);outline-offset:-3px}
 .agrid.work-gallery{width:min(100%,1400px)}
-.work-stage{display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2.8fr) minmax(90px,1fr);gap:14px;height:clamp(280px,calc(65 * var(--uvh)),720px)}
+.work-stage{--work-height:clamp(280px,calc(65 * var(--uvh)),720px);display:grid;grid-template-columns:minmax(90px,1fr) minmax(0,2.8fr) minmax(90px,1fr);gap:14px;height:var(--work-height)}
 .work-wing{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:max-content;align-content:start;gap:8px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;padding:4px}
 .work-thumb{padding:0;border:2px solid transparent;border-radius:9px;overflow:hidden;aspect-ratio:1;background:var(--bg2);cursor:pointer;transition:opacity .3s,transform .3s,border-color .3s;opacity:.7}
 .work-thumb:hover,.work-thumb[aria-pressed=true]{opacity:1;border-color:var(--acc);transform:scale(.96)}
 .work-thumb img{width:100%;height:100%;object-fit:cover;display:block}
-.work-gallery .work-stage .cell{height:100%;min-width:0;border-radius:18px}
-.work-gallery .cell img{object-fit:contain;animation:workReveal .6s ease-out}
+.work-main{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+.work-gallery .work-stage .cell{width:fit-content;height:auto;max-width:100%;min-width:0;flex:0 1 auto;border-radius:18px;background:transparent}
+.work-gallery .cell img{width:auto;height:auto;max-width:100%;max-height:var(--work-height);object-fit:contain;animation:workReveal .6s ease-out}
 .profile-collection{box-sizing:border-box;width:min(1500px,calc(96 * var(--uvw)));max-width:calc(96 * var(--uvw));height:min(880px,calc(94 * var(--uvh)));max-height:calc(94 * var(--uvh));padding:22px;border:1px solid var(--line);border-radius:20px;background:var(--bg,#f2eee8);color:var(--fg,#26221f);box-shadow:0 25px 80px #0005;overflow:hidden}
 .profile-collection::backdrop{background:#211c1980;backdrop-filter:blur(14px)}
 .profile-collection header{display:flex;align-items:center;justify-content:space-between;gap:15px;margin-bottom:16px;height:40px}
@@ -1161,5 +1162,37 @@ body.m .lb img,body.m .lb video{max-width:calc(94 * var(--uvw));max-height:72svh
 .profile-photo-grid button:hover img{transform:scale(1.08)}
 @keyframes profileReveal{from{opacity:.2;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 @keyframes workReveal{from{opacity:.3;transform:scale(1.025)}to{opacity:1;transform:scale(1)}}
-@media(max-width:700px){.work-stage{grid-template-columns:minmax(42px,1fr) minmax(0,4fr) minmax(42px,1fr);gap:6px;height:clamp(260px,calc(55 * var(--uvh)),520px)}.work-wing{grid-template-columns:1fr;gap:6px;padding:2px}.profile-collection{padding:12px}.profile-photo-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:110px;gap:6px}}
+@media(max-width:700px){.work-stage{grid-template-columns:minmax(42px,1fr) minmax(0,4fr) minmax(42px,1fr);gap:6px;--work-height:clamp(260px,calc(55 * var(--uvh)),520px)}.work-wing{grid-template-columns:1fr;gap:6px;padding:2px}.profile-collection{padding:12px}.profile-photo-grid{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-rows:none;grid-auto-rows:110px;gap:6px}}
 @media(prefers-reduced-motion:reduce){.profile-photo-grid button,.profile-gallery-open img,.work-gallery .cell img{animation:none!important}.profile-photo-grid img,.work-thumb{transition:none}}
+
+/* About content stays within the screen; the milestone and tour navigation wrap. */
+body[data-g="about"] #info,body.m #m-about{overflow-x:clip}
+body[data-g="about"] #info>*,body.m #m-about>*,.atour,.atour-stage,.atour-card,.work-stage,.work-wing,.work-thumb{min-width:0;max-width:100%;box-sizing:border-box}
+.tline,body.m .tline{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;overflow:visible;scroll-snap-type:none;padding:0;align-items:start}
+.tline li{min-width:0;max-width:100%;padding:0;border:1px solid var(--line);border-radius:14px;background:var(--card);transition:background .25s,box-shadow .25s}
+.tline li::before,.tline li::after{display:none}
+.tline .milestone{display:flex;flex-direction:column;align-items:flex-start;gap:8px;width:100%;min-height:112px;padding:14px;border:0;border-radius:14px;background:transparent;color:var(--fg);text-align:left;cursor:pointer;font:inherit;box-sizing:border-box}
+.tline .yr{position:static;padding:0;background:none;font-size:13px}
+.tline b{font-size:18px;line-height:1.2;overflow-wrap:anywhere;margin:0}
+.tline .milestone-hint{font-size:13px;color:var(--soft);margin-top:auto}
+.tline .milestone:focus-visible{outline:2px solid var(--acc);outline-offset:-3px}
+.tline li.expanded{background:var(--bg2);box-shadow:0 8px 20px #00000012}
+.tline .milestone-detail{padding:0 14px 16px;animation:milestoneReveal .25s ease-out}
+.tline .milestone-detail[hidden]{display:none}
+.tline .ln{font-size:15px;line-height:1.5;max-width:none;overflow-wrap:anywhere}
+.atour-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;overflow:visible}
+.atour-tabs button{min-width:0;width:100%;min-height:48px;padding:8px 4px;font-size:14px;line-height:1.3;overflow-wrap:anywhere;white-space:normal;box-sizing:border-box}
+.atour-card{width:min(570px,calc(100% - 28px));max-width:calc(100% - 28px);margin:20px 0;padding:20px}
+.atour-t,.atour-x,.atour-cta{overflow-wrap:anywhere;min-width:0}
+.atour-cta .pill{max-width:100%;white-space:normal;box-sizing:border-box}
+@keyframes milestoneReveal{from{opacity:.3;transform:translateY(-4px)}to{opacity:1;transform:none}}
+@media(max-width:760px){
+ .tline,body.m .tline{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .tline li:last-child,.tline li.expanded{grid-column:1/-1}
+ .tline .milestone{min-height:106px;padding:12px}
+ .tline b{font-size:18px}.tline .milestone-detail{padding:0 12px 14px}
+ .atour-tabs{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+ .atour-card{padding:16px;margin:16px 0}
+ .atour-x{font-size:15px}
+}
+@media(prefers-reduced-motion:reduce){.tline li{transition:none}.milestone-detail{animation:none!important}}
