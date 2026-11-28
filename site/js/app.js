@@ -591,7 +591,7 @@ function buildAboutGrid(own){
   }
   gridTimer=setInterval(function(){
     if(!grid||!grid.isConnected){clearInterval(gridTimer);return}
-    if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
+    if(document.hidden||document.querySelector('#cm-review-dialog[open]')||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
     if(grid&&grid.isConnected&&own.length>1&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
   },2000);
 }
