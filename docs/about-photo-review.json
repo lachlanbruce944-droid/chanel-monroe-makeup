@@ -3,7 +3,7 @@
   "source_commit": "74c1710",
   "supabase_about_objects": 225,
   "saved_removal_requests": 0,
-  "state": "79 photos explicitly identified as Chanel by the owner; awaiting remaining selections before final grouping and exclusions",
+  "state": "Subject labels confirmed by owner and recorded in src/data/photo-subject-labels.json; gallery cleanup remains a separate editorial step.",
   "verification": "All 225 reviewed visually at thumbnail/contact-sheet size. No facial identity matching. Original files retained in Supabase. Blur assessments are editorial, not an automated threshold.",
   "photos": [
     {
@@ -1663,5 +1663,5 @@
     224,
     225
   ],
-  "selection_status": "Partial owner selection; photos 136–180 repaired for remaining review"
+  "selection_status": "Complete owner confirmation of the 79 listed images"
 }

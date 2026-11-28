@@ -1,3 +1,7 @@
+## 29 November 2026 — Owner-confirmed Chanel photo labels
+
+Record 79 owner-selected images as Chanel Monroe in `src/data/photo-subject-labels.json`, with stable review IDs, source paths, Supabase bucket/object names, post references and confirmation provenance. Mark the subject review complete in `docs/about-photo-review.json`. Labels use the owner's explicit selections; unselected images remain unlabelled. No binary image or gallery visibility changes.
+
 ## 29 November 2026 — Retire long-press controls; About review
 
 Remove the public image-review script from the page, disabling long-press flagging and its floating button. Preserve stored requests and media. Check Supabase: 225 About originals, no saved image removal events. Review all 225 thumbnails and record numbered source references and proposed exclusions in docs/about-photo-review.json. Await user selections from the in-chat picker for final Chanel-photo grouping; no face matching or media deletion performed.
