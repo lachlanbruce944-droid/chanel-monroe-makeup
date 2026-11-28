@@ -296,7 +296,7 @@ function pageHTML(id){
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline" aria-label="Chanel’s journey">'+ABOUT_BIO.map(function(b,i){return '<li><button type="button" class="milestone" aria-expanded="false" aria-controls="milestone-detail-'+i+'"><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="milestone-hint">More</span></button><div class="milestone-detail" id="milestone-detail-'+i+'" hidden><span class="ln">'+esc(b[2])+'</span></div></li>'}).join('')+'</ol>'+
-      tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
+      '<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+tourHTML()+teamHTML()+
       '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
@@ -589,6 +589,8 @@ function tourGo(t){
 }
 function aboutPhotoGroups(own){
   var labelled=new Set(window.CHANEL_SUBJECT_SOURCES||[]);
+  var excluded=new Set(window.ABOUT_EXCLUDED_SOURCES||[]);
+  own=own.filter(function(x){return !excluded.has(x.src)});
   return {profile:own.filter(function(x){return labelled.has(x.src)}),work:own.filter(function(x){return !labelled.has(x.src)})};
 }
 function openProfileCollection(photos){

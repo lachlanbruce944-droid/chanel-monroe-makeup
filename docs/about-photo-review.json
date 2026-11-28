@@ -613,7 +613,9 @@
       "source": "images/chanel/instagram/17966719246001921.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": "chanel"
+      "user_subject": "chanel",
+      "user_decision": "remove",
+      "visibility": "excluded_from_about"
     },
     {
       "id": 88,
@@ -1516,14 +1518,18 @@
       "source": "images/chanel/instagram/17916877896535786.jpg",
       "post": "https://www.instagram.com/p/DfCfWu0Cq1M/",
       "proposed_exclusion": "Quote card or promotional graphic with text",
-      "user_subject": "chanel"
+      "user_subject": "chanel",
+      "user_decision": "remove",
+      "visibility": "excluded_from_about"
     },
     {
       "id": 217,
       "source": "images/chanel/instagram/18129540151872132.jpg",
       "post": "https://www.instagram.com/p/DevyIqAird8/",
       "proposed_exclusion": "Quote card or promotional graphic with text",
-      "user_subject": "chanel"
+      "user_subject": "chanel",
+      "user_decision": "remove",
+      "visibility": "excluded_from_about"
     },
     {
       "id": 218,

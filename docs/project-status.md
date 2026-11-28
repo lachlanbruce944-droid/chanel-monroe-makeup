@@ -1,3 +1,15 @@
+## 29 November 2026 — About section order
+
+Place Chanel’s Work directly after the timeline and before the website description tabs on desktop and mobile.
+
+## 29 November 2026 — Glass About tiles
+
+Keep all five timeline tiles and six description tabs in single rows on mobile and desktop. Add translucent frosted glass and glowing accent borders, stronger on selection or hover. Expanded timeline details use a full-width panel beneath the row.
+
+## 29 November 2026 — Apply About photo review
+
+Exclude stable review IDs 87, 216 and 217 from About photo collections. Leave all unmarked images and subject labels unchanged; retain original media and stable review IDs.
+
 ## 29 November 2026 — About fits the screen
 
 Replace sideways timeline scrolling with responsive milestone cards. Tap a milestone to expand its description, with a subtle background and reveal; only one opens at a time. Website-tour navigation wraps into three columns on phones and six on desktop. Keep rotating descriptions, action buttons and work tiles within the About width. Include the pending natural-proportion work-photo sizing fix.
