@@ -292,12 +292,12 @@ function pageHTML(id){
   if(id==='about'){
     var lines=(sec('about').lines||[]).filter(function(l){return l&&!/\[[^\]]*\]/.test(l)});
     var own=items().filter(function(x){return x.own&&x.type!=='video'&&!hid(x)});
-    h='<div class="about-editorial"><div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
+    h='<div class="about-hero"><figure class="me"><img src="'+(window.ABOUT_PHOTO||'images/about/chanel.jpg')+'" alt="Chanel Monroe" onerror="this.closest(\'.me\').remove()"></figure><div class="me-txt">'+
       '<h1 class="brand-title">'+$('brand').innerHTML+'</h1><p class="lead">Mobile makeup artist on the Gold Coast. Bridal, glam, editorial, character and party looks.</p>'+
       '<p class="about-lines" id="aboutLine">'+esc(lines[0]||'Makeup for every kind of day, from barely there to full character.')+'</p></div></div>'+
       '<ol class="tline">'+ABOUT_BIO.map(function(b){return '<li><span class="yr">'+esc(b[0])+'</span><b>'+esc(b[1])+'</b><span class="ln">'+esc(b[2])+'</span></li>'}).join('')+'</ol>'+
-      '<section class="about-work"><h3>Chanel’s work</h3><div class="agrid" id="agrid"></div></section>'+tourHTML()+teamHTML()+
-      '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p></div>';
+      tourHTML()+'<h3 style="text-align:center">Chanel’s work</h3><div class="agrid" id="agrid"></div>'+teamHTML()+
+      '<p><a class="pill" style="text-decoration:none;display:inline-block;margin-top:10px" href="'+ig+'" target="_blank" rel="noopener">Follow on Instagram</a></p>';
     if(lines.length>1){var n=0;aboutTimer=setInterval(function(){var p=$('aboutLine');if(!p)return clearInterval(aboutTimer);p.style.opacity=0;setTimeout(function(){n=(n+1)%lines.length;p.textContent=lines[n];p.style.opacity=1},400)},3800)}
   }
   if(id==='affiliates'){
@@ -549,7 +549,7 @@ function tourStart(el){
     A.innerHTML=c.styles?GROUPS.map(function(g,k){return '<button type="button" class="pill" data-go=\'{"g":'+k+'}\'>'+esc(g.name)+'</button>'}).join(''):
       (c.cta[1].enq?'<a class="pill solid" href="enquire.html" style="text-decoration:none">'+esc(c.cta[0])+'</a>':
        '<button type="button" class="pill solid" data-go=\''+JSON.stringify(c.cta[1])+'\'>'+esc(c.cta[0])+'</button>');
-    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;if(!still&&T.animate){[T,X].forEach(function(node){node.animate([{opacity:0,transform:'translateY(12px)'},{opacity:1,transform:'none'}],{duration:500,easing:'ease-out'})})}
+    T.textContent=c.t;SR.textContent=c.t+'. '+c.x;
     X.textContent=c.x;A.classList.add('on');
     if(still)return;
     el.style.setProperty('--dur','5200ms');
@@ -575,32 +575,25 @@ function tourGo(t){
   if(t.work){var g=$('agrid');if(g)g.scrollIntoView({behavior:'smooth',block:'start'})}
 }
 function buildAboutGrid(own){
-  initTours();clearInterval(gridTimer);
-  var grid=$('agrid'),offset=0,size=12,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
-  if(!grid)return;
-  grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work gallery");
+  initTours();
+  clearInterval(gridTimer);
+  var grid=$('agrid');
+  var k=0,tick=0,still=matchMedia('(prefers-reduced-motion: reduce)').matches;
   function show(){
-    if(!own.length){grid.innerHTML='';return}
-    var end=Math.min(offset+size,own.length);
-    grid.innerHTML='<div class="about-masonry">'+own.slice(offset,end).map(function(x,i){return '<button type="button" class="cell" data-photo="'+(offset+i)+'" style="--i:'+i+'" aria-label="Open photo '+(offset+i+1)+'"><img loading="lazy" decoding="async" src="'+esc(small(x.src))+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button>'}).join('')+'</div><div class="about-controls"><button type="button" data-step="-1">Previous photos</button><output aria-live="polite">'+(offset+1)+'–'+end+' / '+own.length+'</output><button type="button" data-step="1">Next photos</button></div>';
+    if(!grid||!own.length)return;
+    var x=own[k];
+    grid.innerHTML='<button type="button" class="cell" aria-label="Open photo"><img decoding="async" src="'+esc(x.src)+'" alt="'+esc(desc(x))+'"><span>'+esc(desc(x))+'</span></button><div class="about-controls"><button type="button" data-step="-1" aria-label="Previous photo">‹</button><output aria-live="off">'+(k+1)+' / '+own.length+'</output><button type="button" data-step="1" aria-label="Next photo">›</button></div>';
   }
-  grid.onclick=function(e){
-    var step=e.target.closest('[data-step]'),cell=e.target.closest('[data-photo]');
-    if(step){offset=(offset+Number(step.dataset.step)*size+Math.ceil(own.length/size)*size)%(Math.ceil(own.length/size)*size);show();grid.querySelector('[data-step="'+step.dataset.step+'"]').focus();return}
-    if(!cell)return;
-    var rect=cell.querySelector('img').getBoundingClientRect();
-    igOpen(own,+cell.dataset.photo);var mod=$('igMod');mod.classList.add('about-expanded');
-    var image=$('igBox').querySelector('.ph img');
-    requestAnimationFrame(function(){var target=image.getBoundingClientRect();if(!still&&image.animate&&target.width&&target.height)image.animate([{transformOrigin:'top left',transform:'translate('+(rect.left-target.left)+'px,'+(rect.top-target.top)+'px) scale('+(rect.width/target.width)+','+(rect.height/target.height)+')',borderRadius:'16px'},{transformOrigin:'top left',transform:'none',borderRadius:'0'}],{duration:650,easing:'cubic-bezier(.2,.8,.2,1)'})});
-    var close=mod.querySelector('[data-close]');if(close)close.focus();
-    function restore(){if(!mod.classList.contains('open')){mod.classList.remove('about-expanded');if(cell.isConnected)cell.focus();mod.removeEventListener('click',restore);document.removeEventListener('keydown',key)}}
-    function key(e){if(e.key==='Escape'){mod.classList.remove('open');restore()}if(e.key==='Tab'&&mod.classList.contains('open')){var controls=Array.from(mod.querySelectorAll('button,a[href]')).filter(function(x){return x.getClientRects().length});var first=controls[0],last=controls[controls.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus()}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus()}}}
-    mod.addEventListener('click',restore);document.addEventListener('keydown',key);
-  };
-  show();
-  // Gentle motion continues on visible images; content never changes under a pointer.
-  var observer=new IntersectionObserver(function(entries){entries.forEach(function(entry){grid.querySelectorAll('img').forEach(function(img){img.style.animationPlayState=entry.isIntersecting?'running':'paused'})})});observer.observe(grid);
-  gridTimer=setInterval(function(){if(!grid.isConnected){observer.disconnect();clearInterval(gridTimer)}},4000);
+  if(grid){
+    grid.setAttribute('role','region');grid.setAttribute('aria-label',"Chanel’s work carousel");
+    grid.onclick=function(e){var step=e.target.closest('[data-step]');if(step){k=(k+Number(step.dataset.step)+own.length)%own.length;tick=0;show()}else if(e.target.closest('.cell'))igOpen(own,k)};
+    grid.onmouseenter=function(){grid.dataset.hover='1'};grid.onmouseleave=function(){delete grid.dataset.hover};show();
+  }
+  gridTimer=setInterval(function(){
+    if(!grid||!grid.isConnected){clearInterval(gridTimer);return}
+    if(document.hidden||$('igMod').classList.contains('open')||$('lb').classList.contains('open'))return;
+    if(grid&&grid.isConnected&&own.length>1&&!still&&!grid.dataset.hover&&!grid.contains(document.activeElement)&&++tick>=2){tick=0;k=(k+1)%own.length;show()}
+  },2000);
 }
 
 /* ---- EDIT MODE: drag to reorder (pins), pin, hide, re-caption, move; save to data/overrides.js ---- */

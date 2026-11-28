@@ -54,55 +54,6 @@ body[data-theme="c"]{background:transparent}
  #igBox.igp{grid-template-columns:minmax(0,1fr) minmax(0,45%);grid-template-rows:minmax(0,1fr)}
  #igBox .side{border-top:0;border-left:1px solid #efefef}
 }
-
-
-/* About — living editorial gallery, retaining all existing copy and post details. */
-.about-editorial{max-width:1360px;margin:auto;isolation:isolate}
-.about-editorial .about-hero{display:grid;grid-template-columns:1fr 1.35fr;align-items:center;gap:clamp(28px,calc(6 * var(--uvw)),90px);padding:42px 0 60px;margin:0}
-.about-editorial .about-hero .me{width:100%;max-width:420px;aspect-ratio:4/5;border-radius:44% 44% 20px 20px;justify-self:center;transform:rotate(-3deg);animation:aboutPortrait 10s ease-in-out infinite alternate;box-shadow:20px 24px 0 color-mix(in srgb,var(--acc) 13%,transparent)}
-.about-editorial .me img{object-fit:cover;animation:aboutZoom 16s ease-in-out infinite alternate}
-.about-editorial .brand-title{font-size:clamp(44px,calc(6.6 * var(--uvw)),96px);line-height:.98;animation:aboutReveal 1s both}
-.about-editorial .lead{font-size:clamp(16px,calc(1.6 * var(--uvw)),21px);max-width:42ch;animation:aboutReveal 1s .12s both}
-.about-editorial .about-lines{font-size:clamp(24px,calc(2.5 * var(--uvw)),36px);color:var(--acc);animation:aboutReveal 1s .24s both}
-.about-editorial .tline{gap:14px;margin:0 0 64px;padding:12px 0 20px;scroll-snap-type:x proximity}
-.about-editorial .tline li{flex:1 0 180px;padding:24px 20px;border:1px solid var(--line);border-radius:20px;background:color-mix(in srgb,var(--card) 75%,transparent);animation:aboutDrift 7s ease-in-out infinite alternate;transition:background .4s,translate .4s}
-.about-editorial .tline li:nth-child(even){animation-delay:-3.5s}
-.about-editorial .tline li:hover{translate:0 -6px;background:var(--card)}
-.about-editorial .tline li:before{display:none}
-.about-editorial .tline li:after{top:auto;bottom:12px;left:20px;width:24px;height:2px;border:0;border-radius:0}
-.about-editorial .tline .yr{position:static;display:block;padding:0;margin-bottom:20px;background:none;font-size:14px}
-.about-editorial .tline b{font-size:25px}.about-editorial .tline .ln{font-size:16px;line-height:1.55}
-.about-work h3{font-size:clamp(36px,calc(5 * var(--uvw)),64px);font-weight:400;margin:0 0 28px}
-.about-editorial .agrid{width:100%;margin:0 0 70px;text-align:left}
-.about-masonry{columns:3;column-gap:18px}
-.about-editorial .agrid .cell{display:inline-block;vertical-align:top;width:100%;height:auto;margin:0 0 18px;border-radius:16px;break-inside:avoid;background:var(--bg2);animation:aboutReveal .8s both;animation-delay:calc(var(--i) * 45ms);transition:translate .5s,box-shadow .5s}
-.about-editorial .agrid .cell img{height:auto;width:100%;min-height:180px;object-fit:cover;animation:aboutZoom 14s ease-in-out infinite alternate;animation-delay:calc(var(--i) * -1.7s)}
-.about-editorial .agrid .cell:nth-child(3n+2) img{aspect-ratio:3/4}.about-editorial .agrid .cell:nth-child(3n) img{aspect-ratio:1}
-.about-editorial .agrid .cell:hover,.about-editorial .agrid .cell:focus-visible{translate:0 -5px;box-shadow:0 16px 32px #0002}
-.about-editorial .agrid .cell span{font:16px/1.45 var(--fh);padding:45px 16px 14px;text-align:left}
-.about-editorial .about-controls{justify-content:space-between;border-top:1px solid var(--line);padding-top:18px}
-.about-editorial .about-controls button{border-radius:10px;transition:background .3s,transform .3s}
-.about-editorial .about-controls button:hover{background:var(--bg2);transform:translateY(-3px)}
-.about-editorial .atour{display:grid;grid-template-columns:180px 1fr;gap:24px;margin:0 0 54px}
-.about-editorial .atour-tabs{flex-direction:column;overflow:visible;gap:14px;justify-content:center}
-.about-editorial .atour-tabs button{flex:0;font-size:16px;padding:8px;min-width:0;transition:translate .4s}
-.about-editorial .atour-tabs button[aria-selected=true]{translate:8px 0}
-.about-editorial .atour-stage{min-height:530px;border-radius:30px}
-.about-editorial .atour-card{background:color-mix(in srgb,var(--card) 88%,transparent);border:1px solid var(--line);animation:aboutDrift 8s ease-in-out infinite alternate}
-.about-editorial .atour-x::after{display:none}.about-editorial .atour-x{font-size:16px}
-.about-editorial .atour-t{font-size:36px}
-.about-editorial .atour-cta.on{animation:aboutReveal .6s both}
-#igMod.about-expanded{background:#17131185;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-#igMod.about-expanded #igBox{border-radius:24px;overflow:hidden;box-shadow:0 30px 100px #0005}
-@keyframes aboutReveal{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-@keyframes aboutPortrait{from{transform:rotate(-3deg) translateY(-5px)}to{transform:rotate(1deg) translateY(8px)}}
-@keyframes aboutZoom{from{transform:scale(1)}to{transform:scale(1.065)}}
-@keyframes aboutDrift{from{transform:translateY(-3px)}to{transform:translateY(4px)}}
-body.m .about-editorial .about-hero{display:grid;grid-template-columns:1fr;gap:30px;text-align:left;padding:28px 0 40px}
-body.m .about-editorial .about-hero .me{width:min(calc(70 * var(--uvw)),340px)}
-body.m .about-editorial .me-txt{width:100%}
-@media(max-width:700px){.about-masonry{columns:2;column-gap:12px}.about-editorial .agrid .cell{margin-bottom:12px}.about-editorial .atour{display:block}.about-editorial .atour-tabs{flex-direction:row;overflow-x:auto;gap:8px;margin-bottom:20px}.about-editorial .atour-tabs button{flex:1 0 100px}.about-editorial .atour-stage{min-height:450px}.about-editorial .atour-t{font-size:28px}.about-editorial .about-controls{gap:8px}.about-editorial .about-controls button{padding:10px;font-size:14px}}
-@media(prefers-reduced-motion:reduce){.about-editorial *{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 /* ===== HEADER + NAV ===== */
 .hdr{height:var(--hdr);display:flex;align-items:center;gap:16px;padding:0 clamp(16px,calc(3 * var(--uvw)),40px)}
 .brand{font-family:"Cormorant Garamond",serif;font-size:24px;letter-spacing:.04em;text-decoration:none;white-space:nowrap}
