@@ -3,7 +3,7 @@
   "source_commit": "74c1710",
   "supabase_about_objects": 225,
   "saved_removal_requests": 0,
-  "state": "Awaiting user selections from the in-chat 10 by 10 picker before final photo grouping and exclusions",
+  "state": "79 photos explicitly identified as Chanel by the owner; awaiting remaining selections before final grouping and exclusions",
   "verification": "All 225 reviewed visually at thumbnail/contact-sheet size. No facial identity matching. Original files retained in Supabase. Blur assessments are editorial, not an automated threshold.",
   "photos": [
     {
@@ -11,70 +11,70 @@
       "source": "images/chanel/Special-occasions/gala_01_sunset-glam.jpg",
       "post": "https://www.instagram.com/p/DfhIwm0CSIE/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 2,
       "source": "images/chanel/Parties/character_01_circus-character.jpg",
       "post": "https://www.instagram.com/p/DfMaFAymjhu/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 3,
       "source": "images/chanel/Parties/character_02_circus-character.jpg",
       "post": "https://www.instagram.com/p/DfMaFAymjhu/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 4,
       "source": "images/chanel/Editorial/shoot-look_01_red-hot-glamour.jpg",
       "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 5,
       "source": "images/chanel/Editorial/shoot-look_02_red-hot-glamour.jpg",
       "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 6,
       "source": "images/chanel/Parties/halloween_02_clown.jpg",
       "post": "https://www.instagram.com/p/BpgvCKggErh/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 7,
       "source": "images/chanel/Parties/halloween_03_gypsy-witch-competition.jpg",
       "post": "https://www.instagram.com/p/BavuPzqH7m9/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 8,
       "source": "images/chanel/Editorial/sfx_01_sinner-dark-creature.jpg",
       "post": "https://www.instagram.com/p/Ba1T-nJniq9/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 9,
       "source": "images/chanel/Parties/halloween_06_ghoulish-glam.jpg",
       "post": "https://www.instagram.com/p/BaV8Tl-n5YR/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 10,
       "source": "images/chanel/Parties/character_04_fairy-tale.jpg",
       "post": "https://www.instagram.com/p/BpVlUAngk5k/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 11,
@@ -88,42 +88,42 @@
       "source": "images/chanel/Parties/birthday_01_pink-lip-party-glam.jpg",
       "post": "https://www.instagram.com/p/DC1CuANp7xI/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 13,
       "source": "images/chanel/Special-occasions/milestone_01_21st-birthday-glam.jpg",
       "post": "https://www.instagram.com/p/BpbwYAwg7ge/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 14,
       "source": "images/chanel/Parties/birthday_02_night-out-glam.jpg",
       "post": "https://www.instagram.com/p/BjT_ilxhXYf/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 15,
       "source": "images/chanel/Editorial/statement_02_blue-ice.jpg",
       "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 16,
       "source": "images/chanel/Editorial/statement_04_blue-ice.jpg",
       "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 17,
       "source": "images/chanel/Natural/natural_01_glam-selfie.jpg",
       "post": "https://www.instagram.com/p/CJil6Ijg8aP/",
       "proposed_exclusion": "Visible phone or mirror selfie",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 18,
@@ -151,14 +151,14 @@
       "source": "images/chanel/instagram/17846999040368701.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 22,
       "source": "images/chanel/instagram/17885627933656012.jpg",
       "post": "",
       "proposed_exclusion": "Small 468 x 585 image; weak enlarged portfolio quality",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 23,
@@ -263,7 +263,7 @@
       "source": "images/chanel/instagram/18045470371087416.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 38,
@@ -305,14 +305,14 @@
       "source": "images/chanel/instagram/18027850960132376.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 44,
       "source": "images/chanel/instagram/17969347000205414.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 45,
@@ -333,7 +333,7 @@
       "source": "images/chanel/instagram/18025018216055606.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 48,
@@ -410,14 +410,14 @@
       "source": "images/chanel/instagram/18002721985036780.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 59,
       "source": "images/chanel/instagram/17936933686223998.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 60,
@@ -480,14 +480,14 @@
       "source": "images/chanel/instagram/17976739828127362.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 69,
       "source": "images/chanel/instagram/17932868125214355.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 70,
@@ -529,7 +529,7 @@
       "source": "images/chanel/instagram/17963003122141352.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 76,
@@ -557,14 +557,14 @@
       "source": "images/chanel/instagram/17926713337201303.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 80,
       "source": "images/chanel/instagram/17960754304142303.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 81,
@@ -578,70 +578,70 @@
       "source": "images/chanel/instagram/17982352723010170.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 83,
       "source": "images/chanel/instagram/17920253380220524.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 84,
       "source": "images/chanel/instagram/17966410525045555.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 85,
       "source": "images/chanel/instagram/17966219158040470.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 86,
       "source": "images/chanel/instagram/17877325675254041.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 87,
       "source": "images/chanel/instagram/17966719246001921.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 88,
       "source": "images/chanel/instagram/17951606794107749.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 89,
       "source": "images/chanel/instagram/17965836328037750.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 90,
       "source": "images/chanel/instagram/17954503174062852.jpg",
       "post": "",
       "proposed_exclusion": "Collage or before/after composite",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 91,
       "source": "images/chanel/instagram/17955600277021837.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 92,
@@ -655,14 +655,14 @@
       "source": "images/chanel/instagram/17851074499271923.jpg",
       "post": "",
       "proposed_exclusion": "Visible phone or mirror selfie",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 94,
       "source": "images/chanel/instagram/17938902094102115.jpg",
       "post": "",
       "proposed_exclusion": "Visible phone or mirror selfie",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 95,
@@ -683,14 +683,14 @@
       "source": "images/chanel/instagram/17845794094254957.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 98,
       "source": "images/chanel/instagram/17859357787243411.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 99,
@@ -711,7 +711,7 @@
       "source": "images/chanel/instagram/17928542830008987.jpg",
       "post": "",
       "proposed_exclusion": "Cosmetic tattoo procedure rather than makeup portfolio",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 102,
@@ -767,35 +767,35 @@
       "source": "images/chanel/instagram/17913373753108959.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 110,
       "source": "images/chanel/instagram/17915363128118321.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 111,
       "source": "images/chanel/instagram/17901334474131302.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 112,
       "source": "images/chanel/instagram/17897622157156149.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 113,
       "source": "images/chanel/instagram/17886194962195386.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 114,
@@ -837,7 +837,7 @@
       "source": "images/chanel/instagram/17862508186200630.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 120,
@@ -851,7 +851,7 @@
       "source": "images/chanel/instagram/17860146265220728.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 122,
@@ -865,14 +865,14 @@
       "source": "images/chanel/instagram/17920142968025279.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 124,
       "source": "images/chanel/instagram/17892828037157893.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 125,
@@ -949,7 +949,7 @@
       "source": "images/chanel/instagram/17909911855017380.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 136,
@@ -1278,7 +1278,7 @@
       "source": "images/chanel/instagram/17883177013071367.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 183,
@@ -1348,35 +1348,35 @@
       "source": "images/chanel/instagram/17865019708143722.jpg",
       "post": "",
       "proposed_exclusion": "Caption credits makeup to another artist; exclude from Chanel work attribution",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 193,
       "source": "images/chanel/instagram/17875569103114578.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 194,
       "source": "images/chanel/instagram/17887784005058332.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 195,
       "source": "images/chanel/instagram/17864413693131070.jpg",
       "post": "",
       "proposed_exclusion": "Visible phone or mirror selfie",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 196,
       "source": "images/chanel/instagram/17885671372026983.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 197,
@@ -1390,14 +1390,14 @@
       "source": "images/chanel/instagram/17879529685067855.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 199,
       "source": "images/chanel/instagram/17872541629107373.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 200,
@@ -1411,7 +1411,7 @@
       "source": "images/chanel/instagram/17882147962003344.jpg",
       "post": "",
       "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 202,
@@ -1425,7 +1425,7 @@
       "source": "images/chanel/instagram/17842691593195241.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 204,
@@ -1439,7 +1439,7 @@
       "source": "images/chanel/instagram/17882163454047884.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 206,
@@ -1453,7 +1453,7 @@
       "source": "images/chanel/instagram/17882636359015220.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 208,
@@ -1474,77 +1474,77 @@
       "source": "images/chanel/instagram/17864308912098534.jpg",
       "post": "",
       "proposed_exclusion": "Prominent backdrop logos or signage",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 211,
       "source": "images/chanel/instagram/17845411318173044.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 212,
       "source": "images/chanel/instagram/17856593923128164.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 213,
       "source": "images/chanel/instagram/17844936904185390.jpg",
       "post": "",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 214,
       "source": "images/chanel/instagram/18108898507961718.jpg",
       "post": "https://www.instagram.com/p/DfMaFAymjhu/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 215,
       "source": "images/chanel/instagram/18026213561871350.jpg",
       "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 216,
       "source": "images/chanel/instagram/17916877896535786.jpg",
       "post": "https://www.instagram.com/p/DfCfWu0Cq1M/",
       "proposed_exclusion": "Quote card or promotional graphic with text",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 217,
       "source": "images/chanel/instagram/18129540151872132.jpg",
       "post": "https://www.instagram.com/p/DevyIqAird8/",
       "proposed_exclusion": "Quote card or promotional graphic with text",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 218,
       "source": "images/chanel/instagram/18054463225946021.jpg",
       "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 219,
       "source": "images/chanel/instagram/18030886385411783.jpg",
       "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 220,
       "source": "images/chanel/instagram/17907749857615118.jpg",
       "post": "https://www.instagram.com/p/CJil6Ijg8aP/",
       "proposed_exclusion": "Visible phone or mirror selfie",
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 221,
@@ -1572,14 +1572,96 @@
       "source": "images/chanel/instagram/17892856411114547.jpg",
       "post": "https://www.instagram.com/p/Ba1T-nJniq9/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     },
     {
       "id": 225,
       "source": "images/chanel/instagram/17879205529181806.jpg",
       "post": "https://www.instagram.com/p/BavuPzqH7m9/",
       "proposed_exclusion": null,
-      "user_subject": null
+      "user_subject": "chanel"
     }
-  ]
+  ],
+  "confirmed_chanel_ids": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    21,
+    22,
+    37,
+    43,
+    44,
+    47,
+    58,
+    59,
+    68,
+    69,
+    75,
+    79,
+    80,
+    82,
+    83,
+    84,
+    85,
+    86,
+    87,
+    88,
+    89,
+    90,
+    91,
+    93,
+    94,
+    97,
+    98,
+    101,
+    109,
+    110,
+    111,
+    112,
+    113,
+    119,
+    121,
+    123,
+    124,
+    135,
+    182,
+    192,
+    193,
+    194,
+    195,
+    196,
+    198,
+    199,
+    201,
+    203,
+    205,
+    207,
+    210,
+    211,
+    212,
+    213,
+    214,
+    215,
+    216,
+    217,
+    218,
+    219,
+    220,
+    224,
+    225
+  ],
+  "selection_status": "Partial owner selection; photos 136–180 repaired for remaining review"
 }
