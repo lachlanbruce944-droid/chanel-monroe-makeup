@@ -40,6 +40,8 @@ Edits never touch the photos themselves or `media.js`; they live only in `data/o
 Images in `images/inspiration` and `images/videos` belong to the credited artists. They are reference
 material and are not in the public GitHub repo. Ask permission before publishing them.
 
-## Hold photos for removal review
+## Retired: hold photos for removal review
 
 Hold an About or gallery image still for about a second, choose **Save removal request**, and add a reason if useful. The Flagged images panel confirms database sync, supports Undo, retry and export. Then ask ChatGPT “Remove the flagged About photos.” Requests store references only and do not remove public images until an editorial update is published. If sync is pending, retry before clearing browser data.
+
+29 November 2026: long-press controls are retired. Use the numbered in-chat picker; source mapping and proposed exclusions are in `docs/about-photo-review.json`.

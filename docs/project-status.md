@@ -1,3 +1,7 @@
+## 29 November 2026 — Retire long-press controls; About review
+
+Remove the public image-review script from the page, disabling long-press flagging and its floating button. Preserve stored requests and media. Check Supabase: 225 About originals, no saved image removal events. Review all 225 thumbnails and record numbered source references and proposed exclusions in docs/about-photo-review.json. Await user selections from the in-chat picker for final Chanel-photo grouping; no face matching or media deletion performed.
+
 ## 29 November 2026 — Database image removal requests
 
 Long-hold About carousel, portrait or gallery photos for 700 ms, confirm Save removal request and optionally add a reason. Requests and undo events sync to private `public.image_removal_events`; failed requests remain in a browser queue with explicit retry, online retry and export fallback. Old local flags migrate on reload. About carousel pauses while the review dialog is open. No photo is deleted by a public gesture.

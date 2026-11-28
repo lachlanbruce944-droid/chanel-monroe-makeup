@@ -1,0 +1,1585 @@
+{
+  "review_date": "2026-11-29",
+  "source_commit": "74c1710",
+  "supabase_about_objects": 225,
+  "saved_removal_requests": 0,
+  "state": "Awaiting user selections from the in-chat 10 by 10 picker before final photo grouping and exclusions",
+  "verification": "All 225 reviewed visually at thumbnail/contact-sheet size. No facial identity matching. Original files retained in Supabase. Blur assessments are editorial, not an automated threshold.",
+  "photos": [
+    {
+      "id": 1,
+      "source": "images/chanel/Special-occasions/gala_01_sunset-glam.jpg",
+      "post": "https://www.instagram.com/p/DfhIwm0CSIE/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 2,
+      "source": "images/chanel/Parties/character_01_circus-character.jpg",
+      "post": "https://www.instagram.com/p/DfMaFAymjhu/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 3,
+      "source": "images/chanel/Parties/character_02_circus-character.jpg",
+      "post": "https://www.instagram.com/p/DfMaFAymjhu/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 4,
+      "source": "images/chanel/Editorial/shoot-look_01_red-hot-glamour.jpg",
+      "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 5,
+      "source": "images/chanel/Editorial/shoot-look_02_red-hot-glamour.jpg",
+      "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 6,
+      "source": "images/chanel/Parties/halloween_02_clown.jpg",
+      "post": "https://www.instagram.com/p/BpgvCKggErh/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 7,
+      "source": "images/chanel/Parties/halloween_03_gypsy-witch-competition.jpg",
+      "post": "https://www.instagram.com/p/BavuPzqH7m9/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 8,
+      "source": "images/chanel/Editorial/sfx_01_sinner-dark-creature.jpg",
+      "post": "https://www.instagram.com/p/Ba1T-nJniq9/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 9,
+      "source": "images/chanel/Parties/halloween_06_ghoulish-glam.jpg",
+      "post": "https://www.instagram.com/p/BaV8Tl-n5YR/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 10,
+      "source": "images/chanel/Parties/character_04_fairy-tale.jpg",
+      "post": "https://www.instagram.com/p/BpVlUAngk5k/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 11,
+      "source": "images/chanel/Special-occasions/formal_01_soft-bronzed-glam.jpg",
+      "post": "https://www.instagram.com/p/DeqbhPwismg/",
+      "proposed_exclusion": "Collage or before/after composite",
+      "user_subject": null
+    },
+    {
+      "id": 12,
+      "source": "images/chanel/Parties/birthday_01_pink-lip-party-glam.jpg",
+      "post": "https://www.instagram.com/p/DC1CuANp7xI/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 13,
+      "source": "images/chanel/Special-occasions/milestone_01_21st-birthday-glam.jpg",
+      "post": "https://www.instagram.com/p/BpbwYAwg7ge/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 14,
+      "source": "images/chanel/Parties/birthday_02_night-out-glam.jpg",
+      "post": "https://www.instagram.com/p/BjT_ilxhXYf/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 15,
+      "source": "images/chanel/Editorial/statement_02_blue-ice.jpg",
+      "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 16,
+      "source": "images/chanel/Editorial/statement_04_blue-ice.jpg",
+      "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 17,
+      "source": "images/chanel/Natural/natural_01_glam-selfie.jpg",
+      "post": "https://www.instagram.com/p/CJil6Ijg8aP/",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 18,
+      "source": "images/chanel/Parties/character_05_barbie-makeover.jpg",
+      "post": "https://www.instagram.com/p/BpB1ChqhgIL/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 19,
+      "source": "images/chanel/Editorial/shoot-look_04_sunkissed-shoot.jpg",
+      "post": "https://www.instagram.com/p/BrCtt6xgHxT/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 20,
+      "source": "images/chanel/Editorial/shoot-look_06_male-model-portrait.jpg",
+      "post": "https://www.instagram.com/p/BezdXVeBkFO/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 21,
+      "source": "images/chanel/instagram/17846999040368701.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 22,
+      "source": "images/chanel/instagram/17885627933656012.jpg",
+      "post": "",
+      "proposed_exclusion": "Small 468 x 585 image; weak enlarged portfolio quality",
+      "user_subject": null
+    },
+    {
+      "id": 23,
+      "source": "images/chanel/instagram/17959141756350375.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 24,
+      "source": "images/chanel/instagram/17879281621781908.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 25,
+      "source": "images/chanel/instagram/18158359480052163.jpg",
+      "post": "",
+      "proposed_exclusion": "Quote card or promotional graphic with text",
+      "user_subject": null
+    },
+    {
+      "id": 26,
+      "source": "images/chanel/instagram/17845190701812375.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 27,
+      "source": "images/chanel/instagram/18092970052118106.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 28,
+      "source": "images/chanel/instagram/17886527959450863.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 29,
+      "source": "images/chanel/instagram/17921329009358454.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 30,
+      "source": "images/chanel/instagram/18105115498074222.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 31,
+      "source": "images/chanel/instagram/18089839933123079.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 32,
+      "source": "images/chanel/instagram/17877870958474304.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 33,
+      "source": "images/chanel/instagram/17844666787745239.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 34,
+      "source": "images/chanel/instagram/17889332233416281.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 35,
+      "source": "images/chanel/instagram/18084992329110857.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 36,
+      "source": "images/chanel/instagram/18022138279236321.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 37,
+      "source": "images/chanel/instagram/18045470371087416.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 38,
+      "source": "images/chanel/instagram/17873738038369841.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 39,
+      "source": "images/chanel/instagram/18003183448203943.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 40,
+      "source": "images/chanel/instagram/18054160651074724.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 41,
+      "source": "images/chanel/instagram/17938756909280790.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 42,
+      "source": "images/chanel/instagram/17881499578336394.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 43,
+      "source": "images/chanel/instagram/18027850960132376.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 44,
+      "source": "images/chanel/instagram/17969347000205414.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 45,
+      "source": "images/chanel/instagram/17899528261292561.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 46,
+      "source": "images/chanel/instagram/18023995666011459.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 47,
+      "source": "images/chanel/instagram/18025018216055606.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 48,
+      "source": "images/chanel/instagram/17988046036094836.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 49,
+      "source": "images/chanel/instagram/17946676099223734.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 50,
+      "source": "images/chanel/instagram/17984922817081151.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 51,
+      "source": "images/chanel/instagram/17918546185247606.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 52,
+      "source": "images/chanel/instagram/17933496925238241.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 53,
+      "source": "images/chanel/instagram/17907639724269974.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 54,
+      "source": "images/chanel/instagram/17990429479111928.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 55,
+      "source": "images/chanel/instagram/17989956661108205.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 56,
+      "source": "images/chanel/instagram/18004171162003053.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 57,
+      "source": "images/chanel/instagram/17981028871095958.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 58,
+      "source": "images/chanel/instagram/18002721985036780.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 59,
+      "source": "images/chanel/instagram/17936933686223998.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 60,
+      "source": "images/chanel/instagram/18000768991044216.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 61,
+      "source": "images/chanel/instagram/17882368237303948.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 62,
+      "source": "images/chanel/instagram/17882874079283219.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 63,
+      "source": "images/chanel/instagram/17996848081043717.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 64,
+      "source": "images/chanel/instagram/17998221004039303.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 65,
+      "source": "images/chanel/instagram/17975445622084548.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 66,
+      "source": "images/chanel/instagram/17866916977289267.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 67,
+      "source": "images/chanel/instagram/17906557798252294.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 68,
+      "source": "images/chanel/instagram/17976739828127362.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 69,
+      "source": "images/chanel/instagram/17932868125214355.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 70,
+      "source": "images/chanel/instagram/17974073173125022.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 71,
+      "source": "images/chanel/instagram/17992962187052156.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 72,
+      "source": "images/chanel/instagram/17964641452184257.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 73,
+      "source": "images/chanel/instagram/17926733035210031.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 74,
+      "source": "images/chanel/instagram/17890730248268591.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 75,
+      "source": "images/chanel/instagram/17963003122141352.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 76,
+      "source": "images/chanel/instagram/17973601411106740.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 77,
+      "source": "images/chanel/instagram/17928498034205858.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 78,
+      "source": "images/chanel/instagram/17987991415034236.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 79,
+      "source": "images/chanel/instagram/17926713337201303.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 80,
+      "source": "images/chanel/instagram/17960754304142303.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 81,
+      "source": "images/chanel/instagram/17963763763094288.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 82,
+      "source": "images/chanel/instagram/17982352723010170.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 83,
+      "source": "images/chanel/instagram/17920253380220524.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 84,
+      "source": "images/chanel/instagram/17966410525045555.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 85,
+      "source": "images/chanel/instagram/17966219158040470.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 86,
+      "source": "images/chanel/instagram/17877325675254041.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 87,
+      "source": "images/chanel/instagram/17966719246001921.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 88,
+      "source": "images/chanel/instagram/17951606794107749.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 89,
+      "source": "images/chanel/instagram/17965836328037750.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 90,
+      "source": "images/chanel/instagram/17954503174062852.jpg",
+      "post": "",
+      "proposed_exclusion": "Collage or before/after composite",
+      "user_subject": null
+    },
+    {
+      "id": 91,
+      "source": "images/chanel/instagram/17955600277021837.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 92,
+      "source": "images/chanel/instagram/17863576867260849.jpg",
+      "post": "",
+      "proposed_exclusion": "Quote card or promotional graphic with text",
+      "user_subject": null
+    },
+    {
+      "id": 93,
+      "source": "images/chanel/instagram/17851074499271923.jpg",
+      "post": "",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 94,
+      "source": "images/chanel/instagram/17938902094102115.jpg",
+      "post": "",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 95,
+      "source": "images/chanel/instagram/17887791904206758.jpg",
+      "post": "",
+      "proposed_exclusion": "Dim, soft, low-resolution image",
+      "user_subject": null
+    },
+    {
+      "id": 96,
+      "source": "images/chanel/instagram/17908717465157742.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 97,
+      "source": "images/chanel/instagram/17845794094254957.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 98,
+      "source": "images/chanel/instagram/17859357787243411.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 99,
+      "source": "images/chanel/instagram/17917071256118808.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 100,
+      "source": "images/chanel/instagram/17928471415012965.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 101,
+      "source": "images/chanel/instagram/17928542830008987.jpg",
+      "post": "",
+      "proposed_exclusion": "Cosmetic tattoo procedure rather than makeup portfolio",
+      "user_subject": null
+    },
+    {
+      "id": 102,
+      "source": "images/chanel/instagram/17929149211013697.jpg",
+      "post": "",
+      "proposed_exclusion": "Cosmetic tattoo procedure rather than makeup portfolio",
+      "user_subject": null
+    },
+    {
+      "id": 103,
+      "source": "images/chanel/instagram/17915404927107715.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 104,
+      "source": "images/chanel/instagram/17923829338066090.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 105,
+      "source": "images/chanel/instagram/17915878390096287.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 106,
+      "source": "images/chanel/instagram/17926710424035046.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 107,
+      "source": "images/chanel/instagram/17866980175220536.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 108,
+      "source": "images/chanel/instagram/17868224071204594.jpg",
+      "post": "",
+      "proposed_exclusion": "Collage or before/after composite",
+      "user_subject": null
+    },
+    {
+      "id": 109,
+      "source": "images/chanel/instagram/17913373753108959.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 110,
+      "source": "images/chanel/instagram/17915363128118321.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 111,
+      "source": "images/chanel/instagram/17901334474131302.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 112,
+      "source": "images/chanel/instagram/17897622157156149.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 113,
+      "source": "images/chanel/instagram/17886194962195386.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 114,
+      "source": "images/chanel/instagram/17851446349239719.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 115,
+      "source": "images/chanel/instagram/17925216931053917.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 116,
+      "source": "images/chanel/instagram/17895707476185410.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 117,
+      "source": "images/chanel/instagram/17920963789013144.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 118,
+      "source": "images/chanel/instagram/17897702074133324.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 119,
+      "source": "images/chanel/instagram/17862508186200630.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 120,
+      "source": "images/chanel/instagram/17902984330083438.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 121,
+      "source": "images/chanel/instagram/17860146265220728.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 122,
+      "source": "images/chanel/instagram/17919684277040286.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 123,
+      "source": "images/chanel/instagram/17920142968025279.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 124,
+      "source": "images/chanel/instagram/17892828037157893.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 125,
+      "source": "images/chanel/instagram/17859671548210633.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 126,
+      "source": "images/chanel/instagram/17901629101085853.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 127,
+      "source": "images/chanel/instagram/17904034768125585.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 128,
+      "source": "images/chanel/instagram/17910054151075552.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 129,
+      "source": "images/chanel/instagram/17918361664020947.jpg",
+      "post": "",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 130,
+      "source": "images/chanel/instagram/17900471035081790.jpg",
+      "post": "",
+      "proposed_exclusion": "Product-only image",
+      "user_subject": null
+    },
+    {
+      "id": 131,
+      "source": "images/chanel/instagram/17913620449014637.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 132,
+      "source": "images/chanel/instagram/17872601134199497.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 133,
+      "source": "images/chanel/instagram/17853232525214606.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 134,
+      "source": "images/chanel/instagram/17896276828120519.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 135,
+      "source": "images/chanel/instagram/17909911855017380.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 136,
+      "source": "images/chanel/instagram/17907675751047505.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 137,
+      "source": "images/chanel/instagram/17883261820193534.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 138,
+      "source": "images/chanel/instagram/17880872236193742.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 139,
+      "source": "images/chanel/instagram/17891300296129285.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 140,
+      "source": "images/chanel/instagram/17903643721001780.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 141,
+      "source": "images/chanel/instagram/17903093734031631.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 142,
+      "source": "images/chanel/instagram/17902182685049705.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 143,
+      "source": "images/chanel/instagram/17889120412125100.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 144,
+      "source": "images/chanel/instagram/17861617735196961.jpg",
+      "post": "",
+      "proposed_exclusion": "Product-only image",
+      "user_subject": null
+    },
+    {
+      "id": 145,
+      "source": "images/chanel/instagram/17900846119026002.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 146,
+      "source": "images/chanel/instagram/17874062326163456.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 147,
+      "source": "images/chanel/instagram/17899656121062778.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 148,
+      "source": "images/chanel/instagram/17875678558138114.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 149,
+      "source": "images/chanel/instagram/17873317180146435.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 150,
+      "source": "images/chanel/instagram/17897872057030977.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 151,
+      "source": "images/chanel/instagram/17897802727044559.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 152,
+      "source": "images/chanel/instagram/17889226813072464.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 153,
+      "source": "images/chanel/instagram/17871461554192404.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 154,
+      "source": "images/chanel/instagram/17882328595082629.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 155,
+      "source": "images/chanel/instagram/17898097984040298.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 156,
+      "source": "images/chanel/instagram/17881548814090825.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 157,
+      "source": "images/chanel/instagram/17871652708179735.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 158,
+      "source": "images/chanel/instagram/17871868327145348.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 159,
+      "source": "images/chanel/instagram/17885747722109166.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 160,
+      "source": "images/chanel/instagram/17867143510172989.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 161,
+      "source": "images/chanel/instagram/17881297072109685.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 162,
+      "source": "images/chanel/instagram/17867894599180953.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 163,
+      "source": "images/chanel/instagram/17893554820063069.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 164,
+      "source": "images/chanel/instagram/17868250747158428.jpg",
+      "post": "",
+      "proposed_exclusion": "Collage or before/after composite",
+      "user_subject": null
+    },
+    {
+      "id": 165,
+      "source": "images/chanel/instagram/17878013368083911.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 166,
+      "source": "images/chanel/instagram/17892549472034864.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 167,
+      "source": "images/chanel/instagram/17884096714074351.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 168,
+      "source": "images/chanel/instagram/17892287572000814.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 169,
+      "source": "images/chanel/instagram/17892156640004845.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 170,
+      "source": "images/chanel/instagram/17867382532152893.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 171,
+      "source": "images/chanel/instagram/17892842701059845.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 172,
+      "source": "images/chanel/instagram/17893183636021628.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 173,
+      "source": "images/chanel/instagram/17864573869192630.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 174,
+      "source": "images/chanel/instagram/17868842317143893.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 175,
+      "source": "images/chanel/instagram/17885478745070748.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 176,
+      "source": "images/chanel/instagram/17864369821172011.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 177,
+      "source": "images/chanel/instagram/17876081767084457.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 178,
+      "source": "images/chanel/instagram/17878667500099270.jpg",
+      "post": "",
+      "proposed_exclusion": "Product-only image",
+      "user_subject": null
+    },
+    {
+      "id": 179,
+      "source": "images/chanel/instagram/17867451505131107.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 180,
+      "source": "images/chanel/instagram/17890252270029867.jpg",
+      "post": "",
+      "proposed_exclusion": "Collage or before/after composite",
+      "user_subject": null
+    },
+    {
+      "id": 181,
+      "source": "images/chanel/instagram/17863950229160182.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 182,
+      "source": "images/chanel/instagram/17883177013071367.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 183,
+      "source": "images/chanel/instagram/17863279915190994.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 184,
+      "source": "images/chanel/instagram/17888561845023125.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 185,
+      "source": "images/chanel/instagram/17879953249072113.jpg",
+      "post": "",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 186,
+      "source": "images/chanel/instagram/17873698984086735.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 187,
+      "source": "images/chanel/instagram/17873887159086636.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 188,
+      "source": "images/chanel/instagram/17864204809145168.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 189,
+      "source": "images/chanel/instagram/17847382327198484.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 190,
+      "source": "images/chanel/instagram/17861694775172783.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 191,
+      "source": "images/chanel/instagram/17863285198155017.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 192,
+      "source": "images/chanel/instagram/17865019708143722.jpg",
+      "post": "",
+      "proposed_exclusion": "Caption credits makeup to another artist; exclude from Chanel work attribution",
+      "user_subject": null
+    },
+    {
+      "id": 193,
+      "source": "images/chanel/instagram/17875569103114578.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 194,
+      "source": "images/chanel/instagram/17887784005058332.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 195,
+      "source": "images/chanel/instagram/17864413693131070.jpg",
+      "post": "",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 196,
+      "source": "images/chanel/instagram/17885671372026983.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 197,
+      "source": "images/chanel/instagram/17862778660136553.jpg",
+      "post": "",
+      "proposed_exclusion": "Product-only image",
+      "user_subject": null
+    },
+    {
+      "id": 198,
+      "source": "images/chanel/instagram/17879529685067855.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 199,
+      "source": "images/chanel/instagram/17872541629107373.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 200,
+      "source": "images/chanel/instagram/17844102025195487.jpg",
+      "post": "",
+      "proposed_exclusion": "Product-only image",
+      "user_subject": null
+    },
+    {
+      "id": 201,
+      "source": "images/chanel/instagram/17882147962003344.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 202,
+      "source": "images/chanel/instagram/17871090259114350.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 203,
+      "source": "images/chanel/instagram/17842691593195241.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 204,
+      "source": "images/chanel/instagram/17858135167155295.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 205,
+      "source": "images/chanel/instagram/17882163454047884.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 206,
+      "source": "images/chanel/instagram/17875336312064326.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 207,
+      "source": "images/chanel/instagram/17882636359015220.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 208,
+      "source": "images/chanel/instagram/17880447976016413.jpg",
+      "post": "",
+      "proposed_exclusion": "Overexposed and soft glitter-eye detail",
+      "user_subject": null
+    },
+    {
+      "id": 209,
+      "source": "images/chanel/instagram/17878546726023065.jpg",
+      "post": "",
+      "proposed_exclusion": "Lifestyle, event or outfit-focused image; makeup is not the main subject",
+      "user_subject": null
+    },
+    {
+      "id": 210,
+      "source": "images/chanel/instagram/17864308912098534.jpg",
+      "post": "",
+      "proposed_exclusion": "Prominent backdrop logos or signage",
+      "user_subject": null
+    },
+    {
+      "id": 211,
+      "source": "images/chanel/instagram/17845411318173044.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 212,
+      "source": "images/chanel/instagram/17856593923128164.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 213,
+      "source": "images/chanel/instagram/17844936904185390.jpg",
+      "post": "",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 214,
+      "source": "images/chanel/instagram/18108898507961718.jpg",
+      "post": "https://www.instagram.com/p/DfMaFAymjhu/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 215,
+      "source": "images/chanel/instagram/18026213561871350.jpg",
+      "post": "https://www.instagram.com/p/DfJDKuGmnqB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 216,
+      "source": "images/chanel/instagram/17916877896535786.jpg",
+      "post": "https://www.instagram.com/p/DfCfWu0Cq1M/",
+      "proposed_exclusion": "Quote card or promotional graphic with text",
+      "user_subject": null
+    },
+    {
+      "id": 217,
+      "source": "images/chanel/instagram/18129540151872132.jpg",
+      "post": "https://www.instagram.com/p/DevyIqAird8/",
+      "proposed_exclusion": "Quote card or promotional graphic with text",
+      "user_subject": null
+    },
+    {
+      "id": 218,
+      "source": "images/chanel/instagram/18054463225946021.jpg",
+      "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 219,
+      "source": "images/chanel/instagram/18030886385411783.jpg",
+      "post": "https://www.instagram.com/p/DDs_eoUzYbB/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 220,
+      "source": "images/chanel/instagram/17907749857615118.jpg",
+      "post": "https://www.instagram.com/p/CJil6Ijg8aP/",
+      "proposed_exclusion": "Visible phone or mirror selfie",
+      "user_subject": null
+    },
+    {
+      "id": 221,
+      "source": "images/chanel/instagram/17919683194260012.jpg",
+      "post": "https://www.instagram.com/p/BrhRstVAPjr/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 222,
+      "source": "images/chanel/instagram/17885797414275574.jpg",
+      "post": "https://www.instagram.com/p/BpbwYAwg7ge/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 223,
+      "source": "images/chanel/instagram/17948625631194656.jpg",
+      "post": "https://www.instagram.com/p/BpB1ChqhgIL/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 224,
+      "source": "images/chanel/instagram/17892856411114547.jpg",
+      "post": "https://www.instagram.com/p/Ba1T-nJniq9/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    },
+    {
+      "id": 225,
+      "source": "images/chanel/instagram/17879205529181806.jpg",
+      "post": "https://www.instagram.com/p/BavuPzqH7m9/",
+      "proposed_exclusion": null,
+      "user_subject": null
+    }
+  ]
+}
